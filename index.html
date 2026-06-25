@@ -220,7 +220,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
   </div>
   <div class="cbox" id="gCB"></div>
   <button class="gobtn" id="gGB" disabled style="background:linear-gradient(135deg,#f97316,#c2410c);">🔥 分析火烧云</button>
-  <div style="font-size:9.5px;color:#3a5a7a;margin-top:5px;line-height:1.7;">CloudSea Fire Sky Index：云层50%（高云权重&gt;中云） + 太阳几何20% + 大气清透20% + 风暴动力10%<br>雨后加成已收窄为固定+8分（上限+10），并按纬度自动切换热带/温带阈值</div>
+  <div style="font-size:9.5px;color:#3a5a7a;margin-top:5px;line-height:1.7;">CloudSea Fire Sky Index：云层50%（高云权重&gt;中云） + 太阳几何20% + 大气清透20% + 风暴动力10%<br>雨后清透度已并入「风暴动力」项（按过去3小时降水量连续评分），并按纬度自动切换热带/温带阈值</div>
 </div>
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;"><span>🔥</span><span style="font-weight:500;">朝霞晚霞火烧云分析</span></div>
@@ -340,14 +340,14 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
         <div style="font-size:13px;color:#f5c842;font-weight:600;flex:1;min-width:0;">
           📍 <span id="homeLocName">正在定位…</span>
         </div>
-        <button id="homeChangeLoc" style="padding:6px 12px;border-radius:7px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:11px;font-weight:600;">📍 换位置</button>
+        <button id="homeChangeLoc" data-k="homeChangeLoc" style="padding:6px 12px;border-radius:7px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:11px;font-weight:600;">📍 换位置</button>
       </div>
       <div id="homeLocCoord" style="font-size:10.5px;color:#9ab8c8;margin-top:6px;line-height:1.7;"></div>
       <div id="homeLocPicker" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);">
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button id="homeUseGPS" style="padding:7px 12px;border-radius:7px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#22c55e;cursor:pointer;font-size:11px;">🛰️ 用 GPS 定位</button>
+          <button id="homeUseGPS" data-k="homeUseGPS" style="padding:7px 12px;border-radius:7px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#22c55e;cursor:pointer;font-size:11px;">🛰️ 用 GPS 定位</button>
           <input id="homeSearchInput" placeholder="或输入地名（如：成都、丽江）" style="flex:1;min-width:160px;padding:7px 10px;border-radius:7px;border:1px solid #1a2f4a;background:rgba(255,255,255,0.03);color:#e8f4ff;font-size:11px;"/>
-          <button id="homeSearchBtn" style="padding:7px 12px;border-radius:7px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:11px;">🔍 搜</button>
+          <button id="homeSearchBtn" data-k="homeSearchBtn" style="padding:7px 12px;border-radius:7px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:11px;">🔍 搜</button>
         </div>
       </div>
     </div>
@@ -355,7 +355,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     <!-- 三大定向指数（今晚银河 / 明早云海 / 明晚火烧云）-->
     <div style="display:flex;align-items:center;gap:6px;margin:18px 0 8px;">
       <span style="font-size:14px;">🎯</span>
-      <span style="font-weight:600;font-size:13px;color:#e8f4ff;">今晚明早一眼速览</span>
+      <span data-k="homeIdxTitle" style="font-weight:600;font-size:13px;color:#e8f4ff;">今晚明早一眼速览</span>
     </div>
     <div id="homeIndices">
       <div style="text-align:center;padding:18px 16px;color:#5a7a9a;font-size:11.5px;">请先设置位置…</div>
@@ -364,7 +364,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     <!-- 今晚明早最佳机会 -->
     <div style="display:flex;align-items:center;gap:6px;margin:18px 0 8px;">
       <span style="font-size:14px;">🌟</span>
-      <span style="font-weight:600;font-size:13px;color:#e8f4ff;">接下来 48 小时的最佳机会</span>
+      <span data-k="homeOppsTitle" style="font-weight:600;font-size:13px;color:#e8f4ff;">接下来 48 小时的最佳机会</span>
     </div>
     <div id="homeOpps">
       <div style="text-align:center;padding:30px 16px;color:#5a7a9a;font-size:12px;">请先设置位置…</div>
@@ -374,9 +374,9 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     <div style="display:flex;align-items:center;gap:6px;margin:22px 0 8px;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:14px;">📌</span>
-        <span style="font-weight:600;font-size:13px;color:#e8f4ff;">常去地点</span>
+        <span data-k="homeFavTitle" style="font-weight:600;font-size:13px;color:#e8f4ff;">常去地点</span>
       </div>
-      <button id="homeAddFav" style="padding:5px 11px;border-radius:6px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);color:#a78bfa;cursor:pointer;font-size:10.5px;">+ 加当前位置为常去</button>
+      <button id="homeAddFav" data-k="homeAddFav" style="padding:5px 11px;border-radius:6px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);color:#a78bfa;cursor:pointer;font-size:10.5px;">+ 加当前位置为常去</button>
     </div>
     <div id="homeFavorites">
       <div style="text-align:center;padding:18px 16px;color:#5a7a9a;font-size:11.5px;line-height:1.8;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.08);border-radius:9px;">
@@ -388,7 +388,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     <!-- 快捷入口 -->
     <div style="display:flex;align-items:center;gap:6px;margin:22px 0 8px;">
       <span style="font-size:14px;">⚡</span>
-      <span style="font-weight:600;font-size:13px;color:#e8f4ff;">快捷入口</span>
+      <span data-k="homeQuickTitle" style="font-weight:600;font-size:13px;color:#e8f4ff;">快捷入口</span>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
       <button class="quick-btn" data-jump="pgGlow" style="padding:14px 12px;border-radius:9px;border:1px solid rgba(249,115,22,0.3);background:linear-gradient(135deg,rgba(249,115,22,0.10),rgba(245,158,11,0.05));color:#f97316;cursor:pointer;font-size:12px;font-weight:600;text-align:left;line-height:1.5;">🔥 火烧云<br><span style="font-size:9.5px;color:#5a7a9a;font-weight:normal;">日出日落霞光预测</span></button>
@@ -398,7 +398,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
       <button class="quick-btn" data-jump="pgHist" style="padding:14px 12px;border-radius:9px;border:1px solid rgba(34,197,94,0.3);background:linear-gradient(135deg,rgba(34,197,94,0.10),rgba(78,205,196,0.05));color:#22c55e;cursor:pointer;font-size:12px;font-weight:600;text-align:left;line-height:1.5;">📈 准确度<br><span style="font-size:9.5px;color:#5a7a9a;font-weight:normal;">你的反馈统计</span></button>
     </div>
 
-    <div style="margin-top:18px;font-size:10px;color:#3a5a7a;text-align:center;line-height:1.7;">
+    <div data-k="homePrivacy" style="margin-top:18px;font-size:10px;color:#3a5a7a;text-align:center;line-height:1.7;">
       数据本地存储，关闭网站不会上传任何信息
     </div>
   </div>
@@ -449,12 +449,65 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 'use strict';
 // ══ 语言 ══
 var LANG='zh';
+// 导航 / 标题 i18n 字典（data-k 对应键）。此前 data-k 标记从未被接线，切换语言只翻译了百科。
+// 现在 applyLang 会遍历所有 [data-k] 元素，按 LANG 写入对应文案，菜单与中英文同步。
+var I18N={
+  appTitle:{zh:'天象分析', en:'Sky Analysis'},
+  navHome: {zh:'首页',     en:'Home'},
+  navGlow: {zh:'火烧云',   en:'Afterglow'},
+  navCloud:{zh:'云海',     en:'Cloud Sea'},
+  navAlps: {zh:'日照金山', en:'Alpenglow'},
+  navStar: {zh:'星空',     en:'Stars'},
+  navCal:  {zh:'机会日历', en:'Calendar'},
+  navHist: {zh:'准确度',   en:'Accuracy'},
+  navWiki: {zh:'百科',     en:'Wiki'},
+  // ── 首页静态文案 ──
+  homeChangeLoc:{zh:'📍 换位置', en:'📍 Change'},
+  homeUseGPS:{zh:'🛰️ 用 GPS 定位', en:'🛰️ Use GPS'},
+  homeSearchBtn:{zh:'🔍 搜', en:'🔍 Search'},
+  homeIdxTitle:{zh:'今晚明早一眼速览', en:'Tonight & Tomorrow at a Glance'},
+  homeOppsTitle:{zh:'接下来 48 小时的最佳机会', en:'Best Opportunities · Next 48h'},
+  homeFavTitle:{zh:'常去地点', en:'Favorite Spots'},
+  homeAddFav:{zh:'+ 加当前位置为常去', en:'+ Add current as favorite'},
+  homeQuickTitle:{zh:'快捷入口', en:'Quick Access'},
+  homePrivacy:{zh:'数据本地存储，关闭网站不会上传任何信息', en:'All data stored locally. Nothing is uploaded.'},
+  // ── 动态结果区块"仅中文"诚实提示 ──
+  zhOnlyNote:{zh:'', en:'Note: detailed hourly analysis text is currently Chinese-only.'}
+};
+// 切换语言后需要重渲染的动态区块（这些是 JS 拼接出来的，不能靠 data-k 静态替换）
+function relocalizeDynamic(){
+  try{ if(typeof hST!=='undefined' && hST.lat!=null){ if(typeof renderHomeOpps==='function') renderHomeOpps(); } }catch(e){}
+}
 document.getElementById('langBtn').addEventListener('click',function(){LANG=LANG==='zh'?'en':'zh';applyLang();});
-function applyLang(){document.getElementById('langBtn').textContent=LANG==='zh'?'EN':'中文';renderWiki();}
+function applyLang(){
+  document.getElementById('langBtn').textContent=LANG==='zh'?'EN':'中文';
+  // 翻译所有带 data-k 的元素（导航菜单 + 首页静态文案）
+  document.querySelectorAll('[data-k]').forEach(function(el){
+    var dict=I18N[el.getAttribute('data-k')];
+    if(dict && dict[LANG]!=null) el.textContent=dict[LANG];
+  });
+  var title=document.getElementById('appTitle');
+  if(title && I18N.appTitle[LANG]) title.textContent=I18N.appTitle[LANG];
+  // 英文模式下，给正文动态结果区加一条"仅中文"提示条（避免用户误以为整站已英文）
+  var noteEl=document.getElementById('langZhOnlyNote');
+  if(!noteEl){
+    noteEl=document.createElement('div');
+    noteEl.id='langZhOnlyNote';
+    noteEl.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(167,139,250,0.12);border-top:1px solid rgba(167,139,250,0.3);color:#c7b8f5;font-size:10px;text-align:center;padding:4px 10px;backdrop-filter:blur(8px);';
+    document.body.appendChild(noteEl);
+  }
+  if(LANG==='en'){ noteEl.textContent=I18N.zhOnlyNote.en; noteEl.style.display='block'; }
+  else { noteEl.style.display='none'; }
+  renderWiki();
+}
 
 // ══ 页面切换 ══
-var CURRENT_PAGE='pgCloud'; // ← 新增:记录当前页,resize 时只重绘当前页的地图
+var CURRENT_PAGE='pgHome'; // 修复(Bug1):与 HTML 中 class="page on" 的页(pgHome)保持一致，否则首次 resize 不重绘当前页地图
 var PAGE_MAPS={}; // ← 新增:延迟绑定的 map 实例引用,切换页面时调用对应 .draw()
+// 修复(一般-1):全局只挂一个 resize 监听，分发到当前可见页的地图，取代"每实例各挂一个"。
+window.addEventListener('resize',function(){
+  var m=PAGE_MAPS[CURRENT_PAGE]; if(m) m.draw();
+});
 document.querySelectorAll('.ntab[data-page]').forEach(function(btn){
   btn.addEventListener('click',function(){
     document.querySelectorAll('.ntab').forEach(function(b){b.className='ntab';});
@@ -540,15 +593,55 @@ function pruneFetchCache(){
     }
   }
 }
+
+// ── 第三方公共服务限流（修复 Bug4）──────────────────────────────────────
+// nominatim / overpass 都是公共免费实例，明确要求"低频访问"，用户一多必触发 429。
+// 这里给"按主机串行排队 + 最小请求间隔"的节流：同一主机的请求依次发出，彼此间隔
+// >= 该主机的最小间隔（nominatim 官方政策约 1 req/s，这里取 1100ms；overpass 取 1500ms）。
+// Open-Meteo 不在此列（高配额），保持并发不受影响。
+var HOST_MIN_INTERVAL={
+  'nominatim.openstreetmap.org':1100,
+  'overpass-api.de':1500
+};
+var _hostQueue={};   // host -> { lastTs, chain(Promise) }
+function _hostOf(url){ try{ return new URL(url).host; }catch(e){ return ''; } }
+// 把一次"实际发起 fetch 的动作"按主机限流排队，返回 Promise<Response>
+function _throttledFetch(url){
+  var host=_hostOf(url);
+  var minGap=HOST_MIN_INTERVAL[host];
+  if(!minGap) return fetch(url); // 不在限流名单 → 直接发
+  var q=_hostQueue[host] || (_hostQueue[host]={lastTs:0, chain:Promise.resolve()});
+  var run=q.chain.then(function(){
+    var wait=Math.max(0, q.lastTs + minGap - Date.now());
+    return new Promise(function(res){ setTimeout(res, wait); }).then(function(){
+      q.lastTs=Date.now();
+      return fetch(url);
+    });
+  });
+  // chain 只用于"排队节奏"，不传递结果/错误，避免一个失败卡死整条队列
+  q.chain=run.then(function(){}, function(){});
+  return run;
+}
+
+// 内部：执行一次带 429 退避重试的请求（_retry=true 时不再重试，防止无限循环）
+function _fetchWithRetry(url, _retry){
+  return _throttledFetch(url).then(function(r){
+    if(r.status===429 && !_retry){
+      // 公共服务限流：等待后重试一次
+      return new Promise(function(res){ setTimeout(res, 1500); })
+        .then(function(){ return _fetchWithRetry(url, true); });
+    }
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  });
+}
+
 function cachedFetch(url){
   var hit=FETCH_CACHE[url];
   if(hit && (Date.now()-hit.ts)<FETCH_CACHE_TTL) return Promise.resolve(hit.data);
   // 已有同 URL 请求在飞行中 → 直接复用，不再发起第二次
   if(FETCH_INFLIGHT[url]) return FETCH_INFLIGHT[url];
-  var p=fetch(url).then(function(r){
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(d){
+  var p=_fetchWithRetry(url, false).then(function(d){
     FETCH_CACHE[url]={ts:Date.now(), data:d};
     delete FETCH_INFLIGHT[url];
     pruneFetchCache();
@@ -559,6 +652,17 @@ function cachedFetch(url){
   });
   FETCH_INFLIGHT[url]=p;
   return p;
+}
+
+// ── 通用防抖（修复 Bug5：地图频繁点击触发大量 elevation/Overpass 请求）──
+// debounce(fn, ms)：返回包装函数，连续调用只在最后一次之后 ms 毫秒执行一次。
+function debounce(fn, ms){
+  var t=null;
+  return function(){
+    var ctx=this, args=arguments;
+    if(t) clearTimeout(t);
+    t=setTimeout(function(){ t=null; fn.apply(ctx, args); }, ms||500);
+  };
 }
 // ── 统一的非阻塞错误提示(替代 alert),在指定 banner 元素里显示 5 秒 ──
 function showErr(bannerId, msg){
@@ -699,9 +803,10 @@ function fromNow(rows, moduleType){
     var end=new Date(anchor.getTime()+24*3600*1000);
     return rows.filter(function(r){var t=new Date(r.time);return t>=anchor && t<end;});
   }
-  var h=n.getHours();
-  var cutoff=new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,0,0);
-  return rows.filter(function(r){return new Date(r.time)>=cutoff;});
+  // 修复(严重-5):原用"设备本地整点"构造 cutoff，与 r.time(按设备时区解析)在跨时区时基准错位，
+  // 可能把未来 7 天数据全过滤掉(表格空白)。改用"当前时刻前 1 小时"的绝对毫秒做容错截断。
+  var cutoffMs=n.getTime()-3600*1000;
+  return rows.filter(function(r){return new Date(r.time).getTime()>=cutoffMs;});
 }
 
 // 月相
@@ -1332,9 +1437,15 @@ function MapEng(baseId, wrapId, onSel, ovCb){
     S.lat+=dy/(TS*N/(2*Math.PI))*(180/Math.PI)*Math.cos(S.lat*Math.PI/180);
     S.lat=Math.max(-85,Math.min(85,S.lat));
   }
-  function resize(){var w=document.getElementById(wrapId);cv.width=w.offsetWidth;cv.height=w.offsetHeight;}
+  function resize(){
+    var w=document.getElementById(wrapId);
+    var nw=w.offsetWidth, nh=w.offsetHeight;
+    if(nw<=0||nh<=0) return false; // 修复(致命-1):页面隐藏时 offsetWidth=0，不要把画布设成 0×0
+    cv.width=nw; cv.height=nh;
+    return true;
+  }
   function draw(){
-    resize();
+    if(resize()===false) return; // 尺寸无效（隐藏页）→ 跳过绘制，等可见时再画
     var W=cv.width, H=cv.height;
     ctx.fillStyle='#040c16'; ctx.fillRect(0,0,W,H);
     var N=1<<S.z;
@@ -1390,12 +1501,10 @@ function MapEng(baseId, wrapId, onSel, ovCb){
   cv.addEventListener('mouseleave',function(){S.drag=false;});
   cv.addEventListener('wheel',function(e){e.preventDefault();dz(e.deltaY<0?1:-1);},{passive:false});
   cv.addEventListener('touchstart',function(e){e.preventDefault();if(e.touches.length===1){S.drag=true;S.lx=e.touches[0].clientX;S.ly=e.touches[0].clientY;S.moved=false;S.pd=null;}else if(e.touches.length===2){var dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY;S.pd=Math.sqrt(dx*dx+dy*dy);S.drag=false;}},{passive:false});
-  cv.addEventListener('touchmove',function(e){e.preventDefault();if(e.touches.length===1&&S.drag){var dx=e.touches[0].clientX-S.lx,dy=e.touches[0].clientY-S.ly;if(Math.abs(dx)>2||Math.abs(dy)>2)S.moved=true;S.lx=e.touches[0].clientX;S.ly=e.touches[0].clientY;pan(dx,dy);requestDraw();}else if(e.touches.length===2&&S.pd){var dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,nd=Math.sqrt(dx*dx+dy*dy);if(nd/S.pd>1.25&&S.z<18){S.z++;S.tiles={};S.pd=nd;draw();}if(S.pd/nd>1.25&&S.z>2){S.z--;S.tiles={};S.pd=nd;draw();}}},{passive:false});
+  cv.addEventListener('touchmove',function(e){e.preventDefault();if(e.touches.length===1&&S.drag){var dx=e.touches[0].clientX-S.lx,dy=e.touches[0].clientY-S.ly;if(Math.abs(dx)>2||Math.abs(dy)>2)S.moved=true;S.lx=e.touches[0].clientX;S.ly=e.touches[0].clientY;pan(dx,dy);requestDraw();}else if(e.touches.length===2&&S.pd){var dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,nd=Math.sqrt(dx*dx+dy*dy);if(nd/S.pd>1.4&&S.z<18){S.z++;S.tiles={};S.pd=nd;requestDraw();}else if(S.pd/nd>1.4&&S.z>2){S.z--;S.tiles={};S.pd=nd;requestDraw();}}},{passive:false});
   cv.addEventListener('touchend',function(e){if(e.changedTouches.length===1&&!S.moved&&e.touches.length===0)sel(null,e.changedTouches[0]);S.drag=false;});
-  // 只在自己所在的 page 当前可见时响应 window resize,避免隐藏 page 上 offsetWidth=0 时重设 canvas 为 0×0
-  window.addEventListener('resize',function(){
-    if(PAGE_MAPS[CURRENT_PAGE]===api) draw();
-  });
+  // 修复(一般-1):不再每个实例各挂一个 window resize(4实例=4监听)。改为全局单一监听(见 PAGE_MAPS 定义处)，
+  // 通过 CURRENT_PAGE 分发到当前可见页的地图，避免监听器累积。
   draw();
   var api={
     draw:draw, dz:dz,
@@ -1501,7 +1610,7 @@ function bindSearch(p,mapObj,selFn){
 function doSearch(p,mapObj,selFn){
   var q=document.getElementById(p+'PQ').value.trim();if(!q)return;
   showLoad('搜索中…');
-  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=1&accept-language=zh')
+  _throttledFetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=1&accept-language=zh')
     .then(function(r){return r.json();})
     .then(function(d){
       hideLoad();
@@ -1532,14 +1641,36 @@ function doSearch(p,mapObj,selFn){
 // ══════════════════════════════════════════════════════════════════════
 var TERRAIN_LS_KEY='photoglow_terrain_v1';
 var TERRAIN_MEM=null; // 内存映射，懒加载
+var TERRAIN_MAX_ENTRIES=2000; // 修复(Bug3)：地形缓存最多保留 2000 项，防止永久增长撑爆 localStorage
 function terrainLoad(){
   if(TERRAIN_MEM) return TERRAIN_MEM;
   try{ TERRAIN_MEM=JSON.parse(localStorage.getItem(TERRAIN_LS_KEY)||'{}'); }
   catch(e){ TERRAIN_MEM={}; }
   return TERRAIN_MEM;
 }
+// 超出上限时淘汰最早写入的条目（依赖对象键的插入顺序，近似 FIFO/LRU）。
+function terrainEvictIfNeeded(){
+  if(!TERRAIN_MEM) return;
+  var keys=Object.keys(TERRAIN_MEM);
+  if(keys.length<=TERRAIN_MAX_ENTRIES) return;
+  var drop=keys.length-TERRAIN_MAX_ENTRIES;
+  for(var i=0;i<drop;i++){ delete TERRAIN_MEM[keys[i]]; }
+}
 function terrainSave(){
-  try{ localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM||{})); }catch(e){}
+  terrainEvictIfNeeded();
+  try{
+    localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM||{}));
+  }catch(e){
+    // 配额超限（QuotaExceededError，Android WebView 尤甚）：强制砍半后重试一次，仍失败则放弃缓存
+    try{
+      var keys=Object.keys(TERRAIN_MEM||{});
+      var keep=Math.floor(keys.length/2);
+      var trimmed={};
+      for(var i=keys.length-keep;i<keys.length;i++){ trimmed[keys[i]]=TERRAIN_MEM[keys[i]]; }
+      TERRAIN_MEM=trimmed;
+      localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM));
+    }catch(e2){ /* 仍失败：本次不持久化，内存缓存照常工作 */ }
+  }
 }
 function terrainKey(lat,lon,kind){
   return kind+':'+(+lat).toFixed(3)+','+(+lon).toFixed(3);
@@ -1571,6 +1702,14 @@ function terrainGetElev(lat,lon){
 function fetchElev(lat,lon,cb){
   terrainGetElev(lat,lon).then(function(v){cb(v);});
 }
+// ── 交互专用：防抖版海拔获取（修复 Bug5）──────────────────────────────
+// 地图被快速连点（如反复点 100 次）时，每次 onSel 都直接 fetchElev → 触发大量 elevation/Overpass。
+// 这里对"点击触发的海拔查询"做 450ms 防抖：连点只在用户停手后对最后落点发一次请求。
+// 注意：仅供地图 onSel 这类交互路径使用；首页/日历的批量 Promise 取数仍走 terrainGetElev（不防抖、不影响）。
+var _elevDebounced=debounce(function(lat,lon,cb){
+  terrainGetElev(lat,lon).then(function(v){cb(v);});
+}, 450);
+function fetchElevDebounced(lat,lon,cb){ _elevDebounced(lat,lon,cb); }
 // 获取周边 30km 内最高峰海拔（Promise 版，永久缓存 + 请求去重）。
 // 命中缓存直接返回；未命中走 Overpass，成功才永久缓存；失败返回 0 且不写缓存（留待重试）。
 // 用于首页地形可行性判断（日照金山是否可拍），消除每次首页分析都重打 Overpass 的开销。
@@ -2093,8 +2232,10 @@ function lclH(temp,dew){return Math.max(0,Math.round((temp-dew)*125));}
 // 相比v4的修正：
 //   ① 高云权重(50%) > 中云权重(25%)——高云（卷云/卷积云/高积云）才是染色的主要载体，
 //      旧版"中云>高云"的权重分配是反的
-//   ② 雨后加成从×1.4降为固定+8分（硬上限+10）——下雨不等于有霞，雷暴/积雨云残留后
-//      往往完全没有霞，旧版的乘法加成会系统性高估雨后场景
+//   ② 雨后信号统一收归 storm 模块的 rainScore（基于过去3小时降水的连续梯度：适量雨后放晴=100，
+//      过大降雨/雷暴残留=10）。已彻底移除独立的"雨后加成"开关——下雨不等于有霞，且该开关与
+//      rainScore 看的是同一信号（近期下没下雨），会重复计分并对阴沉雨后误加。雨停后能不能烧，
+//      取决于当前高/中/低云画布，这已由 cloudScore + canvasGate 表达。
 //   ③ 新增太阳几何评分模块：用太阳仰角（而非死板的"距日出日落多少分钟"）判断时间窗口，
 //      这套逻辑物理上天然适配不同纬度/季节（仰角相同=光学条件相同，无论在马来西亚还是北海道）
 //   ④ 新增"太阳方向云层"修正项——数据局限说明：Open-Meteo是单点预报API，无法获取太阳
@@ -2243,8 +2384,10 @@ function computeGlowComponents(r, minFromSun, isSunrise, prevRainBonus, lat){
 
   // ══ 总分（火烧云指数）══
   var finalRaw = cloudScore*0.50 + sunScore*0.20 + atmosphereScore*0.20 + stormScore*0.10;
-  var rainBonus = prevRainBonus ? 8 : 0; // 雨后加成：固定小额，硬上限+10（替代旧版×1.4）
-  var finalScore = Math.min(100, finalRaw+rainBonus);
+  // 雨后信号已由 storm 模块的 rainScore（基于 rain3h 的连续梯度）表达，
+  // 此处不再叠加 prevRainBonus 开关——避免"近期下没下雨"被记两次分、对阴沉雨后误加。
+  // prevRainBonus 参数保留只为兼容现有调用签名，不参与评分。
+  var finalScore = Math.min(100, finalRaw);
 
   // ── 【关键修复】"画布门控"：火烧云必须有高云/中云当染色画布 ──
   // 物理事实：万里无云的素天，无论太阳角度多好、空气多通透，都不可能有火烧云。
@@ -2534,7 +2677,11 @@ function destPoint(lat, lon, bearingDeg, distKm){
   var lat1=lat*Math.PI/180, lon1=lon*Math.PI/180;
   var lat2=Math.asin(Math.sin(lat1)*Math.cos(dR)+Math.cos(lat1)*Math.sin(dR)*Math.cos(bR));
   var lon2=lon1+Math.atan2(Math.sin(bR)*Math.sin(dR)*Math.cos(lat1), Math.cos(dR)-Math.sin(lat1)*Math.sin(lat2));
-  return {lat:lat2*180/Math.PI, lon:((lon2*180/Math.PI+540)%360)-180};
+  // 修复(一般-3):极点附近浮点边界可能产生 NaN，回退到原坐标，避免拼出 latitude=NaN 的 URL → API 400
+  return {
+    lat: isNaN(lat2)?lat:lat2*180/Math.PI,
+    lon: isNaN(lon2)?lon:((lon2*180/Math.PI+540)%360)-180
+  };
 }
 
 // 把任意角度差归一化到 [-180, 180]，避免"359° vs 1°"这种环绕错误（实际只差2°却被算成358°）
@@ -2725,7 +2872,7 @@ var cMap=MapEng('cMC','cMW',function(lat,lon){
   document.getElementById('cCB').style.display='block';
   document.getElementById('cCB').innerHTML='📍 '+lat.toFixed(4)+', '+lon.toFixed(4)+'<br>🏔️ 获取海拔中…';
   enableGo('c');
-  fetchElev(lat,lon,function(e){
+  fetchElevDebounced(lat,lon,function(e){
     if(e){
       cST.elev=e;
       document.getElementById('cES').textContent=e;
@@ -2745,34 +2892,40 @@ var cMap=MapEng('cMC','cMW',function(lat,lon){
 PAGE_MAPS.pgCloud=cMap; // ← 注册以便切页面时重绘
 bindMode('c');bindMdl('c',cST);bindSearch('c',cMap,function(lat,lon){cMap.setCenter(lat,lon,12);cST.lat=lat;cST.lon=lon;enableGo('c');fetchElev(lat,lon,function(e){if(e){cST.elev=e;document.getElementById('cES').textContent=e;document.getElementById('cEI').value=e;}});});
 bindCscrollDrag('cRes');
-document.getElementById('cAM').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=Math.max(0,(parseInt(el.value)||cST.elev||500)-10);document.getElementById('cES').textContent=el.value;});
-document.getElementById('cAP').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=(parseInt(el.value)||cST.elev||500)+10;document.getElementById('cES').textContent=el.value;});
+document.getElementById('cAM').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=Math.max(0,(Math.round(parseFloat(el.value))||cST.elev||500)-10);document.getElementById('cES').textContent=el.value;});
+document.getElementById('cAP').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=(Math.round(parseFloat(el.value))||cST.elev||500)+10;document.getElementById('cES').textContent=el.value;});
 document.getElementById('cZI').addEventListener('click',function(){cMap.dz(1);});
 document.getElementById('cZO').addEventListener('click',function(){cMap.dz(-1);});
 document.getElementById('cGB').addEventListener('click',runCloud);
 
 function runCloud(){
   if(!cST.lat){ showErr('cBNR','请先点击地图选点'); return; }
-  var elev=parseInt(document.getElementById('cEI').value)||cST.elev||800;
+  var elev=Math.round(parseFloat(document.getElementById('cEI').value))||cST.elev||800;
   showLoad('获取云海气象数据…');
   cachedFetch('https://api.open-meteo.com/v1/forecast?latitude='+cST.lat+'&longitude='+cST.lon
     +'&hourly=temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,windgusts_10m,weathercode,dewpoint_2m,temperature_850hPa,relativehumidity_850hPa,temperature_700hPa,relativehumidity_700hPa'
     +'&daily=sunrise,sunset&models='+cST.model+'&timezone=auto&forecast_days=7')
     .then(function(data){
-      var h=data.hourly;
-      var rows=h.time.map(function(ti,i){
-        var r2={time:ti,temp:h.temperature_2m[i],rh:h.relativehumidity_2m[i],cloud:h.cloudcover[i],
-          cLow:h.cloudcover_low[i]||0,cMid:h.cloudcover_mid[i]||0,cHigh:h.cloudcover_high[i]||0,
-          precip:h.precipitation[i],wind:h.windspeed_10m[i],gust:h.windgusts_10m?h.windgusts_10m[i]:null,
-          wc:h.weathercode[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:(h.temperature_2m[i]-4),
-          t850:h.temperature_850hPa?h.temperature_850hPa[i]:null,
-          rh850:h.relativehumidity_850hPa?h.relativehumidity_850hPa[i]:null,
-          t700:h.temperature_700hPa?h.temperature_700hPa[i]:null,
-          rh700:h.relativehumidity_700hPa?h.relativehumidity_700hPa[i]:null};
-        r2.prob=calcCloud(r2,elev);r2.cloudBase=lclH(r2.temp,r2.dew);return r2;
-      });
-      hideLoad();renderCloud(rows,data.daily,elev);
-      document.getElementById('cEmp').style.display='none';document.getElementById('cBNR').style.display='none';
+      if(!data || !data.hourly || !data.hourly.time){ // 修复(致命-4):缺 hourly 不再崩溃白屏
+        hideLoad(); showErr('cBNR','返回数据异常'+(data&&data.reason?'：'+data.reason:'')); return;
+      }
+      try{
+        var h=data.hourly;
+        // 修复(致命-3):安全取值，缺列时回退默认值而非 undefined[i] 抛错
+        var rows=h.time.map(function(ti,i){
+          function f(name,d){return (h[name]&&h[name][i]!=null)?h[name][i]:d;}
+          var temp=f('temperature_2m',null);
+          var r2={time:ti,temp:temp,rh:f('relativehumidity_2m',null),cloud:f('cloudcover',0),
+            cLow:f('cloudcover_low',0),cMid:f('cloudcover_mid',0),cHigh:f('cloudcover_high',0),
+            precip:f('precipitation',0),wind:f('windspeed_10m',0),gust:f('windgusts_10m',null),
+            wc:f('weathercode',0),dew:(h.dewpoint_2m&&h.dewpoint_2m[i]!=null)?h.dewpoint_2m[i]:(temp!=null?temp-4:10),
+            t850:f('temperature_850hPa',null),rh850:f('relativehumidity_850hPa',null),
+            t700:f('temperature_700hPa',null),rh700:f('relativehumidity_700hPa',null)};
+          r2.prob=calcCloud(r2,elev);r2.cloudBase=lclH(r2.temp!=null?r2.temp:15,r2.dew);return r2;
+        });
+        hideLoad();renderCloud(rows,data.daily,elev);
+        document.getElementById('cEmp').style.display='none';document.getElementById('cBNR').style.display='none';
+      }catch(err){ hideLoad(); showErr('cBNR','数据处理失败:'+err.message); }
     }).catch(function(e){hideLoad();showErr('cBNR','获取失败:'+e.message);});
 }
 
@@ -2822,7 +2975,7 @@ function renderCloud(rows,daily,elev){
 
   SCALES.c=1;
   var svgH=buildChart(rows,function(r){return r.prob;},1,daily,'cloud');
-  var mName=cST.model==='gfs_seamless'?'GFS':cST.model==='ecmwf_ifs025'?'ECMWF':'Auto';
+  var mName=cST.model==='gfs_seamless'?'GFS':cST.model==='ecmwf_ifs025'?'ECMWF':cST.model==='icon_seamless'?'ICON':'—';
 
   // 报表（从当前时间）— 云海只在清晨发生，过滤到 3-10 点
   var trH=fromNow(rows,'cloud').filter(function(r){
@@ -2921,6 +3074,10 @@ function runGlow(){
       // Open-Meteo 多点请求返回数组,单点请求返回对象。统一处理。
       var pts = Array.isArray(rawData) ? rawData : [rawData];
       var main = pts[0];
+      if(!main || !main.hourly || !main.hourly.time){ // 修复(致命-4)
+        hideLoad(); showErr('gBNR','返回数据异常'+(main&&main.reason?'：'+main.reason:'')); return;
+      }
+      try{
       var srSect = [pts[1], pts[2]].filter(Boolean); // 日出扇区(30/80km)
       var ssSect = [pts[3], pts[4]].filter(Boolean); // 日落扇区(30/80km)
       gST.daily=main.daily;
@@ -2941,12 +3098,14 @@ function runGlow(){
 
       gST.rows=main.hourly.time.map(function(ti,i){
         var h2=main.hourly,dt=new Date(ti),dayKey=ti.split('T')[0],ev=sunEv[dayKey]||{};
-        var r={time:ti,temp:h2.temperature_2m[i],rh:h2.relativehumidity_2m[i],cloud:h2.cloudcover[i],
-          cLow:h2.cloudcover_low[i]||0,cMid:h2.cloudcover_mid[i]||0,cHigh:h2.cloudcover_high[i]||0,
-          precip:h2.precipitation[i],wind:h2.windspeed_10m[i],wc:h2.weathercode[i],
-          dew:h2.dewpoint_2m?h2.dewpoint_2m[i]:(h2.temperature_2m[i]-4),
-          vis:h2.visibility?h2.visibility[i]:null,
-          cape:h2.cape?h2.cape[i]:0,
+        function f(name,d){return (h2[name]&&h2[name][i]!=null)?h2[name][i]:d;}
+        var temp=f('temperature_2m',null);
+        var r={time:ti,temp:temp,rh:f('relativehumidity_2m',null),cloud:f('cloudcover',0),
+          cLow:f('cloudcover_low',0),cMid:f('cloudcover_mid',0),cHigh:f('cloudcover_high',0),
+          precip:f('precipitation',0),wind:f('windspeed_10m',0),wc:f('weathercode',0),
+          dew:(h2.dewpoint_2m&&h2.dewpoint_2m[i]!=null)?h2.dewpoint_2m[i]:(temp!=null?temp-4:10),
+          vis:f('visibility',null),
+          cape:f('cape',0),
           sol:solarPos(trueUtcDate(ti,utcOff),gST.lat,gST.lon)};
         // ── 扇区低云/高云代理(关键改进)──
         var sectSRLow = sectorClouds(srSect, i, 'cloudcover_low');
@@ -2986,6 +3145,7 @@ function runGlow(){
       });
       hideLoad();renderGlow();gMap.draw();
       document.getElementById('gEmp').style.display='none';
+      }catch(err){ hideLoad(); showErr('gBNR','数据处理失败:'+err.message); }
     }).catch(function(e){hideLoad();showErr('gBNR','获取失败:'+e.message);});
 }
 
@@ -3070,7 +3230,7 @@ function renderGlow(){
     var bestTime = bestAnchorISO ? fmtT(bestAnchorISO) : (bestRow?pad2(new Date(bestRow.time).getHours())+':00':'—');
     var bestBurst=bestRow?compOf(bestRow).burst:0;
     var bg=burstGrade(bestBurst);
-    var rainBonus=rs.some(function(r){return r.prevRain;});
+    var rainInfo=rs.some(function(r){return r.prevRain;});
 
     gridH+='<div class="dcell" style="background:'+c+'0a;border-color:'+c+'22;" onclick="gDay(\''+day+'\')">'
       +'<div style="font-size:9.5px;color:#3a5a7a;">'+label+'</div>'
@@ -3092,7 +3252,7 @@ function renderGlow(){
     if(mode!=='sr'){var aSs=glowAdvice(rs,'ss',ev);if(aSs)adviceLines.push('🌇 建议面向<b style="color:#e8734a;">'+aSs.dirText+'</b>地平线 · 窗口 '+aSs.windowText);}
 
     srssH+='<div class="anrow"><div class="anico">'+ico+'</div><div class="aninfo">'
-      +'<div class="andate">'+label+' 最佳 '+bestTime+(rainBonus?'<span style="color:#4ecdc4;margin-left:4px;">☔雨后加成</span>':'')+'</div>'
+      +'<div class="andate">'+label+' 最佳 '+bestTime+(rainInfo?'<span style="color:#4ecdc4;margin-left:4px;">☔近期有雨</span>':'')+'</div>'
       +'<div class="andetail">'
       +detailLine
       +'<br>🔥 火烧云指数 <b style="color:'+c+';">'+best+'/100 '+g.label+'</b> · 💥 爆烧指数 <b style="color:'+bg.color+';">'+bestBurst+'/100 '+bg.label+'</b>'
@@ -3274,7 +3434,7 @@ function aOnSelect(lat,lon){
   enableGo('a');
   var noteEl=document.getElementById('aAutoNote');
   noteEl.style.display='block';noteEl.textContent='⏳ 正在获取山峰真实海拔…';
-  fetchElev(lat,lon,function(e){
+  fetchElevDebounced(lat,lon,function(e){
     aST.peakElev=e;
     document.getElementById('aPkHigh').value=e || 5000;
     var baseE = e>=5000?2500 : e>=3000?1800 : e>=1500?800 : Math.max(0, e-500);
@@ -3319,14 +3479,19 @@ function runAlps(){
     +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility'
     +'&daily=sunrise,sunset&models='+aST.model+'&timezone=auto&forecast_days=7')
     .then(function(data){
+      if(!data || !data.hourly || !data.hourly.time){ // 修复(致命-4)
+        hideLoad(); showErr('aCB','返回数据异常'+(data&&data.reason?'：'+data.reason:'')); return;
+      }
+      try{
       var h=data.hourly,utcOff=data.utc_offset_seconds||0;
       aST.utcOff=utcOff;
       var rows=h.time.map(function(ti,i){
+        function f(name,d){return (h[name]&&h[name][i]!=null)?h[name][i]:d;}
         var dt=new Date(ti),sol=solarPos(trueUtcDate(ti,utcOff),aST.lat,aST.lon);
-        var r={time:ti,temp:h.temperature_2m[i],cloud:h.cloudcover[i],
-          cHigh:h.cloudcover_high[i]||0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]||0:0, cLow:h.cloudcover_low[i]||0,
-          precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
-          rh:h.relativehumidity_2m[i],vis:h.visibility?h.visibility[i]:null,sol:sol};
+        var r={time:ti,temp:f('temperature_2m',null),cloud:f('cloudcover',0),
+          cHigh:f('cloudcover_high',0), cMid:f('cloudcover_mid',0), cLow:f('cloudcover_low',0),
+          precip:f('precipitation',0),wind:f('windspeed_10m',0),wc:f('weathercode',0),
+          rh:f('relativehumidity_2m',null),vis:f('visibility',null),sol:sol};
         // 极简版：方位角对齐"必然满足"——因为我们让观拍点跟着太阳方位走（反推得到的"最佳观拍位置"必然对准山峰）
         // 所以 calcAlps 传入 sol.az 自身作为"虚拟山峰方位"，方位对齐项满分，让"是否能拍"由云量、太阳仰角、海拔差决定
         r.scHigh=calcAlps(r,pkHigh,baseElev, r.sol.az);
@@ -3336,6 +3501,7 @@ function runAlps(){
       aST.rows=rows;aST.daily=data.daily;aST.peaks={high:pkHigh,mid:pkHigh,low:pkHigh,viewer:baseElev};
       hideLoad();renderAlps(aST.rows,aST.daily,aST.peaks);
       document.getElementById('aEmp').style.display='none';
+      }catch(err){ hideLoad(); showErr('aCB','数据处理失败:'+err.message); }
     }).catch(function(e){hideLoad();showErr('aCB','获取失败:'+e.message);});
 }
 
@@ -3458,7 +3624,7 @@ function renderAlps(rows,daily,peaks){
       +'</tr>';
   }).join('');
 
-  var aMName=aST.model==='gfs_seamless'?'GFS':aST.model==='ecmwf_ifs025'?'ECMWF':'Auto';
+  var aMName=aST.model==='gfs_seamless'?'GFS':aST.model==='ecmwf_ifs025'?'ECMWF':aST.model==='icon_seamless'?'ICON':'—';
   document.getElementById('aRes').innerHTML=
     disclaimer
     +'<div id="aHorizon" class="card" style="padding:9px 12px;background:rgba(245,200,66,0.04);border-color:rgba(245,200,66,0.18);">'
@@ -3515,7 +3681,7 @@ var sST={lat:null,lon:null,model:'gfs_seamless',activeTab:null};
 // 两者互为校验、容错：任一数据源失败时自动退回另一个，都失败时退回默认值4级
 function geoLPGuess(lat, lon){
   // zoom=14更精细，能分辨村庄/郊区/城市核心，避免大范围"市"级行政区误判
-  return fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&zoom=14&addressdetails=1&accept-language=zh')
+  return _throttledFetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&zoom=14&addressdetails=1&accept-language=zh')
     .then(function(r){return r.json();})
     .then(function(d){
       var addr=d.address||{};
@@ -3709,12 +3875,13 @@ function autoDetectLP(lat, lon){
     });
 }
 
+var _autoDetectLPDebounced=debounce(function(lat,lon){ autoDetectLP(lat,lon); }, 450);
 var sMap=MapEng('sMC','sMW',function(lat,lon){
   sST.lat=lat;sST.lon=lon;
   document.getElementById('sCB').style.display='block';
   document.getElementById('sCB').innerHTML='📍 '+lat.toFixed(4)+', '+lon.toFixed(4);
   enableGo('s');
-  autoDetectLP(lat,lon);
+  _autoDetectLPDebounced(lat,lon); // 防抖：快速连点只对最后落点查 Overpass，避免 429
 });
 PAGE_MAPS.pgStar=sMap;
 bindMode('s');bindMdl('s',sST);bindSearch('s',sMap,function(lat,lon){sMap.setCenter(lat,lon,12);sST.lat=lat;sST.lon=lon;enableGo('s');autoDetectLP(lat,lon);});
@@ -3731,14 +3898,20 @@ function runStar(){
     +'&hourly=temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,weathercode,dewpoint_2m,visibility'
     +'&daily=sunrise,sunset&models='+sST.model+'&timezone=auto&forecast_days=7')
     .then(function(data){
+      if(!data || !data.hourly || !data.hourly.time){ // 修复(致命-4)
+        hideLoad(); showErr('sCB','返回数据异常'+(data&&data.reason?'：'+data.reason:'')); return;
+      }
+      try{
       var h=data.hourly, utcOff=data.utc_offset_seconds||0;
       var rows=h.time.map(function(ti,i){
+        function f(name,d){return (h[name]&&h[name][i]!=null)?h[name][i]:d;}
         var dt=new Date(ti),mp=moonPhase(dt);
-        var r={time:ti,temp:h.temperature_2m[i],rh:h.relativehumidity_2m[i],cloud:h.cloudcover[i],
-          cLow:h.cloudcover_low?h.cloudcover_low[i]:0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]:0, cHigh:h.cloudcover_high?h.cloudcover_high[i]:0,
-          vis:h.visibility?h.visibility[i]:null,
-          precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
-          dew:h.dewpoint_2m?h.dewpoint_2m[i]:(h.temperature_2m[i]-4),moonPh:mp,moonIllum:moonIll(mp)};
+        var temp=f('temperature_2m',null);
+        var r={time:ti,temp:temp,rh:f('relativehumidity_2m',null),cloud:f('cloudcover',0),
+          cLow:f('cloudcover_low',0), cMid:f('cloudcover_mid',0), cHigh:f('cloudcover_high',0),
+          vis:f('visibility',null),
+          precip:f('precipitation',0),wind:f('windspeed_10m',0),wc:f('weathercode',0),
+          dew:(h.dewpoint_2m&&h.dewpoint_2m[i]!=null)?h.dewpoint_2m[i]:(temp!=null?temp-4:10),moonPh:mp,moonIllum:moonIll(mp)};
         // 真实UTC时刻 → 算太阳高度，供暗夜门控（天黑没黑）
         var utc=trueUtcDate(ti,utcOff);
         r.sunAlt=solarPos(utc,sST.lat,sST.lon).alt;
@@ -3779,6 +3952,7 @@ function runStar(){
 
       hideLoad();renderStar(rows,data.daily,lp,nightAnalyses);
       document.getElementById('sEmp').style.display='none';
+      }catch(err){ hideLoad(); showErr('sCB','数据处理失败:'+err.message); }
     }).catch(function(e){hideLoad();showErr('sCB','获取失败:'+e.message);});
 }
 
@@ -3859,12 +4033,12 @@ function renderStar(rows,daily,lp,nightAnalyses){
     // 仰角<=15° → 太低（地平线附近大气消光严重，且很可能被地形/建筑遮挡），显示为暗色
     var galCell;
     if(r.galWindow){
-      galCell='<span class="bdg" style="background:#a78bfa20;color:#a78bfa;border:1px solid #a78bfa50;font-weight:700;">🌌 '+r.galAlt.toFixed(0)+'° 最佳拍摄期</span>';
+      galCell='<span class="bdg" style="background:#a78bfa20;color:#a78bfa;border:1px solid #a78bfa50;font-weight:700;">🌌 '+(r.galAlt||0).toFixed(0)+'° 最佳拍摄期</span>';
     } else if(r.galAlt>15){
       var blockReason = r.moonUp ? '🌙月光' : '☁️云遮';
-      galCell='<span style="color:#5a7a9a;">'+r.galAlt.toFixed(0)+'° <span style="font-size:9px;">('+blockReason+')</span></span>';
+      galCell='<span style="color:#5a7a9a;">'+(r.galAlt||0).toFixed(0)+'° <span style="font-size:9px;">('+blockReason+')</span></span>';
     } else {
-      galCell='<span style="color:#2a4a5a;">'+r.galAlt.toFixed(0)+'°</span>';
+      galCell='<span style="color:#2a4a5a;">'+(r.galAlt||0).toFixed(0)+'°</span>';
     }
     return'<tr class="'+(r.galWindow?'galwin':'')+'"><td style="color:#3a5a7a;font-family:monospace;">'+ds+'</td>'
       +'<td style="font-family:monospace;">'+ts+'</td>'
@@ -3946,7 +4120,7 @@ function glowDesc(srMax, ssMax, dayRows, mode){
     else lines.push('⚠️能见度仅'+avgVis+'km，霾影响明显');
   }
   var hasRain=glowRows.some(function(r){return r.prevRain;});
-  if(hasRain) lines.push('☔雨后放晴，小幅清透度加成');
+  if(hasRain) lines.push('☔近期有降水，留意雨停后云是否散开');
   return lines.join(' · ');
 }
 
@@ -3955,17 +4129,41 @@ function renderWiki(){
   var items=[
     // 📰 最新更新
     {icon:'📰',color:'#22c55e',title:zh?'最新更新':'Latest Updates',body:zh?[
-      '<b>🏠 全新首页 / 摄影师驾驶舱</b>：进站直接看到接下来 48 小时的最佳出片机会。支持 GPS 自动定位、地名搜索定位、上次位置记忆。可收藏"常去地点"——多个常去点的最佳机会一屏对比。',
-      '<b>🌟 跳转分析功能</b>：从首页 48 小时机会，点"看详细预报" → 弹窗确认 → 自动跳到对应模块页面（火烧云/云海/日照金山/星空），自动填好坐标，自动点击分析。专业摄影师一键看到逐小时报表。',
-      '<b>⭐ 星空时间标注更明确</b>：以前显示"12/15 晚"容易理解错，现在显示"12/15 晚 → 12/16 凌晨"，明确告诉你这是哪两天之间的夜晚。',
-      '<b>🗑️ 删除了 7 天日历页</b>：新首页替代它，加入了 48 小时高分机会卡。',
-      '<b>🐛 修了不少 bug</b>：地图 setCenter 错误覆盖青点（搜索后选点丢失的根因）、星空报表跨日期标注模糊等。',
+      '<b>🌐 界面语言切换扩展</b>：导航菜单、首页标题/按钮、百科现已支持中英切换（点右上角 EN/中文）。逐小时分析报表文案目前仍为中文，英文模式下页面底部会有提示条说明。',
+      '<b>🔗 全面打通跳转</b>：①「机会日历」Top3 任务卡现在<b>整张可点</b>，直接跳到对应模块自动分析；②首页「今晚明早一眼速览」三张卡也<b>可点跳转</b>。',
+      '<b>🕐 推荐时间更准</b>：机会日历的火烧云/日照金山推荐时间，过去会同时列"日出 / 日落"两段，让人分不清。现在按当天最高分实际落在<b>朝霞还是晚霞</b>，只显示对的那一段。',
+      '<b>🛡️ 稳定性大修</b>：修复了首屏地图白屏（隐藏页画布尺寸为 0）、气象数据缺字段导致整页崩溃白屏、双指缩放卡死、跨时区报表丢数据等问题。',
+      '<b>🚦 防限流</b>：地图地名搜索 / 光污染查询接入限流队列 + 429 自动退避重试；地图快速连点改为防抖，避免触发公共服务封禁。',
+      '<b>💾 本地缓存防爆</b>：地形缓存加了容量上限与配额超限自动收缩，长期使用不再撑爆 localStorage（Android WebView 尤其受益）。',
+      '<b>⭐ 星空时间标注</b>：显示"12/15 晚 → 12/16 凌晨"，明确是哪两天之间的夜晚。',
     ]:[
-      '🏠 NEW: Photographer cockpit homepage with GPS, favorites, 48h opportunities.',
-      '🎯 Find-Light Map: each opportunity now has detail report + auto-jump-to-detail buttons.',
-      '⭐ Star night labels are now clearer: "Dec 15 night → Dec 16 dawn".',
-      '🗑️ 7-Day Calendar page removed (replaced by new homepage).',
-      '🐛 Several map pin / refresh bugs fixed.',
+      '🌐 Language toggle now covers nav, homepage titles/buttons & wiki. Hourly analysis text is still Chinese-only (a footer note shows in EN mode).',
+      '🔗 Jump-to-detail everywhere: Calendar Top3 cards and Homepage glance cards are now fully clickable → auto-jump & analyze.',
+      '🕐 Smarter recommended time: Afterglow/Alpenglow now shows only sunrise OR sunset (whichever scored higher), not both.',
+      '🛡️ Stability: fixed first-load blank map, crash on missing weather fields, pinch-zoom freeze, cross-timezone data loss.',
+      '🚦 Rate-limit protection: geocoding / light-pollution lookups queued with 429 back-off; map clicks debounced.',
+      '💾 Local cache capped with quota-overflow shrink (helps Android WebView).',
+      '⭐ Star night labels span days: "Dec 15 night → Dec 16 dawn".',
+    ]},
+
+    // 📅 机会日历
+    {icon:'📅',color:'#fb923c',title:zh?'机会日历 — 未来 7 天 Top3':'Opportunity Calendar',body:zh?[
+      '<b>核心：</b>把当前位置未来 7 天的火烧云/云海/日照金山/银河四题材逐日打分，挑出<b>最值得出门的 3 天</b>排行。',
+      '<b>每张任务卡告诉你：</b>哪天、拍什么题材、推荐时间（已精确到当天日出或日落那一段）、推荐原因、构图建议。',
+      '<b>整卡可点</b>：点 Top3 任意一张卡 → 直接跳到对应模块，自动填好你的位置并开始逐小时分析。',
+      '<b>银河季节门控：</b>当季银河核心整夜不升起的日子，会自动把银河分降为 0，不再误推"冬夜天清=能拍银河"。',
+      '<b>日照金山门控：</b>周边 30km 内无 ≥3000m 高峰时，该题材默认 0 分。',
+    ]:[
+      'Ranks the best 3 days in the next 7 across all four genres. Each card is clickable → jumps to that module and auto-analyzes. Includes Milky-Way seasonal gating and alpenglow peak-availability gating.',
+    ]},
+
+    // 🌐 语言支持
+    {icon:'🌐',color:'#a78bfa',title:zh?'关于语言支持':'About Language Support',body:zh?[
+      '点右上角 <b>EN / 中文</b> 可切换界面语言。',
+      '<b>已支持英文：</b>导航菜单、首页标题与按钮、本百科。',
+      '<b>暂仅中文：</b>各模块的逐小时分析报表、推荐文案等动态生成内容（涉及大量气象术语，正在逐步补全）。英文模式下页面底部会有提示条说明这一点。',
+    ]:[
+      'Toggle EN / 中文 at top-right. English now covers: navigation, homepage titles & buttons, and this wiki. Detailed hourly analysis text remains Chinese-only for now (a footer note indicates this in EN mode).',
     ]},
 
     // 🏠 首页
@@ -4017,8 +4215,10 @@ function renderWiki(){
       '<b>算法：</b>云量评分（高云 50% + 中云 25% + 低云 25%）占总分 50%，太阳几何 20%，大气 20%，风暴动力学 10%。<b>+ 扇区采样</b>（日出/日落方向 30km + 80km 各采样一点）。',
       '<b>"火烧云指数" vs "爆烧指数"：</b>前者用加权和，平均水平就给中高分；后者用乘积式评分，要求所有条件同时顶级才能出高分，更能识别"满天烧"。',
       '<b>地平线低云一票否决：</b>日出/日落方向低云 &gt; 55%，爆烧指数会被强制压低。',
+      '<b>🔧 雨后逻辑（已更新）：</b>移除了独立的"雨后固定加成"开关。下雨不等于有霞，且该开关与「风暴动力」里基于过去 3 小时降水的连续评分（rainScore）是同一信号，会重复计分、对阴沉雨后误加。现在雨后清透度只由 rainScore 表达：适量雨后放晴给高分，过大降雨/雷暴残留扣分；雨停后能不能烧，由当前高/中/低云画布决定。',
     ]:[
       'Algorithm with <b>sector sampling</b>. Fire Index (weighted sum) vs Burst Index (multiplicative).',
+      'Post-rain logic updated: removed the standalone "post-rain bonus" switch (it double-counted the same signal as the continuous rainScore in Storm Dynamics). Post-rain clarity is now expressed solely via rainScore.',
     ]},
 
     // ☁️ 云海
@@ -4410,8 +4610,8 @@ function homeAnalyze48h(lat, lon){
           }
           // 星空：任何海拔都可拍
           if(hr>=22 || hr<=3){
-            var mp = moonPhase ? moonPhase(dt) : {phase:0.2};
-            var ss=0; try{ ss=calcStar(r,(mp&&mp.phase!=null?mp.phase:0.2),4)||0; }catch(e){}
+            var mp = moonPhase(dt); // moonPhase 返回角度数值（非对象）
+            var ss=0; try{ ss=calcStar(r,(mp!=null?mp:0),4)||0; }catch(e){}
             if(ss>=30) opps.push({module:'star',score:Math.round(ss),hour:ti,phase:'深夜',r:r});
           }
         });
@@ -4472,9 +4672,9 @@ function renderHomeIndices(opps){
     return best;
   }
   var items=[
-    {emoji:'🌌', name:'今晚银河', color:'#a78bfa', o:pickStarTonight()},
-    {emoji:'☁️', name:'明早云海', color:'#4ecdc4', o:pickCloudTmwAM()},
-    {emoji:'🔥', name:'明晚火烧云', color:'#f97316', o:pickGlowTmwPM()}
+    {emoji:'🌌', name:'今晚银河', color:'#a78bfa', module:'star', o:pickStarTonight()},
+    {emoji:'☁️', name:'明早云海', color:'#4ecdc4', module:'cloud', o:pickCloudTmwAM()},
+    {emoji:'🔥', name:'明晚火烧云', color:'#f97316', module:'glow', o:pickGlowTmwPM()}
   ];
   function confWord(score){ // ②C：高/中/低，无百分比
     if(score>=50) return {t:'高',c:'#22c55e'};
@@ -4497,7 +4697,7 @@ function renderHomeIndices(opps){
     }
     var dt=new Date(o.hour);
     var cw=confWord(o.score);
-    h+='<div style="border:1px solid '+it.color+'33;border-radius:10px;padding:11px 12px;background:linear-gradient(135deg,'+it.color+'0e,transparent);">'
+    h+='<div class="home-idx-jump" data-mod="'+it.module+'" style="border:1px solid '+it.color+'33;border-radius:10px;padding:11px 12px;background:linear-gradient(135deg,'+it.color+'0e,transparent);cursor:pointer;">'
       +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
         +'<span style="font-size:12px;font-weight:600;color:'+it.color+';">'+it.emoji+' '+it.name+'</span>'
         +'<span style="margin-left:auto;font-size:11px;color:#f5c842;letter-spacing:1px;">'+starStr(o.score)+'</span>'
@@ -4505,10 +4705,18 @@ function renderHomeIndices(opps){
       +'<div style="font-size:10.5px;color:#9ab8c8;margin-top:6px;line-height:1.7;">'
         +'🕐 <span style="font-family:monospace;color:#e8f4ff;">'+homePad2(dt.getHours())+':'+homePad2(dt.getMinutes())+'</span> '+o.phase+'<br>'
         +'✅ 可信度 <b style="color:'+cw.c+';">'+cw.t+'</b>'
+        +'<span style="color:'+it.color+';margin-left:6px;">👉 点查详情</span>'
       +'</div></div>';
   });
   h+='</div>';
   el.innerHTML=h;
+  // 点击速览卡 → 跳到对应模块自动分析
+  el.querySelectorAll('.home-idx-jump').forEach(function(card){
+    card.addEventListener('click',function(){
+      var mod=this.getAttribute('data-mod');
+      if(mod && hST.lat!=null) jumpToAnalysis(mod, hST.lat, hST.lon, hST.name);
+    });
+  });
 }
 
 function renderHomeOpps(){
@@ -4664,7 +4872,7 @@ function renderHomeFavorites(){
       var idx=parseInt(this.getAttribute('data-idx'));
       if(!confirm('删除常去地点 "'+hST.favorites[idx].name+'"？')) return;
       hST.favorites.splice(idx,1);
-      localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites));
+      try{ localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites)); }catch(e){}
       renderHomeFavorites();
     });
   });
@@ -4679,7 +4887,7 @@ function setHomeLocation(lat, lon, name){
   document.getElementById('homeLocCoord').innerHTML = '📌 '+lat.toFixed(4)+', '+lon.toFixed(4)+' · 📅 '+homeFmtDate(new Date());
   document.getElementById('homeLocPicker').style.display='none';
   // 保存最后位置
-  localStorage.setItem('photoglow_last_location',JSON.stringify({lat:lat,lon:lon,name:hST.name}));
+  try{ localStorage.setItem('photoglow_last_location',JSON.stringify({lat:lat,lon:lon,name:hST.name})); }catch(e){}
   renderHomeOpps();
 }
 
@@ -4729,11 +4937,14 @@ function pcReason(module, score){
   return g[t] || g['低'] || '条件一般';
 }
 // 推荐时间段：按题材锚定真实日出/日落或夜间窗口（复用 GLOW_WIN_OFFSETS 口径）
-function pcTimeRange(module, ev){
+function pcTimeRange(module, ev, phase){
   function hm(iso){return iso?fmtT(iso):null;}
   if(module==='glow' || module==='alps'){
-    // 朝/晚都可能，给"日出前后 / 日落前后"两段里分数代表的那段在 render 时已定，这里给通用区间
     var sr=ev&&ev.sr, ss=ev&&ev.ss;
+    // phase 由聚合阶段给出（'sr'=朝霞/日出, 'ss'=晚霞/日落），只显示最佳分对应的那一段
+    if(phase==='sr' && sr) return '日出 '+hm(sr)+' 前后';
+    if(phase==='ss' && ss) return '日落 '+hm(ss)+' 前后';
+    // phase 缺失时回退到两段都显示
     if(sr&&ss) return '日出 '+hm(sr)+' / 日落 '+hm(ss)+' 前后';
     if(sr) return '日出 '+hm(sr)+' 前后';
     if(ss) return '日落 '+hm(ss)+' 前后';
@@ -4769,22 +4980,22 @@ function buildPhotoCalendar7d(lat, lon){
     h.time.forEach(function(ti,i){
       var dt=new Date(ti), dayKey=ti.split('T')[0], hr=dt.getHours();
       var ev=sunEv[dayKey]||{};
-      if(!days[dayKey]) days[dayKey]={day:dayKey, ev:ev, glow:0, cloud:0, alps:0, star:0};
+      if(!days[dayKey]) days[dayKey]={day:dayKey, ev:ev, glow:0, cloud:0, alps:0, star:0, glowPhase:null, alpsPhase:null};
       var sol=solarPos(trueUtcDate(ti,utcOff),lat,lon);
       var r={time:ti,temp:h.temperature_2m[i],cloud:h.cloudcover[i],
         cHigh:h.cloudcover_high[i]||0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]||0:0, cLow:h.cloudcover_low[i]||0,
         precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
         rh:h.relativehumidity_2m[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:null,
         vis:h.visibility?h.visibility[i]:null,sol:sol};
-      // 火烧云：朝/晚窗口
+      // 火烧云：朝/晚窗口（记录最高分来自朝霞还是晚霞，供推荐时段只显示对的那段）
       if((hr>=4&&hr<=8)||(hr>=16&&hr<=20)){
         var isSr=hr<=8, gs=0; try{gs=calcGlow(r,0,isSr,0,lat)||0;}catch(e){}
-        if(gs>days[dayKey].glow) days[dayKey].glow=gs;
+        if(gs>days[dayKey].glow){ days[dayKey].glow=gs; days[dayKey].glowPhase=isSr?'sr':'ss'; }
       }
       // 云海：清晨
       if(hr>=4&&hr<=9){ var cs=0; try{cs=calcCloud(r,useElev)||0;}catch(e){} if(cs>days[dayKey].cloud) days[dayKey].cloud=cs; }
-      // 日照金山：仅周边有 ≥3000m 高峰
-      if(canAlps && ((hr>=5&&hr<=8)||(hr>=17&&hr<=19))){ var as=0; try{as=calcAlps(r,5000,2500,sol.az)||0;}catch(e){} if(as>days[dayKey].alps) days[dayKey].alps=as; }
+      // 日照金山：仅周边有 ≥3000m 高峰（同样记录朝/晚）
+      if(canAlps && ((hr>=5&&hr<=8)||(hr>=17&&hr<=19))){ var as=0; try{as=calcAlps(r,5000,2500,sol.az)||0;}catch(e){} if(as>days[dayKey].alps){ days[dayKey].alps=as; days[dayKey].alpsPhase=hr<=8?'sr':'ss'; } }
       // 银河（③b）：逐时先累计 calcStar 原始估分到 starRaw，季节门控在日聚合层按天判一次。
       if(hr>=22||hr<=3){ var mp=moonPhase(dt); var ss=0; try{ss=calcStar(r,(mp!=null?mp:0.2),4)||0;}catch(e){} if(ss>(days[dayKey].starRaw||0)) days[dayKey].starRaw=ss; }
     });
@@ -4851,7 +5062,9 @@ function renderPhotoCalendar(force){
         var g=PC_GENRES[d.bestModule];
         var stars=pcStars(d.bestScore);
         var reason=pcReason(d.bestModule, d.bestScore);
-        var timeRange=pcTimeRange(d.bestModule, d.ev);
+        // 传入最佳分所属朝/晚阶段，只显示对的那段时间
+        var phase=d.bestModule==='glow'?d.glowPhase:(d.bestModule==='alps'?d.alpsPhase:null);
+        var timeRange=pcTimeRange(d.bestModule, d.ev, phase);
         // 银河代表题材：若银河引擎给出真实最佳窗口，用它替代通用文案，并补方向/构图
         if(d.bestModule==='star' && d.mw && d.mw.visible){
           var mw=d.mw;
@@ -4862,7 +5075,7 @@ function renderPhotoCalendar(force){
         }
         var dt=new Date(d.day+'T12:00:00');
         var wk=['日','一','二','三','四','五','六'][dt.getDay()];
-        h+='<div class="card" style="padding:13px 14px;margin-bottom:9px;border-color:'+g.color+'33;background:linear-gradient(135deg,'+g.color+'0c,transparent);">'
+        h+='<div class="card cal-jump" data-mod="'+d.bestModule+'" style="padding:13px 14px;margin-bottom:9px;border-color:'+g.color+'33;background:linear-gradient(135deg,'+g.color+'0c,transparent);cursor:pointer;">'
           +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'
           +'<span style="font-size:18px;">'+medals[idx]+'</span>'
           +'<span style="font-size:13px;font-weight:700;color:'+g.color+';">'+g.emoji+' '+g.name+'</span>'
@@ -4873,6 +5086,7 @@ function renderPhotoCalendar(force){
           +'<div>🕐 推荐时间：<b style="color:#e8f4ff;">'+timeRange+'</b></div>'
           +'<div>💡 推荐原因：'+reason+'</div>'
           +'<div>🎬 推荐题材：'+g.subject+(d.bestModule==='star'&&d.mw&&d.mw.bestDirection?'（朝 '+d.mw.bestDirection+'）':'')+'</div>'
+          +'<div style="margin-top:5px;color:'+g.color+';font-size:10.5px;">👉 点这张卡 → 跳到「'+g.name+'」看逐小时详细预报</div>'
           +'</div>';
         // 当天其它有戏题材
         var others=d.ranked.filter(function(p){return p[0]!==d.bestModule;});
@@ -4883,6 +5097,13 @@ function renderPhotoCalendar(force){
         h+='</div>';
       });
       top3El.innerHTML=h;
+      // 点击 Top3 卡 → 跳到对应模块自动分析（事件委托，重绘后仍有效）
+      top3El.querySelectorAll('.cal-jump').forEach(function(card){
+        card.addEventListener('click',function(){
+          var mod=this.getAttribute('data-mod');
+          if(mod) jumpToAnalysis(mod, hST.lat, hST.lon, hST.name);
+        });
+      });
     }
     // ── 全部 7 天总览 ──
     var ah='<div style="display:flex;align-items:center;gap:6px;margin:16px 0 8px;"><span style="font-size:14px;">🗓️</span><span style="font-weight:600;font-size:13px;color:#e8f4ff;">未来 7 天总览</span></div>';
@@ -4939,7 +5160,7 @@ function tryGPSLocation(){
 
   navigator.geolocation.getCurrentPosition(function(pos){
     var lat=pos.coords.latitude, lon=pos.coords.longitude;
-    fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=zh&zoom=10')
+    _throttledFetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=zh&zoom=10')
       .then(function(r){return r.json();})
       .then(function(d){
         var name = d.address ? (d.address.city || d.address.county || d.address.state || d.address.country || '当前位置') : '当前位置';
@@ -5051,7 +5272,7 @@ document.getElementById('homeUseGPS').addEventListener('click', tryGPSLocation);
 document.getElementById('homeSearchBtn').addEventListener('click', function(){
   var q = document.getElementById('homeSearchInput').value.trim();
   if(!q) return;
-  fetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=1&accept-language=zh')
+  _throttledFetch('https://nominatim.openstreetmap.org/search?q='+encodeURIComponent(q)+'&format=json&limit=1&accept-language=zh')
     .then(function(r){return r.json();})
     .then(function(d){
       if(!d || !d.length){ alert('未找到「'+q+'」'); return; }
@@ -5072,7 +5293,7 @@ document.getElementById('homeAddFav').addEventListener('click',function(){
   }
   hST.favorites.unshift({lat:hST.lat, lon:hST.lon, name:hST.name});
   if(hST.favorites.length>10) hST.favorites=hST.favorites.slice(0,10);
-  localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites));
+  try{ localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites)); }catch(e){}
   renderHomeFavorites();
 });
 
