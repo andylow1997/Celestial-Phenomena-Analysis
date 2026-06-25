@@ -270,6 +270,14 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
   <div id="aAutoNote" style="font-size:9.5px;color:#4ecdc4;line-height:1.6;display:none;background:rgba(78,205,196,0.06);border:1px solid rgba(78,205,196,0.18);border-radius:6px;padding:6px 8px;"></div>
   <div class="cbox" id="aCB"></div>
   <button class="gobtn" id="aGB" disabled style="background:linear-gradient(135deg,#f97316,#b45309);">🏔️ 分析日照金山</button>
+  <!-- P1-3 目的地清单（远征用户：标记想去的雪山，看未来7天哪天能拍） -->
+  <div style="margin-top:10px;border-top:1px solid #0d1c30;padding-top:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <span style="font-size:10px;letter-spacing:.1em;color:#f59e0b;">🎯 目的地清单</span>
+      <button id="aAddWish" style="padding:3px 8px;border-radius:5px;border:1px solid rgba(245,158,11,0.4);background:rgba(245,158,11,0.08);color:#f59e0b;cursor:pointer;font-size:9.5px;">+ 加入当前山峰</button>
+    </div>
+    <div id="aWishList"><div style="font-size:9.5px;color:#3a5a7a;line-height:1.6;">还没有目的地。分析一座山后点"+加入当前山峰"，可追踪贡嘎/梅里/南迦巴瓦等远征目标未来 7 天的拍摄机会。</div></div>
+  </div>
 </div>
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span>🏔️</span><span style="font-weight:500;">日照金山 — 直接点山峰看能不能拍</span></div>
@@ -472,13 +480,67 @@ var I18N={
   homeQuickTitle:{zh:'快捷入口', en:'Quick Access'},
   homePrivacy:{zh:'数据本地存储，关闭网站不会上传任何信息', en:'All data stored locally. Nothing is uploaded.'},
   // ── 动态结果区块"仅中文"诚实提示 ──
-  zhOnlyNote:{zh:'', en:'Note: detailed hourly analysis text is currently Chinese-only.'}
+  zhOnlyNote:{zh:'', en:'Note: tables & tabs are translated; detailed analysis prose is still Chinese-only.'}
 };
 // 切换语言后需要重渲染的动态区块（这些是 JS 拼接出来的，不能靠 data-k 静态替换）
 function relocalizeDynamic(){
   try{ if(typeof hST!=='undefined' && hST.lat!=null){ if(typeof renderHomeOpps==='function') renderHomeOpps(); } }catch(e){}
 }
 document.getElementById('langBtn').addEventListener('click',function(){LANG=LANG==='zh'?'en':'zh';applyLang();});
+
+// ══════════════════════════════════════════════════════════════════════
+// 🌐 P2-2 动态文案翻译（务实版）
+// ──────────────────────────────────────────────────────────────────────
+// 各模块结果是 JS 拼接的大量中文，完整翻译每句报告成本极高、收益低（用户基本是中文）。
+// 这里做"高可见结构文案"的翻译：表头(<th>)、tab 按钮、常见评级词——用一个词典 + 一次 DOM 扫描
+// 完成，零模板改动、可降级（词典没有的词保持中文）。深层气象报告正文仍中文（底部提示条已说明）。
+// 英文模式下用 MutationObserver 在每次重绘后自动重译。
+// ══════════════════════════════════════════════════════════════════════
+var TERM_EN={
+  // 表头
+  '日期':'Date','时间':'Time','天气':'Wx','天况':'Sky','℃':'°C','湿度':'RH','云量':'Cloud',
+  '云底':'Base','概率':'Prob','评价':'Rating','评分':'Score','风km/h':'Wind','风速':'Wind',
+  '高/中/低云':'Hi/Mid/Lo','类型':'Type','雨后':'Post-rain','火烧云指数':'Fire Idx','爆烧指数':'Burst',
+  '等级':'Grade','朝霞分':'Dawn','晚霞分':'Dusk','中云%':'Mid%','低云%':'Lo%','爆烧':'Burst',
+  '月相':'Moon','银河核心':'MW Core','建议':'Tip','太阳仰角':'Sun Alt','应站方向':'Stand','日出':'Sunrise',
+  // tab 按钮
+  '📝 专业分析报告':'📝 Report','🌌 月度规划':'🌌 Month','🌙 月相&光污染':'🌙 Moon&LP','📊 每日评分':'📊 Daily',
+  '📈 趋势图':'📈 Trend','📋 夜间报表':'📋 Night Table','🌅 综合分析':'🌅 Overview','📋 关键时段':'📋 Key Hours',
+  '🔥 朝霞':'🔥 Dawn','🌇 晚霞':'🌇 Dusk','📊 朝晚对比':'📊 Dawn vs Dusk'
+};
+// 翻译单个文本节点内容（整段精确匹配；匹配不到保持原样）
+function translateTermsInRoot(root){
+  if(LANG!=='en' || !root) return;
+  // 表头
+  root.querySelectorAll('th').forEach(function(th){
+    var t=th.textContent.trim();
+    if(TERM_EN[t]) th.textContent=TERM_EN[t];
+  });
+  // tab 按钮（class tab / ntab 之外的结果内 tab）
+  root.querySelectorAll('.tab').forEach(function(b){
+    var t=b.textContent.trim();
+    if(TERM_EN[t]) b.textContent=TERM_EN[t];
+  });
+}
+var _i18nObserver=null;
+function ensureI18nObserver(){
+  if(_i18nObserver) return;
+  _i18nObserver=new MutationObserver(function(muts){
+    if(LANG!=='en') return;
+    muts.forEach(function(m){
+      for(var i=0;i<m.addedNodes.length;i++){
+        var n=m.addedNodes[i];
+        if(n.nodeType===1) translateTermsInRoot(n);
+      }
+    });
+  });
+  // 观察四个结果容器
+  ['cRes','gRes','aRes','sRes'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) _i18nObserver.observe(el,{childList:true,subtree:true});
+  });
+}
+
 function applyLang(){
   document.getElementById('langBtn').textContent=LANG==='zh'?'EN':'中文';
   // 翻译所有带 data-k 的元素（导航菜单 + 首页静态文案）
@@ -496,8 +558,14 @@ function applyLang(){
     noteEl.style.cssText='position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(167,139,250,0.12);border-top:1px solid rgba(167,139,250,0.3);color:#c7b8f5;font-size:10px;text-align:center;padding:4px 10px;backdrop-filter:blur(8px);';
     document.body.appendChild(noteEl);
   }
-  if(LANG==='en'){ noteEl.textContent=I18N.zhOnlyNote.en; noteEl.style.display='block'; }
-  else { noteEl.style.display='none'; }
+  if(LANG==='en'){
+    noteEl.textContent=I18N.zhOnlyNote.en; noteEl.style.display='block';
+    ensureI18nObserver();
+    // 立即翻译已渲染的结果区表头/tab
+    ['cRes','gRes','aRes','sRes'].forEach(function(id){ translateTermsInRoot(document.getElementById(id)); });
+  } else {
+    noteEl.style.display='none';
+  }
   renderWiki();
 }
 
@@ -700,6 +768,43 @@ function scoreToTier(score){
   return         {label:'几乎无',color:'#3a5a7a', emoji:'⊘', desc:'基本无希望'};
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// 🎯 P0-2 三档决策：把"82分"翻译成"该不该出门"一句话
+// ──────────────────────────────────────────────────────────────────────
+// 摄影师要的是决策，不是精确分数（虚假精确感）。默认只给三档 + 人话；分数折叠进详情。
+//   ≥55 值得去 / 30-54 看运气 / <30 别去
+// ══════════════════════════════════════════════════════════════════════
+function decisionVerdict(score){
+  if(score>=55) return {go:'值得去', color:'#22c55e', emoji:'✅', tip:'条件不错，建议安排出行（出发前再看一眼实时云图）'};
+  if(score>=30) return {go:'看运气', color:'#f5c842', emoji:'🤔', tip:'有机会但不稳定，时间富裕可赌一把，否则别专程跑'};
+  return            {go:'别去',  color:'#fb7185', emoji:'😴', tip:'条件不佳，今天大概率没戏，省点睡眠'};
+}
+// P0-1 实时卫星云图外链（按坐标跳 Windy 云图；摄影师出发前的固定动作）
+function satelliteLinkHTML(lat, lon){
+  if(lat==null||lon==null) return '';
+  var windy='https://www.windy.com/?clouds,'+(+lat).toFixed(3)+','+(+lon).toFixed(3)+',8';
+  return '<a href="'+windy+'" target="_blank" rel="noopener" '
+    +'style="display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;'
+    +'border:1px solid rgba(96,165,250,0.4);background:rgba(96,165,250,0.08);color:#60a5fa;'
+    +'text-decoration:none;font-size:11px;white-space:nowrap;">📡 看实时卫星云图确认</a>';
+}
+// P0-1+P0-2 决策横幅：三档结论 + 实时云图按钮（注入各结果页顶部）
+// bestScore: 该位置当前最该看的代表分；lat/lon 给云图链接用
+function decisionBannerHTML(bestScore, lat, lon){
+  var v=decisionVerdict(bestScore||0);
+  return '<div class="card" style="background:'+v.color+'10;border-color:'+v.color+'40;padding:11px 13px;">'
+    +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+    +'<span style="font-size:22px;">'+v.emoji+'</span>'
+    +'<div style="flex:1;min-width:0;">'
+    +'<div style="font-size:14px;font-weight:700;color:'+v.color+';">今天'+v.go+'</div>'
+    +'<div style="font-size:10.5px;color:#9ab8c8;line-height:1.6;margin-top:2px;">'+v.tip+'</div>'
+    +'</div>'
+    +satelliteLinkHTML(lat,lon)
+    +'</div>'
+    +'<div style="font-size:9px;color:#5a7a9a;margin-top:6px;">💡 下方有逐日/逐小时详情可展开。预报告诉你"该不该计划"，云图告诉你"此刻动不动身"。</div>'
+    +'</div>';
+}
+
 // 置信度评估(基于扇区/主点云况分歧、数据缺失情况、模型选择)
 // ── 用户看到"高可能"但置信度"低"时,应理解为"算法觉得有戏但模型间分歧大,实际可能完全不准"
 function assessConfidence(opts){
@@ -762,6 +867,62 @@ window.exportFeedback=function(){
   console.log('反馈数据 (复制下面这段保留):'); console.log(d);
   return JSON.parse(d);
 };
+
+// ══════════════════════════════════════════════════════════════════════
+// 🎯 P1-4 校准闭环：按「模块 + 地点」从历史反馈算个性化阈值
+// ──────────────────────────────────────────────────────────────────────
+// 想法：通用算法给的分是经验权重，但「在你这个点，多少分才真的值得去」因人/因地而异。
+// 用你自己的 👍/👎 历史，算出在该点该题材下：
+//   · 实际看到(👍)案例的预测分布 → 推荐"出门阈值"(看到案例预测分的下四分位附近)
+//   · 系统性偏差 = 平均预测分 − 实际看到率  (>0=高估, <0=低估)
+// 数据不足(<5 条)时返回 null，不显示，避免噪音误导。
+// 地点用 0.1°(约10km)聚合，与准确度页一致。
+// ══════════════════════════════════════════════════════════════════════
+function getCalibration(module, lat, lon){
+  try{
+    var arr=JSON.parse(localStorage.getItem('feedback_v1')||'[]');
+    var qlat=(+lat).toFixed(1), qlon=(+lon).toFixed(1);
+    var local=arr.filter(function(x){
+      return x.module===module && (+x.lat).toFixed(1)===qlat && (+x.lon).toFixed(1)===qlon;
+    });
+    if(local.length<5) return null; // 样本太少不给建议
+    var goods=local.filter(function(x){return x.actual==='good';});
+    var sightRate=goods.length/local.length*100;
+    var avgPred=local.reduce(function(a,x){return a+x.predicted;},0)/local.length;
+    var bias=avgPred-sightRate; // >0 高估
+    // 推荐阈值：看到案例预测分排序后取 25 分位(允许一点保守冗余)；无 good 案例则给个高位保守值
+    var recTh;
+    if(goods.length>=2){
+      var ps=goods.map(function(x){return x.predicted;}).sort(function(a,b){return a-b;});
+      var idx=Math.floor(ps.length*0.25);
+      recTh=Math.round(ps[Math.max(0,idx)]);
+    } else {
+      recTh=Math.round(Math.min(70, avgPred+10));
+    }
+    recTh=Math.max(15,Math.min(85,recTh));
+    return {
+      n: local.length, goodN: goods.length,
+      sightRate: Math.round(sightRate),
+      avgPred: Math.round(avgPred),
+      bias: Math.round(bias),
+      recommendThreshold: recTh
+    };
+  }catch(e){ return null; }
+}
+// 个性化阈值提示卡（注入到各模块结果页顶部；无足够数据返回空串）
+function calibrationCardHTML(module, lat, lon){
+  var c=getCalibration(module, lat, lon);
+  if(!c) return '';
+  var biasTxt = Math.abs(c.bias)<10 ? '算法在这一带校准良好'
+    : c.bias>0 ? '算法在这一带倾向<b style="color:#f59e0b;">高估约 '+c.bias+' 分</b>'
+    : '算法在这一带倾向<b style="color:#60a5fa;">低估约 '+Math.abs(c.bias)+' 分</b>';
+  return '<div class="card" style="background:rgba(167,139,250,0.05);border-color:rgba(167,139,250,0.25);padding:9px 12px;">'
+    +'<div style="font-size:11px;color:#a78bfa;font-weight:600;">🎯 你在这个点的个性化校准</div>'
+    +'<div style="font-size:10.5px;color:#9ab8c8;margin-top:5px;line-height:1.7;">'
+    +'基于你在此处 <b style="color:#e8f4ff;">'+c.n+'</b> 条反馈：'+biasTxt+'。<br>'
+    +'💡 建议：在这个点，预测分 <b style="color:#22c55e;">≥ '+c.recommendThreshold+'</b> 时才值得专程出门。'
+    +'</div></div>';
+}
 
 // ══════════════════════════════════════════
 // 通用免责说明卡(每个分析页顶部显示一次)
@@ -2934,7 +3095,7 @@ function renderCloud(rows,daily,elev){
   var dayMap={};rows.forEach(function(r){var d=r.time.split('T')[0];if(!dayMap[d])dayMap[d]=[];dayMap[d].push(r);});
   // 云海置信度:模型自动选 vs 单一模型
   var conf = assessConfidence({cloudDiff:0});
-  var disclaimer = disclaimerCardHTML('云海', conf);
+  var disclaimer = disclaimerCardHTML('云海', conf) + calibrationCardHTML('cloud', cST.lat, cST.lon);
 
   var dStats=Object.keys(dayMap).map(function(day){
     var rs=dayMap[day],ev=sunEv[day]||{};
@@ -3003,8 +3164,10 @@ function renderCloud(rows,daily,elev){
       +'</tr>';
   }).join('');
 
+  var cloudBest=dStats.reduce(function(m,d){return d.wf>m?d.wf:m;},0);
   document.getElementById('cRes').innerHTML=
     disclaimer
+    +decisionBannerHTML(cloudBest, cST.lat, cST.lon)
     +'<div class="tabs"><button class="tab on" id="ct1">🌅 综合分析</button><button class="tab" id="ct2">📈 趋势图</button><button class="tab" id="ct3">📋 关键时段</button></div>'
     +'<div id="ctA">'+srHTML+'<div style="margin-top:12px;">'+wfH+'</div></div>'
     +'<div id="ctC" class="card" style="display:none;"><h3>综合趋势 <span style="font-size:9px;color:#f5c842;margin-left:3px;">'+mName+'</span></h3>'
@@ -3202,7 +3365,7 @@ function renderGlow(){
   var winRows = rows.filter(function(r){return r.isSR||r.isSS;});
   var avgDiff = winRows.length ? winRows.reduce(function(a,b){return a+(b.confDiff||0);},0)/winRows.length : 0;
   var conf = assessConfidence({cloudDiff: avgDiff});
-  var disclaimer = disclaimerCardHTML('火烧云', conf);
+  var disclaimer = disclaimerCardHTML('火烧云', conf) + calibrationCardHTML('glow', gST.lat, gST.lon);
 
   var modeTitle=mode==='sr'?'🌅 朝霞专项分析':'🌇 晚霞专项分析';
   var switcher='<div class="czrow" style="margin-bottom:8px;">'
@@ -3288,8 +3451,10 @@ function renderGlow(){
 
   var keyReportTitle=mode==='sr'?'仅显示朝霞窗口（日出前后）':mode==='ss'?'仅显示晚霞窗口（日落前后）':'仅显示日出日落候选窗口';
 
+  var glowBest=(fromNow(rows)||rows).reduce(function(m,r){var s=scoreOf(r)||0;return s>m?s:m;},0);
   document.getElementById('gRes').innerHTML=
     disclaimer
+    +decisionBannerHTML(glowBest, gST.lat, gST.lon)
     +'<div id="gCmp" class="card" style="padding:9px 12px;background:rgba(167,139,250,0.04);border-color:rgba(167,139,250,0.18);">'
     +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
     +'<span style="font-size:11px;color:#a78bfa;font-weight:600;">📡 多模型一致性</span>'
@@ -3466,6 +3631,100 @@ document.getElementById('aZI').addEventListener('click',function(){aMap.dz(1);})
 document.getElementById('aZO').addEventListener('click',function(){aMap.dz(-1);});
 document.getElementById('aGB').addEventListener('click',runAlps);
 
+// ══════════════════════════════════════════════════════════════════════
+// 🎯 P1-3 日照金山「目的地清单」（远征用户专用）
+// ──────────────────────────────────────────────────────────────────────
+// 远征用户没有"常去点"，他们有"这辈子要去的雪山清单"(贡嘎/梅里/南迦巴瓦…)。
+// 标记后，清单里每座山显示它未来 7 天的最佳拍摄日（用 GFS 单点 + calcAlps 估分）。
+// 独立 localStorage 键，不和首页 favorites 混。
+// ══════════════════════════════════════════════════════════════════════
+var alpsWishlist=[];
+try{ alpsWishlist=JSON.parse(localStorage.getItem('photoglow_alps_wishlist')||'[]'); }catch(e){ alpsWishlist=[]; }
+function saveAlpsWishlist(){ try{ localStorage.setItem('photoglow_alps_wishlist',JSON.stringify(alpsWishlist)); }catch(e){} }
+// 算一座山未来 7 天的最佳日（返回 {bestScore,bestDay,bestPhase} | null）
+function alpsWishBestDay(lat, lon, peakElev, viewerElev){
+  var url='https://api.open-meteo.com/v1/forecast?latitude='+(+lat).toFixed(3)+'&longitude='+(+lon).toFixed(3)
+    +'&hourly=cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,relativehumidity_2m,visibility,temperature_2m'
+    +'&daily=sunrise,sunset&models=gfs_seamless&timezone=auto&forecast_days=7';
+  return cachedFetch(url).then(function(data){
+    if(!data||!data.hourly||!data.hourly.time) return null;
+    var h=data.hourly, utcOff=data.utc_offset_seconds||0;
+    var best={score:0,day:null,phase:null};
+    h.time.forEach(function(ti,i){
+      function f(n,d){return (h[n]&&h[n][i]!=null)?h[n][i]:d;}
+      var dt=new Date(ti), hr=dt.getHours();
+      if(!((hr>=5&&hr<=8)||(hr>=17&&hr<=19))) return;
+      var sol=solarPos(trueUtcDate(ti,utcOff),lat,lon);
+      var r={time:ti,temp:f('temperature_2m',null),cloud:f('cloudcover',0),cHigh:f('cloudcover_high',0),
+        cMid:f('cloudcover_mid',0),cLow:f('cloudcover_low',0),precip:f('precipitation',0),
+        wind:f('windspeed_10m',0),rh:f('relativehumidity_2m',null),vis:f('visibility',null),sol:sol};
+      var sc=0; try{ sc=calcAlps(r,peakElev,viewerElev,sol.az)||0; }catch(e){}
+      if(sc>best.score){ best.score=Math.round(sc); best.day=ti.split('T')[0]; best.phase=hr<=8?'日出':'日落'; }
+    });
+    return best.day?best:null;
+  }).catch(function(){return null;});
+}
+function renderAlpsWishlist(){
+  var el=document.getElementById('aWishList');
+  if(!el) return;
+  if(!alpsWishlist.length){
+    el.innerHTML='<div style="font-size:9.5px;color:#3a5a7a;line-height:1.6;">还没有目的地。分析一座山后点"+加入当前山峰"，可追踪贡嘎/梅里/南迦巴瓦等远征目标未来 7 天的拍摄机会。</div>';
+    return;
+  }
+  var h='';
+  alpsWishlist.forEach(function(w,idx){
+    h+='<div id="awish-'+idx+'" style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:7px;padding:7px 9px;margin-bottom:5px;">'
+      +'<div style="display:flex;align-items:center;gap:6px;">'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:600;color:#f5c842;">🏔️ '+w.name+'</div>'
+      +'<div style="font-size:9px;color:#9ab8c8;">'+w.lat.toFixed(3)+', '+w.lon.toFixed(3)+' · '+w.peakElev+'m · <span class="awish-best">⏳…</span></div></div>'
+      +'<button class="awish-go" data-idx="'+idx+'" style="padding:3px 7px;border-radius:5px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:9px;">分析</button>'
+      +'<button class="awish-del" data-idx="'+idx+'" style="padding:3px 6px;border-radius:5px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer;font-size:9px;">✕</button>'
+      +'</div></div>';
+  });
+  el.innerHTML=h;
+  // 异步算每座山的最佳日
+  alpsWishlist.forEach(function(w,idx){
+    alpsWishBestDay(w.lat,w.lon,w.peakElev,w.viewerElev).then(function(b){
+      var card=document.getElementById('awish-'+idx); if(!card) return;
+      var st=card.querySelector('.awish-best'); if(!st) return;
+      if(!b){ st.innerHTML='<span style="color:#5a7a9a;">7天内无机会</span>'; return; }
+      var dt=new Date(b.day+'T12:00:00'); var col=b.score>=65?'#22c55e':b.score>=40?'#f5c842':'#fb923c';
+      st.innerHTML='最佳 <b style="color:'+col+';">'+(dt.getMonth()+1)+'/'+dt.getDate()+' '+b.phase+' '+b.score+'分</b>';
+    });
+  });
+  // 绑定
+  el.querySelectorAll('.awish-del').forEach(function(b){
+    b.addEventListener('click',function(){
+      var i=parseInt(this.getAttribute('data-idx'));
+      alpsWishlist.splice(i,1); saveAlpsWishlist(); renderAlpsWishlist();
+    });
+  });
+  el.querySelectorAll('.awish-go').forEach(function(b){
+    b.addEventListener('click',function(){
+      var w=alpsWishlist[parseInt(this.getAttribute('data-idx'))]; if(!w) return;
+      aMap.setCenter(w.lat,w.lon,11); aMap.setSelected(w.lat,w.lon);
+      document.getElementById('aPkHigh').value=w.peakElev;
+      document.getElementById('aPkLow').value=w.viewerElev;
+      aOnSelect(w.lat,w.lon);
+      setTimeout(function(){ var btn=document.getElementById('aGB'); if(btn&&!btn.disabled) btn.click(); },1500);
+    });
+  });
+}
+document.getElementById('aAddWish').addEventListener('click',function(){
+  if(aST.lat==null){ alert('请先在地图上点选一座山峰'); return; }
+  var pkHigh=parseFloat(document.getElementById('aPkHigh').value)||5000;
+  var viewer=parseFloat(document.getElementById('aPkLow').value)||2500;
+  if(alpsWishlist.some(function(w){return Math.abs(w.lat-aST.lat)<0.01&&Math.abs(w.lon-aST.lon)<0.01;})){
+    alert('该山峰已在清单中'); return;
+  }
+  var nm=prompt('给这座山起个名字（如：贡嘎、梅里雪山）：', '山峰 '+aST.lat.toFixed(2)+','+aST.lon.toFixed(2));
+  if(nm===null) return;
+  alpsWishlist.unshift({name:nm||('山峰'+aST.lat.toFixed(2)), lat:aST.lat, lon:aST.lon, peakElev:Math.round(pkHigh), viewerElev:Math.round(viewer)});
+  if(alpsWishlist.length>15) alpsWishlist=alpsWishlist.slice(0,15);
+  saveAlpsWishlist(); renderAlpsWishlist();
+});
+setTimeout(renderAlpsWishlist, 300);
+
 // 极简版：tier 永远 = 'high'（只算"用户点的那座山"那一个海拔），但保留 setAlpsTier 防 reference error
 function setAlpsTier(tier){ aST.tier=tier; if(aST.rows){renderAlps(aST.rows,aST.daily,aST.peaks);} }
 
@@ -3512,7 +3771,7 @@ function renderAlps(rows,daily,peaks){
   var tier='high';
   var tierLabel='山峰海拔 '+peaks.high+'m · 观拍点 '+peaks.viewer+'m';
   var conf = assessConfidence({cloudDiff:0, dataLoss:0});
-  var disclaimer = disclaimerCardHTML('日照金山', conf);
+  var disclaimer = disclaimerCardHTML('日照金山', conf) + calibrationCardHTML('alps', aST.lat, aST.lon);
 
   // 方位角文字转中文方向
   function azToDir(az){
@@ -3625,8 +3884,10 @@ function renderAlps(rows,daily,peaks){
   }).join('');
 
   var aMName=aST.model==='gfs_seamless'?'GFS':aST.model==='ecmwf_ifs025'?'ECMWF':aST.model==='icon_seamless'?'ICON':'—';
+  var alpsBest=(fromNow(rows)||rows).reduce(function(m,r){var s=tierScore(r)||0;return s>m?s:m;},0);
   document.getElementById('aRes').innerHTML=
     disclaimer
+    +decisionBannerHTML(alpsBest, aST.lat, aST.lon)
     +'<div id="aHorizon" class="card" style="padding:9px 12px;background:rgba(245,200,66,0.04);border-color:rgba(245,200,66,0.18);">'
     +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
     +'<span style="font-size:11px;color:#f5c842;font-weight:600;">📐 真实地平线</span>'
@@ -3956,6 +4217,61 @@ function runStar(){
     }).catch(function(e){hideLoad();showErr('sCB','获取失败:'+e.message);});
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// 🌌 P1-2 银河月度日历：未来 28 天的"月相 × 核心可见 × (7天内)天气"规划视图
+// ──────────────────────────────────────────────────────────────────────
+// 银河用户按月相规划：新月前后 + 核心可见 + 晴 = 黄金窗口，要提前两周定行程。
+// 复用 moonPhase/moonIll（任意未来日期可算）+ mwIsShootable（核心是否升起）。
+// 天气只有 7 天预报：前 7 天用真实云量(传入的 dayCloudMap)，之后只标"月相+核心潜力"。
+// dayCloudMap: { 'YYYY-MM-DD': avgNightCloud% }，由 renderStar 从 rows 聚合后传入。
+// ══════════════════════════════════════════════════════════════════════
+function buildMilkyWayMonthHTML(lat, lon, utcOff, dayCloudMap){
+  utcOff=utcOff||0; dayCloudMap=dayCloudMap||{};
+  var today=new Date();
+  var cells='';
+  var weekNames=['日','一','二','三','四','五','六'];
+  for(var d=0; d<28; d++){
+    var day=new Date(today.getFullYear(),today.getMonth(),today.getDate()+d);
+    var dayKey=day.getFullYear()+'-'+pad2(day.getMonth()+1)+'-'+pad2(day.getDate());
+    var ill=moonIll(moonPhase(new Date(day.getTime()+12*3600*1000))); // 当日正午月相亮度
+    var emo=moonEmo(moonPhase(new Date(day.getTime()+12*3600*1000)));
+    // 核心是否可见（升起且有可拍窗口）
+    var shoot; try{ shoot=mwIsShootable(dayKey, lat, lon, utcOff); }catch(e){ shoot={ok:false}; }
+    var coreOk=shoot && shoot.ok;
+    // 天气（仅前 7 天有）
+    var cloud = dayCloudMap[dayKey];
+    var hasWeather = cloud!=null;
+    // 综合评级：月暗(ill<30) + 核心可见 + (有天气则要求云少)
+    var moonGood = ill<=30, moonOk = ill<=55;
+    var rating, bg, label;
+    if(!coreOk){ rating='no'; bg='rgba(255,255,255,0.02)'; label='核心未升'; }
+    else if(hasWeather){
+      if(moonGood && cloud<=25){ rating='best'; bg='rgba(167,139,250,0.30)'; label='✦绝佳'; }
+      else if(moonOk && cloud<=45){ rating='good'; bg='rgba(167,139,250,0.16)'; label='可拍'; }
+      else if(cloud>60){ rating='cloudy'; bg='rgba(120,140,160,0.10)'; label='多云'; }
+      else { rating='moon'; bg='rgba(245,200,66,0.08)'; label='月明'; }
+    } else {
+      // 7 天外：只看月相潜力
+      if(moonGood){ rating='potential'; bg='rgba(167,139,250,0.14)'; label='月暗窗口'; }
+      else if(moonOk){ rating='potential2'; bg='rgba(167,139,250,0.06)'; label='月渐暗'; }
+      else { rating='moon'; bg='rgba(245,200,66,0.06)'; label='月明'; }
+    }
+    var isToday=d===0;
+    var weatherTxt = hasWeather ? ('☁'+Math.round(cloud)+'%') : '<span style="opacity:.5;">—</span>';
+    cells+='<div style="background:'+bg+';border:1px solid '+(isToday?'#a78bfa':'rgba(255,255,255,0.06)')+';border-radius:7px;padding:5px 4px;text-align:center;min-height:62px;">'
+      +'<div style="font-size:8.5px;color:#5a7a9a;">'+(day.getMonth()+1)+'/'+day.getDate()+' '+weekNames[day.getDay()]+'</div>'
+      +'<div style="font-size:15px;line-height:1.3;">'+emo+'</div>'
+      +'<div style="font-size:8px;color:#9ab8c8;">'+ill+'%·'+weatherTxt+'</div>'
+      +'<div style="font-size:8.5px;color:'+(rating==='best'?'#c4b5fd':rating==='good'||rating==='potential'?'#a78bfa':'#5a7a9a')+';margin-top:1px;font-weight:'+(rating==='best'?'700':'400')+';">'+label+'</div>'
+      +'</div>';
+  }
+  return '<div class="card"><h3>🌌 银河月度规划（未来 28 天）</h3>'
+    +'<div class="csub">月相 + 银河核心是否可见 + 前 7 天真实云量。✦绝佳 = 月暗 + 核心可见 + 少云 · 7 天外只给月相潜力（天气需临近再看）</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">'+cells+'</div>'
+    +'<div style="font-size:9px;color:#5a7a9a;margin-top:8px;line-height:1.6;">🟣 紫色越深越值得拍 · 🌑新月期(月亮亮度低)是银河黄金期 · 核心未升起的季节不显示窗口</div>'
+    +'</div>';
+}
+
 function renderStar(rows,daily,lp,nightAnalyses){
   var lpLabels=['','极暗天（沙漠/高原）','真正黑暗（偏远山区）','乡村天空','乡村/郊区过渡','郊区天空','亮郊区','城郊过渡','城市天空','市中心'];
   var lpC=lp<=2?'#a78bfa':lp<=4?'#6366f1':lp<=6?'#22c55e':lp<=7?'#eab308':'#ef4444';
@@ -4056,19 +4372,31 @@ function renderStar(rows,daily,lp,nightAnalyses){
 
   // 置信度:光污染等级用户没改 → 数据可信度中等
   var conf = assessConfidence({cloudDiff:0});
-  var disclaimer = disclaimerCardHTML('星空', conf);
+  var disclaimer = disclaimerCardHTML('星空', conf) + calibrationCardHTML('star', sST.lat, sST.lon);
 
+  // P1-2: 银河月度日历——聚合每天夜间(21-04时)平均云量 + utcOff（取自 nightAnalyses）
+  var dayCloudMap={};
+  Object.keys(dayMap).forEach(function(day){
+    var night=dayMap[day].filter(function(r){var h2=new Date(r.time).getHours();return h2>=21||h2<=4;});
+    if(night.length) dayCloudMap[day]=night.reduce(function(a,r){return a+(r.cloud||0);},0)/night.length;
+  });
+  var mwUtcOff=(nightAnalyses&&nightAnalyses[0]&&nightAnalyses[0].utcOffsetSec)||0;
+  var monthH=buildMilkyWayMonthHTML(sST.lat, sST.lon, mwUtcOff, dayCloudMap);
+
+  var starBest=(nightAnalyses&&nightAnalyses[0]&&nightAnalyses[0].analysis&&nightAnalyses[0].analysis.score)||0;
   document.getElementById('sRes').innerHTML=
     disclaimer
-    +'<div class="tabs"><button class="tab on" id="st0">📝 专业分析报告</button><button class="tab" id="st1">🌙 月相&光污染</button><button class="tab" id="st2">📊 每日评分</button><button class="tab" id="st3">📈 趋势图</button><button class="tab" id="st4">📋 夜间报表</button></div>'
+    +decisionBannerHTML(starBest, sST.lat, sST.lon)
+    +'<div class="tabs"><button class="tab on" id="st0">📝 专业分析报告</button><button class="tab" id="st5">🌌 月度规划</button><button class="tab" id="st1">🌙 月相&光污染</button><button class="tab" id="st2">📊 每日评分</button><button class="tab" id="st3">📈 趋势图</button><button class="tab" id="st4">📋 夜间报表</button></div>'
     +'<div id="stR">'+reportH+'</div>'
+    +'<div id="stMW" style="display:none;">'+monthH+'</div>'
     +'<div id="stI" style="display:none;">'+infoH+'</div>'
     +'<div id="stD" style="display:none;" class="card"><h3>7天夜间最佳星空评分</h3><div class="csub">取每天21:00-04:00最高分</div>'+dgH+'</div>'
     +'<div id="stC" class="card" style="display:none;"><h3>星空评分趋势</h3><div class="csub">紫线=评分 · 灰柱=云量</div>'
     +chartWrap('s','star',rows,function(r){return r.starScore;},daily,'sCI','sCSc','sCS')+'</div>'
     +'<div id="stT" class="card" style="display:none;"><h3>夜间逐小时报表</h3><div class="csub">从当前时间起 · 当晚20:00至次日05:00为一夜（同一日期）· 🌌银河核心列：紫色高亮=仰角&gt;15°且无月无云的最佳拍摄期</div><div class="tblwrap"><table><thead><tr><th>日期</th><th>时间</th><th>天况</th><th>天气</th><th>℃</th><th>云量</th><th>湿度</th><th>风km/h</th><th>月相</th><th>银河核心</th><th>评分</th><th>建议</th></tr></thead><tbody>'+trH+'</tbody></table></div></div>';
 
-  var sTabDefs=[{btn:'st0',panel:'stR'},{btn:'st1',panel:'stI'},{btn:'st2',panel:'stD'},{btn:'st3',panel:'stC'},{btn:'st4',panel:'stT'}];
+  var sTabDefs=[{btn:'st0',panel:'stR'},{btn:'st5',panel:'stMW'},{btn:'st1',panel:'stI'},{btn:'st2',panel:'stD'},{btn:'st3',panel:'stC'},{btn:'st4',panel:'stT'}];
   bindTabs('sRes',sST,sTabDefs);
   applyTabState(sST,sTabDefs);
   initZoom('s','star',rows,function(r){return r.starScore;},daily,'sCI','sCSc','sCS');
@@ -4527,6 +4855,48 @@ function exportICS(opt){
 }
 
 // ══════════════════════════════════════════════════════════════════════
+// 🔔 P1-1 订阅式提醒（本地日历版）
+// ──────────────────────────────────────────────────────────────────────
+// 纯前端无法做真正的服务端推送，但可以把一个地点未来 48h 内"所有 ≥阈值 的机会窗口"
+// 一次性打包成多事件 .ics，每个事件带 -2h 提醒(VALARM)。用户导入日历后，到点系统就会推送。
+// 这把"被动查询"变成"它主动叫我"，拿到推送 80% 的价值且零后端成本。
+// opts: [{lat,lon,name,hour,day,module,score,phase}], 已按分数排序
+// ══════════════════════════════════════════════════════════════════════
+function exportICSMulti(name, opts){
+  if(!opts || !opts.length){ alert('该地点未来 48 小时内没有可提醒的机会'); return; }
+  var modNames={glow:'🔥火烧云',cloud:'☁️云海',alps:'🏔️日照金山',star:'⭐星空'};
+  function pz(n){return n<10?'0'+n:n;}
+  function toICSDate(d){
+    return d.getUTCFullYear()+pz(d.getUTCMonth()+1)+pz(d.getUTCDate())+'T'
+      +pz(d.getUTCHours())+pz(d.getUTCMinutes())+'00Z';
+  }
+  var lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PhotoGlow//Subscribe//ZH','CALSCALE:GREGORIAN'];
+  opts.forEach(function(o){
+    var dt=o.hour?new Date(o.hour):new Date(o.day+'T05:00:00');
+    var dtEnd=new Date(dt.getTime()+60*60*1000);
+    var mod=modNames[o.module]||o.module;
+    var summary=mod+' · '+(name||'追光点')+' ('+o.score+'分)';
+    var desc=[mod, '地点：'+(name||'追光点'), '坐标：'+o.lat.toFixed(4)+','+o.lon.toFixed(4),
+      '预测分数：'+o.score+'/100', o.phase?'时段：'+o.phase:'',
+      '', '提醒：出发前再查一遍分数变化，并看一眼实时卫星云图。'].filter(Boolean).join('\\n');
+    var uid='photoglow-'+Date.now()+'-'+Math.random().toString(36).substr(2,5)+'@localhost';
+    lines.push('BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+toICSDate(new Date()),
+      'DTSTART:'+toICSDate(dt),'DTEND:'+toICSDate(dtEnd),'SUMMARY:'+summary,
+      'LOCATION:'+o.lat.toFixed(4)+','+o.lon.toFixed(4),'DESCRIPTION:'+desc,
+      'GEO:'+o.lat.toFixed(6)+';'+o.lon.toFixed(6),
+      'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:'+summary,'END:VALARM',
+      'END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  var blob=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='追光订阅-'+(name||'地点')+'.ics';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+}
+
+// ══════════════════════════════════════════════════════════════════════
 // 🏠 首页 / 摄影师驾驶舱
 // ══════════════════════════════════════════════════════════════════════
 var hST = {
@@ -4819,6 +5189,7 @@ function renderHomeFavorites(){
           +'<div style="font-size:12.5px;font-weight:600;color:#e8f4ff;">📍 '+fav.name+'</div>'
           +'<div style="font-size:10.5px;color:#9ab8c8;margin-top:3px;">'+fav.lat.toFixed(3)+', '+fav.lon.toFixed(3)+' · <span class="fav-status">⏳ 加载中…</span></div>'
         +'</div>'
+        +'<button class="fav-subscribe" data-idx="'+idx+'" title="把未来48h所有机会加入日历(带提醒)" style="padding:4px 9px;border-radius:5px;border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.08);color:#a78bfa;cursor:pointer;font-size:10px;white-space:nowrap;">🔔 订阅</button>'
         +'<button class="fav-remove" data-idx="'+idx+'" style="padding:4px 9px;border-radius:5px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer;font-size:10px;">✕</button>'
       +'</div>'
       +'<div class="fav-opps" style="margin-top:7px;"></div>'
@@ -4862,6 +5233,24 @@ function renderHomeFavorites(){
         var name=this.getAttribute('data-name');
         jumpToAnalysis(mod, lat, lon, name);
       });
+    });
+  });
+
+  // 订阅按钮：把该地点未来 48h 内所有机会批量导出为带提醒的 .ics
+  document.querySelectorAll('.fav-subscribe').forEach(function(b){
+    b.addEventListener('click',function(e){
+      e.stopPropagation();
+      var idx=parseInt(this.getAttribute('data-idx'));
+      var fav=hST.favorites[idx];
+      if(!fav) return;
+      var btn=this; var oldTxt=btn.textContent; btn.textContent='⏳…';
+      homeAnalyze48h(fav.lat, fav.lon).then(function(opps){
+        btn.textContent=oldTxt;
+        var list=(opps||[]).map(function(o){
+          return {lat:fav.lat,lon:fav.lon,name:fav.name,hour:o.hour,day:o.hour.split('T')[0],module:o.module,score:o.score,phase:o.phase};
+        });
+        exportICSMulti(fav.name, list);
+      }).catch(function(){ btn.textContent=oldTxt; alert('获取机会失败，请稍后重试'); });
     });
   });
 
