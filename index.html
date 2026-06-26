@@ -4922,6 +4922,14 @@ function homeAnalyze48h(lat, lon){
         var opps = [];
         var nowMs = Date.now();
         var endMs = nowMs + 48*60*60*1000;
+        // 日出/日落按日期建表（来自 daily，几乎与天气模型无关）→ 速览卡显示稳定的天文事件时刻，
+        // 而不是"模型评分峰值小时"（那个会因模型不同而漂移，导致三模型时间不一致）。
+        var sunByDate = {};
+        if(data.daily && data.daily.time){
+          data.daily.time.forEach(function(d, di){
+            sunByDate[d] = { sr: data.daily.sunrise?data.daily.sunrise[di]:null, ss: data.daily.sunset?data.daily.sunset[di]:null };
+          });
+        }
 
         h.time.forEach(function(ti, i){
           var dt = new Date(ti);
@@ -4935,12 +4943,15 @@ function homeAnalyze48h(lat, lon){
             rh:h.relativehumidity_2m[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:null,
             vis:h.visibility?h.visibility[i]:null,sol:sol};
           var hr = dt.getHours();
+          var dayKey = ti.split('T')[0];
+          var sun = sunByDate[dayKey] || {};
 
           // 火烧云：任何海拔都可拍
           if((hr>=4&&hr<=8) || (hr>=16&&hr<=20)){
             var isSr = hr<=8;
             var gs=0; try{ gs=calcGlow(r,0,isSr,0,lat)||0; }catch(e){}
-            if(gs>=30) opps.push({module:'glow',score:Math.round(gs),hour:ti,phase:isSr?'朝霞':'晚霞',r:r});
+            // evTime = 该方向真实日出/日落时刻（稳定锚点，三模型一致）
+            if(gs>=30) opps.push({module:'glow',score:Math.round(gs),hour:ti,phase:isSr?'朝霞':'晚霞',evTime:isSr?sun.sr:sun.ss,r:r});
           }
           // 云海：任何海拔都可能（山地云海需 800m+，但平流雾/海雾/河谷晨雾在低海拔也很常见）
           if(hr>=4 && hr<=9){
@@ -5038,13 +5049,25 @@ function renderHomeIndices(opps){
     }
     var dt=new Date(o.hour);
     var cw=confWord(o.score);
+    // 时间显示：火烧云/日照金山用真实日出日落时刻（稳定，三模型一致）；
+    // 银河用窗口描述（具体小时会因模型评分峰值漂移，显示窗口更稳定）。
+    var timeHtml;
+    if((o.module==='glow'||o.module==='alps') && o.evTime){
+      var et=new Date(o.evTime);
+      var evLabel = (o.phase&&(o.phase.indexOf('朝')>=0||o.phase.indexOf('日出')>=0))?(L?'sunrise':'日出'):(L?'sunset':'日落');
+      timeHtml='🕐 <span style="font-family:monospace;color:#e8f4ff;">'+homePad2(et.getHours())+':'+homePad2(et.getMinutes())+'</span> '+evLabel;
+    } else if(o.module==='star'){
+      timeHtml='🕐 '+(L?'after dark (best when moonless)':'天黑后（无月时段最佳）');
+    } else {
+      timeHtml='🕐 <span style="font-family:monospace;color:#e8f4ff;">'+homePad2(dt.getHours())+':'+homePad2(dt.getMinutes())+'</span> '+o.phase;
+    }
     h+='<div'+clickAttr+'border:1px solid '+it.color+'33;border-radius:10px;padding:11px 12px;background:linear-gradient(135deg,'+it.color+'0e,transparent);">'
       +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
         +'<span style="font-size:12px;font-weight:600;color:'+it.color+';">'+it.emoji+' '+it.name+mdlBadge+'</span>'
         +'<span style="margin-left:auto;font-size:11px;color:#f5c842;letter-spacing:1px;">'+starStr(o.score)+'</span>'
       +'</div>'
       +'<div style="font-size:10.5px;color:#9ab8c8;margin-top:6px;line-height:1.7;">'
-        +'🕐 <span style="font-family:monospace;color:#e8f4ff;">'+homePad2(dt.getHours())+':'+homePad2(dt.getMinutes())+'</span> '+o.phase+'<br>'
+        +timeHtml+'<br>'
         +'✅ '+(L?'Confidence':'可信度')+' <b style="color:'+cw.c+';">'+cw.t+'</b>'
         +'<br><span style="font-size:9px;color:#5a7a9a;">'+(L?'tap → details':'点击 → 详细分析')+'</span>'
       +'</div></div>';
@@ -5134,7 +5157,18 @@ function renderHomeOppList(){
         +'<div style="flex:1;min-width:0;">'
           +'<div style="font-size:13px;font-weight:600;color:'+col+';">'+modNames[o.module]+'<span style="font-size:8.5px;color:#5a7a9a;border:1px solid #2a3f5a;border-radius:4px;padding:0 4px;margin-left:5px;vertical-align:middle;font-weight:normal;">'+modelApiToLabel(GLOBAL_MODEL)+'</span> <span class="opp-conf" data-oi="'+oi+'" style="vertical-align:middle;"></span></div>'
           +'<div style="font-size:11.5px;color:#e8f4ff;margin-top:3px;">'
-            +'<b style="color:#f5c842;">'+dayLabel+'</b>　<span style="font-family:monospace;color:#4ecdc4;">'+homePad2(dt.getHours())+':'+homePad2(dt.getMinutes())+'</span>　<span style="color:#9ab8c8;">'+o.phase+'</span>'
+            +'<b style="color:#f5c842;">'+dayLabel+'</b>　'
+            +(function(){
+              if((o.module==='glow'||o.module==='alps') && o.evTime){
+                var et=new Date(o.evTime);
+                var evLabel=(o.phase&&(o.phase.indexOf('朝')>=0||o.phase.indexOf('日出')>=0))?'日出':'日落';
+                return '<span style="font-family:monospace;color:#4ecdc4;">'+homePad2(et.getHours())+':'+homePad2(et.getMinutes())+'</span>　<span style="color:#9ab8c8;">'+evLabel+'</span>';
+              }
+              if(o.module==='star'){
+                return '<span style="color:#9ab8c8;">天黑后（无月时段最佳）</span>';
+              }
+              return '<span style="font-family:monospace;color:#4ecdc4;">'+homePad2(dt.getHours())+':'+homePad2(dt.getMinutes())+'</span>　<span style="color:#9ab8c8;">'+o.phase+'</span>';
+            })()
           +'</div>'
           +'<div style="font-size:10px;color:#5a7a9a;margin-top:3px;">点击 → 跳到详细分析页面</div>'
         +'</div>'
