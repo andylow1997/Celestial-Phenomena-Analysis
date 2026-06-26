@@ -3531,16 +3531,18 @@ function renderGlow(){
       +'<br><span style="font-size:9.5px;color:#5a7a9a;">'+glowDesc(srMax,ssMax,rs,mode)+'</span>'
       +(bestRow?scoreBreakdownHTML('glow', bestRow, best, '#f97316'):'')
       +(function(){
-        // 摄影时间轴：取当天对应方向（朝/晚）窗口内逐小时评分，画折线 + 最佳/次佳窗口
-        var side = mode==='sr'?'sr' : mode==='ss'?'ss' : (srMax>=ssMax?'sr':'ss');
-        var winRows = rs.filter(function(r){return side==='sr'?r.isSR:r.isSS;})
-                        .sort(function(a,b){return new Date(a.time)-new Date(b.time);});
-        if(winRows.length<2) return '';
-        var pts=winRows.map(function(r){
-          var dt=new Date(r.time);
-          return {label:pad2(dt.getHours())+':'+pad2(dt.getMinutes()), value:(side==='sr'?r.srSc:r.ssSc)||0};
-        });
-        return '<div style="margin-top:8px;">'+photoTimelineHTML(pts, '#f97316', (side==='sr'?'朝霞':'晚霞')+'时间轴（'+label+'）')+'</div>';
+        // 摄影时间轴：朝霞、晚霞各画一张，始终都显示，标题与数据按 side 严格对应。
+        function buildOne(side){
+          var winRows = rs.filter(function(r){return side==='sr'?r.isSR:r.isSS;})
+                          .sort(function(a,b){return new Date(a.time)-new Date(b.time);});
+          if(winRows.length<2) return '';
+          var pts=winRows.map(function(r){
+            var dt=new Date(r.time);
+            return {label:pad2(dt.getHours())+':'+pad2(dt.getMinutes()), value:(side==='sr'?r.srSc:r.ssSc)||0};
+          });
+          return '<div style="margin-top:8px;">'+photoTimelineHTML(pts, '#f97316', (side==='sr'?'朝霞':'晚霞')+'时间轴（'+label+'）')+'</div>';
+        }
+        return buildOne('sr')+buildOne('ss');
       })()
       +feedbackButtonHTML('glow', gST.lat, gST.lon, day, best)
       +'</div></div>'
