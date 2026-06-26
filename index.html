@@ -463,6 +463,20 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 
 <script>
 'use strict';
+// ══ 安全 localStorage 封装 ══
+// 隐私模式 / 跨域 iframe / 部分 WebView 里访问 localStorage 会抛 SecurityError；
+// 损坏的存储值会让 JSON.parse 抛 SyntaxError。顶层若不兜底，整段脚本会中断 → 白屏。
+// 所有读写一律走这三个函数，保证任何环境下都不会因存储异常导致页面无法运行。
+function lsGet(key, dflt){
+  try{ var v=localStorage.getItem(key); return v==null?dflt:v; }catch(e){ return dflt; }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, val); return true; }catch(e){ return false; }
+}
+function lsParse(key, dfltJson){
+  try{ return JSON.parse(localStorage.getItem(key) || dfltJson); }
+  catch(e){ try{ return JSON.parse(dfltJson); }catch(e2){ return null; } }
+}
 // ══ 语言 ══
 var LANG='zh';
 // i18n 文案字典：所有带 data-k 的元素都从这里取文案，切换语言时统一刷新，
@@ -705,7 +719,7 @@ document.addEventListener('click', function(e){
 });
 // 导出反馈数据(供未来接后端时用,现在用户可以手动 copy/download)
 window.exportFeedback=function(){
-  var d=localStorage.getItem('feedback_v1')||'[]';
+  var d=lsGet('feedback_v1','[]');
   console.log('反馈数据 (复制下面这段保留):'); console.log(d);
   return JSON.parse(d);
 };
@@ -1392,10 +1406,12 @@ function MapEng(baseId, wrapId, onSel, ovCb){
     var cx=(S.lon+180)/360*N, cy=(1-Math.log(Math.tan(S.lat*Math.PI/180)+1/Math.cos(S.lat*Math.PI/180))/Math.PI)/2*N;
     var tW=Math.ceil(W/TS)+3, tH=Math.ceil(H/TS)+3;
     var sTX=Math.floor(cx-tW/2), sTY=Math.floor(cy-tH/2);
+    var usedKeys={}; // M1:本帧用到的瓦片 key，供 draw 后做 LRU 清理
     for(var tx=sTX;tx<=sTX+tW;tx++){
       for(var ty=sTY;ty<=sTY+tH;ty++){
         if(ty<0||ty>=(1<<S.z))continue;
         var wx=((tx%N)+N)%N, key=S.z+'/'+wx+'/'+ty;
+        usedKeys[key]=1;
         var px2=(tx-cx)*TS+W/2, py2=(ty-cy)*TS+H/2;
         var tile=S.tiles[key];
         if(tile&&tile.complete&&tile.naturalWidth>0){ctx.drawImage(tile,px2,py2,TS,TS);}
@@ -1409,6 +1425,14 @@ function MapEng(baseId, wrapId, onSel, ovCb){
             S.tiles[k]=img;
           })(key);
         }
+      }
+    }
+    // M1:LRU 清理——长时间平移地图时 S.tiles 只增不减会持续吃内存。
+    // 上限 256 张；超出时优先删掉"本帧不在视野内"的瓦片（视野内的一定保留，避免闪烁）。
+    var allKeys=Object.keys(S.tiles);
+    if(allKeys.length>256){
+      for(var ki=0; ki<allKeys.length && Object.keys(S.tiles).length>256; ki++){
+        if(!usedKeys[allKeys[ki]]) delete S.tiles[allKeys[ki]];
       }
     }
     ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(0,H-14,W,14);
@@ -1667,7 +1691,7 @@ var WM_MODELS=[
 // 首页、火烧云/云海/日照金山/星空详情页、机会日历、收藏地点全部共用此模型，
 // 切换后统一刷新，杜绝"不同页面用不同模型数据"。
 // ══════════════════════════════════════════════════════════════════════
-var GLOBAL_MODEL = localStorage.getItem('photoglow_model') || 'gfs_seamless';
+var GLOBAL_MODEL = lsGet('photoglow_model', null) || 'gfs_seamless';
 function modelApiToLabel(api){
   return api==='ecmwf_ifs025'?'ECMWF':api==='icon_seamless'?'ICON':'GFS';
 }
@@ -1685,7 +1709,7 @@ function syncModelButtons(){
 // 切换全局模型：写入各模块 state，刷新按钮，并重渲染所有已加载的页面数据。
 function setGlobalModel(api){
   GLOBAL_MODEL=api;
-  try{ localStorage.setItem('photoglow_model', api); }catch(e){}
+  lsSet('photoglow_model', api);
   // 写入四模块 state（它们可能尚未定义，用 typeof 守卫）
   if(typeof cST!=='undefined') cST.model=api;
   if(typeof gST!=='undefined') gST.model=api;
@@ -3602,77 +3626,6 @@ window.gDay=function(day){
   document.getElementById('gRes').insertAdjacentHTML('afterbegin',h);
 };
 
-// ── 火烧云三模型对比（懒加载，点按钮才触发）──
-// 复用 wmFetchAllModels（GFS 命中分析页缓存，仅新增 ECMWF/ICON）+ modelCompareEngine + calcGlow。
-// 取"当前模式下分数最高的那个未来时刻"作为对比锚点，三模型在同一时刻各自重算 calcGlow。
-var gCmpBusy=false;
-function runGlowModelCompare(){
-  if(gCmpBusy) return;
-  var resEl=document.getElementById('gCmpResult');
-  if(!gST.rows || !gST.rows.length || gST.lat==null){ if(resEl)resEl.innerHTML='<span style="font-size:10px;color:#5a7a9a;">请先分析一个位置</span>'; return; }
-  var mode=gST.mode||'sr';
-  // 选锚点行：当前模式分数最高、且仍是有效朝/晚霞窗口的未来时刻
-  var cand=gST.rows.filter(function(r){return mode==='sr'?r.isSR:r.isSS;});
-  if(!cand.length){ if(resEl)resEl.innerHTML='<span style="font-size:10px;color:#5a7a9a;">当前模式无有效窗口</span>'; return; }
-  var scoreKey=mode==='sr'?'srSc':'ssSc';
-  var anchor=cand.reduce(function(a,b){return b[scoreKey]>a[scoreKey]?b:a;},cand[0]);
-  // 还原该时刻的 calcGlow 入参（与 runGlow 内一致）
-  var dayKey=anchor.time.split('T')[0], sunEv=buildSunEv(gST.daily), ev=sunEv[dayKey]||{};
-  var dt=new Date(anchor.time);
-  var isSr=(mode==='sr');
-  var anchorSunISO=isSr?ev.sr:ev.ss;
-  if(!anchorSunISO){ if(resEl)resEl.innerHTML='<span style="font-size:10px;color:#5a7a9a;">缺日出日落时刻</span>'; return; }
-  var minFromSun=(dt-new Date(anchorSunISO))/60000;
-  var prevRain=!!anchor.prevRain;
-  var lat=gST.lat;
-
-  gCmpBusy=true;
-  if(resEl) resEl.innerHTML='<span style="font-size:10px;color:#a78bfa;">⏳ 正在对比 GFS / ECMWF / ICON…</span>';
-  wmFetchAllModels(gST.lat, gST.lon, 'glow', 7).then(function(byModel){
-    var rByModel={};
-    ['gfs','ecmwf','icon'].forEach(function(mk){
-      var md=byModel[mk];
-      rByModel[mk]= md ? mcPickRowByTime(md, anchor.time) : null;
-    });
-    var cmp=modelCompareEngine(rByModel, calcGlow, [minFromSun, isSr, prevRain?1:0, lat]);
-    var when=fmtT(anchorSunISO);
-    if(resEl){
-      resEl.innerHTML='<div style="font-size:9.5px;color:#5a7a9a;margin-bottom:5px;">对比时刻：'+(isSr?'日出':'日落')+' '+when+' 前后</div>'
-        +consistencyBadgeHTML(cmp, false)
-        +'<div style="font-size:9.5px;color:#5a7a9a;margin-top:5px;display:flex;gap:10px;flex-wrap:wrap;">'
-        +'<span>🇺🇸 GFS '+(cmp.gfsScore!=null?cmp.gfsScore:'—')+'</span>'
-        +'<span>🇪🇺 ECMWF '+(cmp.ecmwfScore!=null?cmp.ecmwfScore:'—')+'</span>'
-        +'<span>🇩🇪 ICON '+(cmp.iconScore!=null?cmp.iconScore:'—')+'</span>'
-        +'</div>';
-    }
-    gCmpBusy=false;
-  }).catch(function(){
-    if(resEl) resEl.innerHTML='<span style="font-size:10px;color:#ef4444;">对比失败，请稍后重试</span>';
-    gCmpBusy=false;
-  });
-}
-
-// ── 火烧云：真实地平线（懒加载，点按钮才触发）──
-var gHorizonBusy=false;
-function runGlowHorizon(){
-  if(gHorizonBusy) return;
-  var resEl=document.getElementById('gHorizonResult');
-  if(gST.lat==null || !gST.daily){ if(resEl)resEl.innerHTML='<span style="font-size:10px;color:#5a7a9a;">请先分析一个位置</span>'; return; }
-  var sunEv=buildSunEv(gST.daily);
-  var dayKeys=Object.keys(sunEv).sort();
-  if(!dayKeys.length){ if(resEl)resEl.innerHTML='<span style="font-size:10px;color:#5a7a9a;">缺日出日落数据</span>'; return; }
-  var ev=sunEv[dayKeys[0]];
-  gHorizonBusy=true;
-  if(resEl) resEl.innerHTML='<span style="font-size:10px;color:#f5c842;">⏳ 正在沿东/西方位采样地形…（约 20+ 个点，首次稍慢）</span>';
-  terrainHorizonEngine(gST.lat, gST.lon, ev, gST.utcOff||0).then(function(th){
-    if(resEl) resEl.innerHTML=terrainHorizonCardHTML(th);
-    gHorizonBusy=false;
-  }).catch(function(){
-    if(resEl) resEl.innerHTML='<span style="font-size:10px;color:#ef4444;">地形采样失败，请稍后重试</span>';
-    gHorizonBusy=false;
-  });
-}
-
 // ══════════════
 // 日照金山页面（极简版：点山峰即分析，系统自动按太阳方位反推最佳观拍位置）
 // ══════════════
@@ -4592,7 +4545,7 @@ function renderWiki(){
 // 📈 准确度页 — 反馈数据分析
 // ══════════════════════════════════════════════════════════════════════
 function renderHistory(){
-  var raw=localStorage.getItem('feedback_v1')||'[]';
+  var raw=lsGet('feedback_v1','[]');
   var arr=JSON.parse(raw);
   var modNames={glow:'🔥火烧云',cloud:'☁️云海',alps:'🏔️日照金山',star:'⭐星空/银河'};
   var h='';
@@ -4768,7 +4721,7 @@ function renderHistory(){
 
 document.getElementById('hGB').addEventListener('click',renderHistory);
 document.getElementById('hExport').addEventListener('click',function(){
-  var data=localStorage.getItem('feedback_v1')||'[]';
+  var data=lsGet('feedback_v1','[]');
   var blob=new Blob([data],{type:'application/json'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
@@ -4778,7 +4731,7 @@ document.getElementById('hExport').addEventListener('click',function(){
 });
 document.getElementById('hClear').addEventListener('click',function(){
   if(!confirm('确定清空所有反馈数据吗？此操作不可撤销。')) return;
-  localStorage.removeItem('feedback_v1');
+  try{ localStorage.removeItem('feedback_v1'); }catch(e){}
   renderHistory();
 });
 
@@ -4856,7 +4809,7 @@ function exportICS(opt){
 // ══════════════════════════════════════════════════════════════════════
 var hST = {
   lat:null, lon:null, name:null,
-  favorites: JSON.parse(localStorage.getItem('photoglow_favorites')||'[]'),
+  favorites: lsParse('photoglow_favorites','[]') || [],
   cache:{} // 位置 → 分析结果，避免重复请求
 };
 // 清理 hST.cache 中超过 10 分钟的过期条目，避免缓存只增不减造成内存泄漏。
@@ -4983,7 +4936,7 @@ function homeAnalyze48h(lat, lon){
         pruneHomeCache();
         return ret;
       }).catch(function(){return [];});
-  });
+  }).catch(function(){return [];}); // L2:外层 Promise.all 兜底——即便 terrain 取数将来去掉内部 catch 也不会冒泡成 unhandled rejection
 }
 
 // 三大定向指数：今晚银河 / 明早云海 / 明晚火烧云。
@@ -5200,7 +5153,8 @@ function renderHomeOppList(){
       }
     }
 
-    document.querySelectorAll('.home-opp').forEach(function(row){
+    var homeOppsEl=document.getElementById('homeOpps');
+    (homeOppsEl?homeOppsEl.querySelectorAll('.home-opp'):[]).forEach(function(row){
       row.addEventListener('click',function(e){
         if(e.target.classList.contains('ics-btn')) return;
         var mod = this.getAttribute('data-mod');
@@ -5295,7 +5249,7 @@ function renderHomeFavorites(){
       var idx=parseInt(this.getAttribute('data-idx'));
       if(!confirm('删除常去地点 "'+hST.favorites[idx].name+'"？')) return;
       hST.favorites.splice(idx,1);
-      localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites));
+      lsSet('photoglow_favorites',JSON.stringify(hST.favorites));
       renderHomeFavorites();
     });
   });
@@ -5310,7 +5264,7 @@ function setHomeLocation(lat, lon, name){
   document.getElementById('homeLocCoord').innerHTML = '📌 '+lat.toFixed(4)+', '+lon.toFixed(4)+' · 📅 '+homeFmtDate(new Date());
   document.getElementById('homeLocPicker').style.display='none';
   // 保存最后位置
-  localStorage.setItem('photoglow_last_location',JSON.stringify({lat:lat,lon:lon,name:hST.name}));
+  lsSet('photoglow_last_location',JSON.stringify({lat:lat,lon:lon,name:hST.name}));
   renderHomeOpps();
 }
 
@@ -5827,7 +5781,7 @@ document.getElementById('homeAddFav').addEventListener('click',function(){
   }
   hST.favorites.unshift({lat:hST.lat, lon:hST.lon, name:hST.name});
   if(hST.favorites.length>10) hST.favorites=hST.favorites.slice(0,10);
-  localStorage.setItem('photoglow_favorites',JSON.stringify(hST.favorites));
+  lsSet('photoglow_favorites',JSON.stringify(hST.favorites));
   renderHomeFavorites();
 });
 
@@ -5856,7 +5810,7 @@ function initHomePage(){
   if(bScore) bScore.addEventListener('click',function(){ HOME_OPP_SORT='score'; renderHomeOppList(); });
   if(bConf)  bConf.addEventListener('click', function(){ HOME_OPP_SORT='conf';  renderHomeOppList(); });
   renderHomeFavorites();
-  var saved = localStorage.getItem('photoglow_last_location');
+  var saved = lsGet('photoglow_last_location', null);
   if(saved){
     try{
       var s = JSON.parse(saved);
