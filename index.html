@@ -87,6 +87,11 @@ input,button{font-family:inherit;font-size:13px;}
 .mapwrap canvas.ov{z-index:2;pointer-events:none;}
 .mzb-wrap{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;gap:3px;z-index:10;}
 .mzb{width:27px;height:27px;background:rgba(3,7,14,0.92);border:1px solid rgba(200,223,245,0.15);border-radius:6px;color:#e8f4ff;font-size:16px;line-height:1;cursor:pointer;}
+/* 地图下方图层切换条 */
+.ovbar{display:flex;gap:6px;margin:-4px 0 10px;flex-wrap:wrap;}
+.ovbtn{flex:1;min-width:120px;padding:7px 10px;border-radius:8px;border:1px solid #1a2f4a;background:rgba(255,255,255,0.03);color:#9ab8c8;cursor:pointer;font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;}
+.ovbtn:hover{border-color:#4ecdc4;color:#e8f4ff;}
+.ovbtn.on{border-color:#a78bfa;background:rgba(167,139,250,0.18);color:#cbb8ff;}
 .mhint{position:absolute;top:8px;right:8px;background:rgba(3,7,14,0.85);border:1px solid #0d1c30;border-radius:5px;padding:3px 7px;font-size:9.5px;color:#5a7a9a;z-index:10;pointer-events:none;}
 
 .card{background:rgba(5,12,25,0.9);border:1px solid #0d1c30;border-radius:10px;padding:12px 14px;margin-bottom:10px;}
@@ -202,6 +207,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span>🗺️</span><span style="font-weight:500;">点击地图选点，自动获取海拔</span><span style="margin-left:auto;font-size:9.5px;color:#3a5a7a;">OpenStreetMap</span></div>
   <div class="mapwrap" style="height:255px;" id="cMW"><canvas class="base" id="cMC"></canvas><div class="mzb-wrap"><button class="mzb" id="cZI">+</button><button class="mzb" id="cZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮缩放</div></div>
+  <div class="ovbar"><button class="ovbtn" id="cOvSat">🛰️ 实时卫星云图（看云怎么动）</button></div>
   <div class="bnr" id="cBNR" style="background:rgba(78,205,196,0.07);border:1px solid rgba(78,205,196,0.18);color:#4ecdc4;"></div>
   <div id="cRes"></div>
   <div class="empty" id="cEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌫️</div><p style="line-height:1.9;">点击地图选点<br>预测 7 天云海条件</p></div>
@@ -225,6 +231,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;"><span>🔥</span><span style="font-weight:500;">朝霞晚霞火烧云分析</span></div>
   <div class="mapwrap" style="height:270px;" id="gMW"><canvas class="base" id="gMC"></canvas><div class="mzb-wrap"><button class="mzb" id="gZI">+</button><button class="mzb" id="gZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮</div></div>
+  <div class="ovbar"><button class="ovbtn" id="gOvSat">🛰️ 实时卫星云图（看地平线云况）</button></div>
   <div class="dgrid" id="gDG"></div>
   <div id="gRes"></div>
   <div class="empty" id="gEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌅</div><p>点击地图选点<br>分析朝霞晚霞火烧云</p></div>
@@ -281,6 +288,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     </div>
   </div>
   <div class="mapwrap" style="height:280px;" id="aMW"><canvas class="base" id="aMC"></canvas><div class="mzb-wrap"><button class="mzb" id="aZI">+</button><button class="mzb" id="aZO">−</button></div><div class="mhint">点击山峰位置 · 拖动 · 滚轮</div></div>
+  <div class="ovbar"><button class="ovbtn" id="aOvSat">🛰️ 实时卫星云图（看山头云况）</button></div>
   <div id="aRes"></div>
   <div class="empty" id="aEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🏔️</div><p style="line-height:1.9;">点击地图上的<b>山峰位置</b><br>系统自动分析未来 7 天<br>该山能否拍到日照金山</p></div>
 </div></div></div>
@@ -327,6 +335,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span>⭐</span><span style="font-weight:500;">星空观测条件分析（含光污染）</span></div>
   <div class="mapwrap" style="height:255px;" id="sMW"><canvas class="base" id="sMC"></canvas><div class="mzb-wrap"><button class="mzb" id="sZI">+</button><button class="mzb" id="sZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮</div></div>
+  <div class="ovbar"><button class="ovbtn" id="sOvViirs">🌃 光污染查询 ↗</button><button class="ovbtn" id="sOvSat">🛰️ 实时卫星云图</button></div>
   <div id="sRes"></div>
   <div class="empty" id="sEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌌</div><p style="line-height:1.9;">点击地图选点<br>分析 7 天夜间星空条件</p></div>
 </div></div></div>
@@ -820,6 +829,20 @@ function moonAltitude(date, lat, lon){
   var alt = Math.asin(Math.sin(latR)*Math.sin(decR) + Math.cos(latR)*Math.cos(decR)*Math.cos(HR));
   return alt*180/Math.PI;
 }
+// 月亮高度 + 方位角（地形遮挡补偿用）。方位角 0=正北，顺时针。
+function moonAltAz(date, lat, lon){
+  var pos = moonPosition(date);
+  var JD = date/864e5 + 2440587.5;
+  var GMST = (280.46061837 + 360.98564736629*(JD-2451545.0)) % 360;
+  var LMST = (GMST + lon + 360) % 360;
+  var H = LMST - pos.ra;
+  var latR=lat*Math.PI/180, decR=pos.dec*Math.PI/180, HR=H*Math.PI/180;
+  var alt = Math.asin(Math.sin(latR)*Math.sin(decR) + Math.cos(latR)*Math.cos(decR)*Math.cos(HR));
+  // 方位角（从正北起顺时针）
+  var az = Math.atan2(Math.sin(HR), Math.cos(HR)*Math.sin(latR) - Math.tan(decR)*Math.cos(latR));
+  az = (az*180/Math.PI + 180) % 360; // +180 使 0=正北
+  return {alt: alt*180/Math.PI, az: az};
+}
 // 在"夜晚窗口"范围内寻找月球穿越地平线的时刻
 // ── 修复:原版只扫"当天0-24h",但夜晚窗口是18:00→次日08:00跨日,导致23:30升起、次日6:00落下时,
 //     set 会被漏掉(扫不到次日6:00),isMoonUpAtTime 在次日凌晨判断错误。
@@ -971,6 +994,13 @@ function getPreciseStarrySkyAnalysis(weatherData, astronomicalData){
     // 月亮在地平线下 → 系数恒为1（无论月相多亮都无影响，这是用户要求的自动避让核心）
     // 月亮在地平线上 → 系数随月面亮度线性下降，满月时最低可至0.12（基本看不到银河，但仍保留极少星点可见度）
     var moonDamp = moonUp ? (1 - (moonIllum/100)*0.88) : 1.0;
+    // 🌙 地形遮挡补偿（任务7）：月亮虽在天文地平线上，但若被相机方位的山体挡住，
+    //   月光照不到机位 → 强制无干扰。需 runStar 已 prewarmMoonHorizon（缓存命中才生效）。
+    var moonTerrain = null;
+    if(moonUp){
+      moonTerrain = moonHorizonGateSync(lat, lon, t);
+      if(moonTerrain.blocked){ moonDamp = 1.0; } // 被地形挡住 → 判定为理想暗夜
+    }
     var moonScore = moonDamp * 100; // 仅用于明细展示
 
     // ──────────────────────────────────────────────
@@ -984,12 +1014,7 @@ function getPreciseStarrySkyAnalysis(weatherData, astronomicalData){
     //   > 0°         → 白天，直接 0
     // ──────────────────────────────────────────────
     var sunAlt = solarPos(t, lat, lon).alt;
-    var darkGate;
-    if(sunAlt <= -18) darkGate = 1.0;
-    else if(sunAlt <= -12) darkGate = 1.0 - (sunAlt+18)/6 * 0.65;   // 1.0 → 0.35
-    else if(sunAlt <= -6)  darkGate = 0.35 - (sunAlt+12)/6 * 0.27;  // 0.35 → 0.08
-    else if(sunAlt <= 0)   darkGate = 0.08 - (sunAlt+6)/6 * 0.08;   // 0.08 → 0
-    else darkGate = 0;                                              // 白天
+    var darkGate = starDarkGate(sunAlt); // 共享曲线（与简版 calcStar 同源）
 
     // ──────────────────────────────────────────────
     // 综合小时得分：
@@ -1001,18 +1026,9 @@ function getPreciseStarrySkyAnalysis(weatherData, astronomicalData){
     var hourScore = weatherBase * moonDamp;
     if(rainVeto) hourScore = Math.min(hourScore, 5); // 降水一票否决
 
-    // 波特尔光污染门控：城市再好的天气也看不到银河
+    // 波特尔光污染门控：城市再好的天气也看不到银河（共享曲线）
     var lpForGate = (astronomicalData.lp!=null) ? astronomicalData.lp : 4;
-    var lpGate;
-    if(lpForGate<=1) lpGate=1.00;
-    else if(lpForGate<=2) lpGate=0.96;
-    else if(lpForGate<=3) lpGate=0.90;
-    else if(lpForGate<=4) lpGate=0.85;
-    else if(lpForGate<=5) lpGate=0.72;
-    else if(lpForGate<=6) lpGate=0.55;
-    else if(lpForGate<=7) lpGate=0.28;
-    else if(lpForGate<=8) lpGate=0.12;
-    else lpGate=0.05;
+    var lpGate = starLpGate(lpForGate);
     hourScore = hourScore * lpGate;
     hourScore = hourScore * darkGate; // 天文暗夜门控：天没黑则压低/归零
 
@@ -1022,6 +1038,9 @@ function getPreciseStarrySkyAnalysis(weatherData, astronomicalData){
       time: h.time[i], score: hourScore,
       cloudScore: Math.round(cloudScore), transparencyScore: Math.round(transparencyScore),
       moonScore: Math.round(moonScore), moonUp: moonUp, sunAlt: Math.round(sunAlt*10)/10, darkGate: Math.round(darkGate*100)/100,
+      moonBlocked: (moonTerrain && moonTerrain.blocked) || false,
+      moonTerrainAng: moonTerrain ? moonTerrain.horizonAng : null,
+      moonAltVal: moonTerrain ? moonTerrain.moonAlt : null,
       cLow: cLow, cMid: cMid, cHigh: cHigh, rh: rh, vis: visKm, wind: wind, precip: precip
     });
   }
@@ -1074,11 +1093,15 @@ function getPreciseStarrySkyAnalysis(weatherData, astronomicalData){
   // ──────────────────────────────────────────────
   var report = buildStarReport(hourlyBreakdown, windows, astronomicalData, galacticCoreVisible, galacticCoreNote, overallScore);
 
+  // 🌙 任务7：统计被地形挡月的"重获暗夜"小时（月本在天上但被山挡住 → 无光害）
+  var moonReclaimedHours = hourlyBreakdown.filter(function(x){return x.moonUp && x.moonBlocked && x.darkGate>=0.9;}).length;
+
   return {
     score: overallScore,
     bestWindows: windows,
     report: report,
     galacticCoreVisible: galacticCoreVisible,
+    moonReclaimedHours: moonReclaimedHours,
     hourlyBreakdown: hourlyBreakdown
   };
 }
@@ -1375,9 +1398,55 @@ function buildSunEv(daily){
 
 // ══ 地图引擎 ══
 var TS=256;
+
+// ══════════════════════════════════════════════════════════════════════
+// 🗺️ 地图叠加图层配置（任务3 VIIRS光污染 / 任务4 Himawari卫星云图）
+// ──────────────────────────────────────────────────────────────────────
+// 🛰️ 卫星云图：RainViewer 卫星红外（真·10 分钟级更新，标准 Web Mercator XYZ）
+//   数据目录：https://api.rainviewer.com/public/weather-maps.json
+//     → 返回 { host, satellite:{ infrared:[ {time, path}, ... ] } }
+//   瓦片格式（标准 z/x/y）：{host}{path}/{size}/{z}/{x}/{y}/{color}/{smooth}_{snow}.png
+//   无需 API key，全球覆盖，可叠在现有 OSM 地图上（投影一致，不错位）。
+//   带多帧时间序列 → 可做 2 小时滚动动画。
+// 光污染（VIIRS）仍走按钮跳转 lightpollutionmap.info（见 bindOverlayToggle）。
+// ══════════════════════════════════════════════════════════════════════
+// RainViewer 帧目录缓存：{host, frames:[{time, path}], fetchedAt}
+var RV_DATA=null, RV_FETCHING=null;
+function rainviewerFetchFrames(){
+  // 已有较新缓存（<5分钟）直接用
+  if(RV_DATA && (Date.now()-RV_DATA.fetchedAt < 5*60000)) return Promise.resolve(RV_DATA);
+  if(RV_FETCHING) return RV_FETCHING; // 去重并发
+  RV_FETCHING = fetch('https://api.rainviewer.com/public/weather-maps.json')
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      var host = j.host || 'https://tilecache.rainviewer.com';
+      var inf = (j.satellite && j.satellite.infrared) ? j.satellite.infrared : [];
+      RV_DATA = { host:host, frames:inf, fetchedAt:Date.now() };
+      RV_FETCHING = null;
+      return RV_DATA;
+    })
+    .catch(function(){ RV_FETCHING=null; return null; });
+  return RV_FETCHING;
+}
+var MAP_OVERLAYS={
+  satellite: {
+    label:'🛰️ 卫星云图',
+    // url 用动态帧 path（由 S.ovTime 注入完整 path 字符串），标准 z/x/y。
+    // color=0（IR 默认配色），smooth=1, snow=0。size=256 与基础瓦片一致。
+    url:function(z,x,y,framePath){
+      var host = (RV_DATA && RV_DATA.host) ? RV_DATA.host : 'https://tilecache.rainviewer.com';
+      var path = framePath || (RV_DATA && RV_DATA.frames.length ? RV_DATA.frames[RV_DATA.frames.length-1].path : null);
+      if(!path) return ''; // 还没拉到帧目录
+      return host + path + '/256/' + z + '/' + x + '/' + y + '/0/1_0.png';
+    },
+    maxZoom:7, opacity:0.7, attribution:'RainViewer/卫星红外', timed:true
+  }
+};
+
 function MapEng(baseId, wrapId, onSel, ovCb){
   var cv=document.getElementById(baseId), ctx=cv.getContext('2d');
-  var S={z:9,lat:3.1390,lon:101.6869,tiles:{},drag:false,lx:0,ly:0,moved:false,pd:null,slat:null,slon:null}; // 默认定位：吉隆坡
+  var S={z:9,lat:3.1390,lon:101.6869,tiles:{},drag:false,lx:0,ly:0,moved:false,pd:null,slat:null,slon:null,
+         overlay:null,ovTiles:{},ovTime:null}; // 默认定位：吉隆坡；overlay=叠加图层id|null
   function ll2px(lat,lon){
     var N=1<<S.z;
     var cx=(S.lon+180)/360*N, cy=(1-Math.log(Math.tan(S.lat*Math.PI/180)+1/Math.cos(S.lat*Math.PI/180))/Math.PI)/2*N;
@@ -1435,6 +1504,41 @@ function MapEng(baseId, wrapId, onSel, ovCb){
         if(!usedKeys[allKeys[ki]]) delete S.tiles[allKeys[ki]];
       }
     }
+    // ── 🗺️ 叠加图层（VIIRS 光污染 / Himawari 卫星云图）──
+    if(S.overlay && MAP_OVERLAYS[S.overlay]){
+      var ov=MAP_OVERLAYS[S.overlay];
+      var ovZ=Math.min(S.z, ov.maxZoom||S.z);     // 叠加层有自己的最大缩放
+      var ovN=1<<ovZ;
+      var ratio=(1<<S.z)/ovN;                      // 基础层与叠加层的缩放比（叠加层瓦片更大）
+      var ocx=(S.lon+180)/360*ovN, ocy=(1-Math.log(Math.tan(S.lat*Math.PI/180)+1/Math.cos(S.lat*Math.PI/180))/Math.PI)/2*ovN;
+      var ovTS=TS*ratio;                           // 叠加瓦片在屏幕上的实际像素尺寸
+      var otW=Math.ceil(W/ovTS)+3, otH=Math.ceil(H/ovTS)+3;
+      var osTX=Math.floor(ocx-otW/2), osTY=Math.floor(ocy-otH/2);
+      ctx.save(); ctx.globalAlpha = ov.opacity!=null?ov.opacity:0.6;
+      for(var ox=osTX; ox<=osTX+otW; ox++){
+        for(var oy=osTY; oy<=osTY+otH; oy++){
+          if(oy<0||oy>=ovN) continue;
+          var owx=((ox%ovN)+ovN)%ovN;
+          var okey=S.overlay+':'+ovZ+'/'+owx+'/'+oy+(ov.timed?(':'+S.ovTime):'');
+          var opx=(ox-ocx)*ovTS+W/2, opy=(oy-ocy)*ovTS+H/2;
+          var otile=S.ovTiles[okey];
+          if(otile&&otile.complete&&otile.naturalWidth>0){ ctx.drawImage(otile,opx,opy,ovTS,ovTS); }
+          else if(!otile){
+            (function(k,zz,xx,yy){
+              var img=new Image(); img.crossOrigin='anonymous';
+              img.src=ov.timed ? ov.url(zz,xx,yy,S.ovTime) : ov.url(zz,xx,yy);
+              img.onload=function(){S.ovTiles[k]=img;requestDraw();};
+              img.onerror=function(){delete S.ovTiles[k];}; // 失败删除，允许重试/留空
+              S.ovTiles[k]=img;
+            })(okey,ovZ,owx,oy);
+          }
+        }
+      }
+      ctx.restore();
+      // 叠加层 LRU（上限 200）
+      var ovk=Object.keys(S.ovTiles);
+      if(ovk.length>200){ for(var oi=0;oi<ovk.length&&Object.keys(S.ovTiles).length>200;oi++){ delete S.ovTiles[ovk[oi]]; } }
+    }
     ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(0,H-14,W,14);
     ctx.fillStyle='#777';ctx.font='9px sans-serif';ctx.textAlign='right';
     ctx.fillText('© OpenStreetMap',W-4,H-3);
@@ -1478,6 +1582,25 @@ function MapEng(baseId, wrapId, onSel, ovCb){
     setCenter:function(lat,lon,z){S.lat=lat;S.lon=lon;if(z)S.z=z;S.tiles={};draw();},
     // setSelected: 主动改用户选点标记（搜索定位时用）
     setSelected:function(lat,lon){S.slat=lat;S.slon=lon;draw();},
+    // setOverlay: 切换叠加图层（'satellite'|null）。卫星层先拉 RainViewer 帧目录再绘。
+    setOverlay:function(id){
+      S.overlay = (id && MAP_OVERLAYS[id]) ? id : null;
+      S.ovTiles = {};
+      S.ovTime = null;
+      draw();
+      if(S.overlay==='satellite'){
+        rainviewerFetchFrames().then(function(d){
+          if(d && d.frames.length && S.overlay==='satellite'){
+            S.ovTime = d.frames[d.frames.length-1].path; // 最新一帧
+            S.ovTiles = {};
+            draw();
+          }
+        });
+      }
+    },
+    // setOverlayTime: 卫星动画用——指定帧 path 字符串
+    setOverlayTime:function(framePath){ S.ovTime=framePath; S.ovTiles={}; draw(); },
+    getOverlay:function(){return S.overlay;},
     getS:function(){return S;}
   };
   return api;
@@ -1615,19 +1738,82 @@ function terrainLoad(){
   return TERRAIN_MEM;
 }
 function terrainSave(){
-  try{ localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM||{})); }catch(e){}
+  try{ localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM||{})); }catch(e){
+    // 写入失败（多半是配额超限 QuotaExceededError）→ 立刻 LRU 清理后重试一次
+    try{ terrainLRUEvict(true); localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(TERRAIN_MEM||{})); }catch(e2){}
+  }
 }
 function terrainKey(lat,lon,kind){
   return kind+':'+(+lat).toFixed(3)+','+(+lon).toFixed(3);
 }
-// 读取地形项；命中返回值，未命中返回 undefined
+// ── 缓存项内部统一为 {v:值, _at:最后访问毫秒}。向后兼容旧的"裸值"格式（无 _at）。──
+function terrainUnwrap(item){
+  if(item===undefined) return undefined;
+  return (item && typeof item==='object' && '_at' in item) ? item.v : item; // 旧裸值直接返回
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 🧹 LRU 缓存清理器（localStorage 配额防护）
+// ──────────────────────────────────────────────────────────────────────
+// 策略：terrain 缓存按 _at(最后访问时间) 实现 LRU。当总占用超过 LRU_MAX_BYTES(3MB)，
+//       剔除"最近 30 天内未被访问过"的坐标点 Key；若仍超限，则继续按 _at 从旧到新剔除，
+//       直到回落到 75% 水位。任何地形数据请求执行前都先 checkStorageQuota() 防止白屏。
+// ══════════════════════════════════════════════════════════════════════
+var LRU_MAX_BYTES = 3*1024*1024;          // 3MB 触发清理
+var LRU_TARGET_BYTES = LRU_MAX_BYTES*0.75; // 清到 75% 水位
+var LRU_STALE_MS = 30*24*3600*1000;        // 30 天未访问视为陈旧
+function terrainBytes(){
+  try{ return (localStorage.getItem(TERRAIN_LS_KEY)||'').length*2; }catch(e){ return 0; } // UTF-16 约 2 字节/字符
+}
+// 执行 LRU 剔除。force=true 时即使未超阈值也至少清掉陈旧项（用于写入失败后的急救）。
+function terrainLRUEvict(force){
+  var m=terrainLoad();
+  var now=Date.now();
+  var keys=Object.keys(m);
+  if(!keys.length) return 0;
+  var removed=0;
+  // 第一轮：剔除 30 天内未访问的陈旧项（裸值无 _at → 视为很旧，优先清）
+  keys.forEach(function(k){
+    var it=m[k];
+    var at=(it && typeof it==='object' && '_at' in it) ? it._at : 0;
+    if(now-at > LRU_STALE_MS){ delete m[k]; removed++; }
+  });
+  // 第二轮：若仍超目标水位，按 _at 从旧到新继续剔除
+  if(terrainBytes() > LRU_TARGET_BYTES){
+    var sorted=Object.keys(m).map(function(k){
+      var it=m[k]; var at=(it && typeof it==='object' && '_at' in it)?it._at:0;
+      return {k:k, at:at};
+    }).sort(function(a,b){return a.at-b.at;}); // 最旧在前
+    for(var i=0;i<sorted.length && terrainBytes()>LRU_TARGET_BYTES;i++){
+      delete m[sorted[i].k]; removed++;
+    }
+  }
+  if(removed>0){ try{ localStorage.setItem(TERRAIN_LS_KEY, JSON.stringify(m)); }catch(e){} }
+  return removed;
+}
+// 配额检查：任何地形请求前调用。超过 3MB 即触发 LRU。返回当前是否健康。
+function checkStorageQuota(){
+  if(terrainBytes() > LRU_MAX_BYTES){ terrainLRUEvict(false); }
+  return terrainBytes() <= LRU_MAX_BYTES;
+}
+
+// 读取地形项；命中返回值并刷新 _at（LRU 访问标记），未命中返回 undefined
 function terrainGet(lat,lon,kind){
   var m=terrainLoad(); var k=terrainKey(lat,lon,kind);
-  return m.hasOwnProperty(k)?m[k]:undefined;
+  if(!m.hasOwnProperty(k)) return undefined;
+  var raw=m[k];
+  // 刷新最后访问时间（升级裸值为带时间戳格式）
+  var val=terrainUnwrap(raw);
+  m[k]={v:val, _at:Date.now()};
+  // 访问刷新不立即落盘（避免每次读都写 localStorage），由后续 set 或定期 save 持久化
+  return val;
 }
-// 写入地形项（永久）
+// 写入地形项（带访问时间戳）。写入前先做配额检查。
 function terrainSet(lat,lon,kind,val){
-  var m=terrainLoad(); m[terrainKey(lat,lon,kind)]=val; terrainSave();
+  checkStorageQuota(); // 防止白屏：写入前确保有空间
+  var m=terrainLoad();
+  m[terrainKey(lat,lon,kind)]={v:val, _at:Date.now()};
+  terrainSave();
 }
 // 获取海拔（Promise 版，永久缓存 + 请求去重）。失败返回 null，不写缓存（留待下次重试）。
 function terrainGetElev(lat,lon){
@@ -1726,8 +1912,8 @@ function setGlobalModel(api){
 // 与现有各模块 hourly 串逐字一致（顺序也一致），保证 URL 命中已有缓存。
 var WM_FIELDSETS={
   glow:  'temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,weathercode,dewpoint_2m,visibility,cape',
-  cloud: 'temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,windgusts_10m,weathercode,dewpoint_2m,temperature_850hPa,relativehumidity_850hPa,temperature_700hPa,relativehumidity_700hPa',
-  alps:  'temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility',
+  cloud: 'temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,windgusts_10m,weathercode,dewpoint_2m,surface_pressure,temperature_850hPa,relativehumidity_850hPa,windspeed_850hPa,temperature_700hPa,relativehumidity_700hPa,temperature_500hPa,relativehumidity_500hPa,freezinglevel_height',
+  alps:  'temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,freezinglevel_height',
   star:  'temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,weathercode,dewpoint_2m,visibility'
 };
 // 拼 URL：与现有写法一致（daily=sunrise,sunset & timezone=auto），单点。
@@ -1761,8 +1947,13 @@ function wmNormalizeRows(data, lat, lon){
       cape: f('cape',0),
       t850: f('temperature_850hPa',null),
       rh850: f('relativehumidity_850hPa',null),
+      w850: f('windspeed_850hPa',null),
       t700: f('temperature_700hPa',null),
       rh700: f('relativehumidity_700hPa',null),
+      t500: f('temperature_500hPa',null),
+      rh500: f('relativehumidity_500hPa',null),
+      sp: f('surface_pressure',null),
+      fzl: f('freezinglevel_height',null),
       sol: solarPos(trueUtcDate(ti,utcOff), lat, lon)
     };
   });
@@ -2227,47 +2418,86 @@ function bindTabs(containerId, state, tabDefs){
 //
 // 输入 r 需要：temp, rh（地面温度/湿度，已有）+ 新增 t850, rh850, t700, rh700（来自Open-Meteo气压层数据）
 // 任一气压层数据缺失时做保守降级，不会因为缺数据直接判否，但也不会给"高质量"满分认定。
+// ══════════════════════════════════════════════════════════════════════
+// 🏔️ 动态气压层逆温分析（高海拔修复）
+// ──────────────────────────────────────────────────────────────────────
+// 问题：固定用 850hPa 当逆温基准层，在川西/西藏（海拔>2500m，地表气压常<750hPa）会失效——
+//       此时 850hPa 这个层在"地面以下"，t850-tSurf 比较的是地下虚拟层与地表，物理无意义，
+//       导致整个高原区云海判定全部作废。
+// 方案：用 surface_pressure 动态选择"贴着地面往上数的第一对气压层"做逆温比较：
+//       · sp >= 850         → 低海拔：用 (850hPa, surface) 与 (700,850) —— 原逻辑
+//       · 700 <= sp < 850   → 中海拔(约1500-3000m)：850 已贴地/在地下，改用 (700hPa, surface) 与 (500,700)
+//       · sp < 700          → 高海拔(>3000m，川西/藏区)：700 也贴地，改用 (500hPa, surface)
+// 正常干绝热递减率约 6.5°C/1500m≈ 每层间隔；逆温=上层比"按递减率外推的地面温度"更暖。
+// ══════════════════════════════════════════════════════════════════════
 function analyzeInversionLayer(r){
-  var tSurf=r.temp, t850=r.t850, t700=(r.t700!=null?r.t700:null);
-  var rhSurf=r.rh, rh850=(r.rh850!=null?r.rh850:null), rh700=(r.rh700!=null?r.rh700:null);
+  var tSurf=r.temp, rhSurf=r.rh, sp=(r.sp!=null?r.sp:null);
+  var t850=r.t850, t700=r.t700, t500=(r.t500!=null?r.t500:null);
+  var rh850=(r.rh850!=null?r.rh850:null), rh700=(r.rh700!=null?r.rh700:null), rh500=(r.rh500!=null?r.rh500:null);
 
-  // ① 850hPa逆温强度：t850比地面暖=明确逆温；降幅远小于正常干绝热递减率（~6.5°C/1500m）也算弱逆温
-  var inv850 = (t850!=null) ? (t850-tSurf) : null;
-  var isInversion=false, inversionStrength=0;
-  if(inv850!=null){
-    if(inv850>0){ isInversion=true; inversionStrength=Math.min(1, inv850/6); }
-    else if(inv850>-3){ isInversion=true; inversionStrength=Math.min(0.6, (inv850+3)/3*0.6); }
-    else { isInversion=false; inversionStrength=0; } // 降温幅度接近/超过正常递减率→没有"盖子"，对流可自由发展
+  // ── 动态选层：capLayer=逆温"盖子"层（贴地上方第一层），upperLayer=更高层（验证盖子厚度/高层干燥）──
+  var capT, capRh, upperT, upperRh, capName, layerGapC;
+  // layerGapC：cap 层与地面的标准海拔间隔对应的"正常递减温降"，用于判断是否逆温
+  if(sp==null || sp>=850){
+    // 低海拔：盖子=850hPa(≈1500m)，上层=700hPa
+    capT=t850; capRh=rh850; upperT=t700; upperRh=rh700; capName='850hPa'; layerGapC=9.75; // 1500m×6.5/1000
+  } else if(sp>=700){
+    // 中海拔(约1500-3000m)：盖子=700hPa(≈3000m)，上层=500hPa
+    capT=t700; capRh=rh700; upperT=t500; upperRh=rh500; capName='700hPa'; layerGapC=null; // 高差不定，用宽松判据
   } else {
-    inversionStrength=0.3; isInversion=null; // 无850hPa数据：给中性值，既不否决也不加成
+    // 高海拔(>3000m，川西/藏区)：盖子=500hPa(≈5500m)，上层无（已到对流层中部）
+    capT=t500; capRh=rh500; upperT=null; upperRh=null; capName='500hPa'; layerGapC=null;
   }
-  // ② 逆温延伸到700hPa：说明盖子够厚实，不会一吹风就破，给强度小幅加成
-  if(isInversion===true && t700!=null && t850!=null && (t700-t850)>=-2){
+
+  // ① 逆温强度：盖子层温度 vs 地面温度。
+  //   低海拔有明确层间距 → 用"实际温差相对正常递减温降的偏离"判定（更严谨）。
+  //   中/高海拔层间距大且不定 → 退化为"盖子层是否明显比地面暖/降温很缓"的宽松判据。
+  var isInversion=false, inversionStrength=0;
+  if(capT!=null && tSurf!=null){
+    var dT = capT - tSurf; // 盖子比地面暖多少（正=强逆温信号）
+    if(layerGapC!=null){
+      // 低海拔严谨版：dT > -layerGapC 表示降温比正常递减慢（有盖子）；dT>0 为强逆温
+      if(dT>0){ isInversion=true; inversionStrength=Math.min(1, dT/6); }
+      else if(dT > -3){ isInversion=true; inversionStrength=Math.min(0.6,(dT+3)/3*0.6); }
+      else { isInversion=false; inversionStrength=0; }
+    } else {
+      // 中/高海拔宽松版：层间距大，按"是否接近等温或逆温"判（盖子层降温越缓越像有盖子）
+      if(dT > -2){ isInversion=true; inversionStrength=Math.min(1, (dT+2)/8); }
+      else if(dT > -8){ isInversion=true; inversionStrength=Math.min(0.5,(dT+8)/6*0.5); }
+      else { isInversion=false; inversionStrength=0; }
+    }
+  } else {
+    inversionStrength=0.3; isInversion=null; // 对应层数据缺失：中性
+  }
+  // 盖子延伸到更高层（仅低/中海拔有 upperLayer）→ 盖子厚实，小幅加成
+  if(isInversion===true && upperT!=null && capT!=null && (upperT-capT)>=-2){
     inversionStrength=Math.min(1, inversionStrength+0.15);
   }
 
-  // ③ 低层（地面~850hPa）是否够湿——云海本体的"原料"
+  // ③ 低层是否够湿——云海本体的"原料"（地面湿度为主，盖子层湿度辅助验证）
   var lowHumid = (rhSurf!=null) ? rhSurf>=80 : null;
-  if(lowHumid!==false && rh850!=null) lowHumid = rh850>=70; // 850hPa湿度作进一步验证（若地面数据缺失则单独以此判断）
+  if(lowHumid!==false && capRh!=null) lowHumid = capRh>=70;
 
-  // ④ 高层（700hPa）是否够干——保证云海"之上"是晴空，而非整层都湿的阴天
-  var highDry = (rh700!=null) ? rh700<=55 : null;
+  // ④ 高层是否够干——保证云海"之上"是晴空。用比盖子更高的层；高海拔无更高层时用盖子层自身。
+  var dryRh = (upperRh!=null) ? upperRh : capRh;
+  var highDry = (dryRh!=null) ? dryRh<=55 : null;
 
-  var humidityGap = (rhSurf!=null && rh700!=null) ? (rhSurf-rh700) : null;
+  var humidityGap = (rhSurf!=null && dryRh!=null) ? (rhSurf-dryRh) : null;
 
-  // ⑤ 综合判定："高质量云海"必须 逆温 + 低层高湿 + 高层干燥 三者同时成立（数据缺失的项不参与否决，但也不参与加分）
   var isHighQuality = (isInversion===true)
     && (lowHumid!==false)
     && (highDry!==false)
-    && (humidityGap==null || humidityGap>=15); // 上下湿度差≥15%才算"分层鲜明"
+    && (humidityGap==null || humidityGap>=15);
 
   return {
     isInversion: isInversion, inversionStrength: Math.round(inversionStrength*100)/100,
     lowHumid: lowHumid, highDry: highDry, humidityGap: humidityGap, isHighQuality: isHighQuality,
-    detail: isHighQuality ? '强逆温 + 低层高湿 + 高层干燥，上下分层鲜明，云海质量极佳'
+    capLayer: capName, surfacePressure: sp,
+    detail: (capName!=='850hPa' ? '【'+capName+'基准·高海拔动态选层】' : '')
+      + (isHighQuality ? '强逆温 + 低层高湿 + 高层干燥，上下分层鲜明，云海质量极佳'
       : isInversion===true ? '存在逆温，但湿度分层条件未完全满足（可能整层偏湿或偏干），云海质量普通'
       : isInversion===false ? '无明显逆温层，云层易被对流打散，难以堆积成稳定云海'
-      : '气压层数据不足，逆温强度按中性值估算'
+      : '气压层数据不足，逆温强度按中性值估算')
   };
 }
 
@@ -2335,12 +2565,16 @@ function calcCloud(r, elev){
   else eF=0.60;
 
   // 7. 时段系数（凌晨-清晨最佳）
+  // ── 修复：原 else-if 链区间重叠（h2>=22||h2<=11 几乎覆盖全天），
+  //    导致 12-21 点之外全拿 0.6、时段筛选名存实亡。改为互斥分段。──
   var h2=new Date(r.time).getHours();
   var tF;
-  if(h2>=4&&h2<=7) tF=1.0;   // 黄金时段：日出前后
-  else if(h2>=3&&h2<=9) tF=0.85;
-  else if(h2>=22||h2<=11) tF=0.6;
-  else tF=0.3; // 白天较少
+  if(h2>=4 && h2<=7) tF=1.0;           // 黄金时段：日出前后，逆温/辐射雾最盛
+  else if(h2>=3 && h2<=9) tF=0.85;     // 次优：凌晨末段~上午初
+  else if(h2>=22 || h2<=2) tF=0.6;     // 后半夜：雾层积累中
+  else if(h2>=10 && h2<=11) tF=0.5;    // 上午中段：雾渐消散
+  else if(h2>=18 && h2<=21) tF=0.45;   // 傍晚：偶有平流雾/谷雾起势
+  else tF=0.25;                        // 正午前后(12-17)：对流旺盛，云海最少
 
   // 8. 无降水（下雨时不是云海是雨幕）
   var noRain=r.precip<0.1?1:r.precip<0.5?0.6:r.precip<2?0.2:0;
@@ -2367,11 +2601,47 @@ function calcCloud(r, elev){
   // 之前低湿场景仍能靠时段系数+海拔基底拿到 ~22 分，虽不算高但仍是噪音。这里乘法强压。
   if(r.rh<55) qualityMult *= 0.15;
   else if(r.rh<65) qualityMult *= 0.40;
+  // ── 高空风(850hPa)惩罚 ──
+  // 物理：即使地表静风，850hPa(约1500m，恰在云海顶面附近)若强风，会把刚堆起的云海层
+  //      横向撕散/翻滚，无法形成平整云海。地表风速反映不了这个高度的实际情况。
+  //      w850 单位 km/h；15m/s=54km/h 为阈值，超过则削减约40%（按用户规格）。
+  var w850kmh = (r.w850!=null) ? r.w850 : null;
+  if(w850kmh!=null){
+    if(w850kmh > 54) qualityMult *= 0.60;            // >15m/s：强削40%
+    else if(w850kmh > 40) qualityMult *= 0.60 + (54-w850kmh)/14*0.30; // 40-54km/h(11-15m/s)：0.6→0.9 过渡
+    else if(w850kmh > 28) qualityMult *= 0.90 + (40-w850kmh)/12*0.10; // 28-40km/h：0.9→1.0 轻微
+  }
   var score = Math.round(Math.min(98, Math.max(0, base*qualityMult)));
   r.inversion = invAnalysis; // 挂载到行对象上，供页面展示"逆温/温湿差"判定细节
   return score;
 }
 function lclH(temp,dew){return Math.max(0,Math.round((temp-dew)*125));}
+
+// ══════════════════════════════════════════════════════════════════════
+// 🎯 光线条件阈值校验（极佳日照金山/火烧云专用提示）
+// ──────────────────────────────────────────────────────────────────────
+// 当某窗口评为"极佳"时，进一步校验是否同时命中"浓郁色彩"的窄带条件：
+//   ① 能见度 15-45km：太通透(>45km)反而大气散射少、色彩单调；太低(<15km)发灰。
+//      15-45km 是气溶胶适中、瑞利散射充分、色彩最浓郁的甜区。
+//   ② 高云 10-40%：有足够卷云/高积云当染色画布，又不至于厚到压暗。
+// 命中则返回提示文案（前端弹长焦建议），否则返回 null。
+// ══════════════════════════════════════════════════════════════════════
+function checkGoldenLightThreshold(r, score, threshold){
+  if(score < (threshold||65)) return null;
+  var visKm = (r.vis!=null) ? r.vis/1000 : null;
+  var ch = (r.cHigh!=null) ? r.cHigh : null;
+  if(visKm==null || ch==null) return null;
+  var visOK = visKm>=15 && visKm<=45;
+  var chOK = ch>=10 && ch<=40;
+  if(visOK && chOK){
+    return {
+      hit:true,
+      text:'大气通透度及云层结构极其适合拍摄浓郁色彩，建议携带长焦镜头、提前 30 分钟抵达机位。',
+      detail:'能见度 '+Math.round(visKm)+'km（甜区 15-45km）· 高云 '+Math.round(ch)+'%（甜区 10-40%）'
+    };
+  }
+  return null;
+}
 
 // ══════════════════════════════════════════
 // 🔥 CloudSea Fire Sky Index v5 — 东南亚/亚洲模块化版
@@ -2460,7 +2730,12 @@ function computeGlowComponents(r, minFromSun, isSunrise, prevRainBonus, lat){
   var highScore = ch<10?20 : ch<20?50 : ch<=30?80 : ch<=60?100 : ch<=80?80 : 40;
   var midScore  = cm<10?30 : cm<=35?100 : cm<=60?70 : cm<=80?40 : 10;
   var lowScore  = cl<=20?100 : cl<=40?70 : cl<=60?30 : 0;
-  var cloudScore = highScore*0.50 + midScore*0.25 + lowScore*0.25;
+  // ── 修复：低云双重惩罚 ──
+  // 低云的"遮挡地平线进光"职责已由文末 applyHorizonLowCloudVeto 全权负责（乘法否决）。
+  // 这里 cloudScore 内若再给低云 0.25 高权重，等于同一个低云被罚两遍 → 系统性偏低、
+  // "低云30%左右"的真实可拍场景被过度压分。故把低云在 cloudScore 内降为辅助权重(0.10)，
+  // 高/中云画布权重相应补足，地平线进光的强约束交给 horizonVeto 单点负责。
+  var cloudScore = highScore*0.58 + midScore*0.32 + lowScore*0.10;
 
   // ══ 2. Sun Geometry Score (20%)：太阳仰角窗口 + 太阳方向云层修正 ══
   var elev = (r.sol && r.sol.alt!=null) ? r.sol.alt : null;
@@ -2739,89 +3014,91 @@ function buildGlowV2Sample(r, lat, lon, country, actualResult){
 // 3-4: 乡村 银河清晰
 // 5-6: 郊区 银河隐约
 // 7-9: 城市 银河几乎不可见
+// ── 星空门控曲线（简版/精版唯一真源）──────────────────────────────
+// 此前简版 calcStar 与精版 getPreciseStarrySkyAnalysis 各写了一套 darkGate / lpGate，
+// 曲线不一致（例：-12° 简版给 0.5、精版给 0.35），导致同一天首页与详情页分数打架。
+// 现把两条曲线抽成共享函数，简版与精版都引用，确保口径单一、永不再分叉。
+function starDarkGate(sunAlt){
+  // 天文暗夜门控：太阳高度角决定天黑程度
+  if(sunAlt==null) return null;                                 // 调用方需回退
+  if(sunAlt <= -18) return 1.0;                                 // 天文暗夜
+  if(sunAlt <= -12) return 1.0 - (sunAlt+18)/6*0.65;            // 天文暮光 1.0→0.35
+  if(sunAlt <= -6)  return 0.35 - (sunAlt+12)/6*0.27;           // 航海暮光 0.35→0.08
+  if(sunAlt <= 0)   return 0.08 - (sunAlt+6)/6*0.08;            // 民用暮光 0.08→0
+  return 0;                                                     // 白天
+}
+function starLpGate(lp){
+  // 波特尔光污染门控（乘法）：城市再好的天也看不到银河
+  if(lp<=1) return 1.00;
+  if(lp<=2) return 0.96;
+  if(lp<=3) return 0.90;
+  if(lp<=4) return 0.85;
+  if(lp<=5) return 0.72;
+  if(lp<=6) return 0.55;
+  if(lp<=7) return 0.28;
+  if(lp<=8) return 0.12;
+  return 0.05;
+}
+// 云况得分（0..1）：与精版口径一致——低/中云幂函数(凸)放大小云量影响，高云轻惩罚。
+// 优先用分层云量(cLow/cMid/cHigh)，缺失时回退总云量近似拆分，保证两版结果可比。
+function starCloudScore01(r){
+  var cLow = r.cLow!=null ? r.cLow : (r.cloud!=null?r.cloud*0.4:0);
+  var cMid = r.cMid!=null ? r.cMid : (r.cloud!=null?r.cloud*0.3:0);
+  var cHigh= r.cHigh!=null? r.cHigh: (r.cloud!=null?r.cloud*0.3:0);
+  var lowMidRaw = Math.max(cLow, cMid)/100;
+  var lowMidPenalty = Math.pow(lowMidRaw, 0.45)*0.6; // 与精版一致
+  var highPenalty = (cHigh/100)*0.2;
+  var blockage = Math.min(1, lowMidPenalty + highPenalty);
+  var sc = 1 - blockage;
+  if(cLow>55 || cMid>55) sc = Math.min(sc, 0.08); // 低/中云单层>55% 一票否决
+  return Math.max(0, sc);
+}
+
 function calcStar(r, moonPh, lp, sunAlt){
-  // ── 暗夜门控：用真实太阳高度角判断天黑没黑（取代原来粗糙的"整点钟点"判断）──
-  // 之前用 getHours() 判断 20-5 点为夜晚，但高纬度/夏季凌晨4-5点太阳可能已升起、天大亮，
-  // 却仍被当作夜晚给高分 → "建议早上拍星空"的 bug 根源。改用太阳高度精确把关。
-  var darkF;
-  if(sunAlt==null){
-    // 没传太阳高度时退回旧的钟点逻辑（防御性兼容）
+  // ── 暗夜门控（共享曲线）：天没黑则压低/归零 ──
+  var darkF = starDarkGate(sunAlt);
+  if(darkF==null){
+    // 没传太阳高度时退回钟点逻辑（防御性兼容）
     var h2=new Date(r.time).getHours();
     if(h2>=22||h2<=3) darkF=1.0;
     else if(h2>=20||h2<=5) darkF=0.7;
     else return 0;
-  } else {
-    if(sunAlt <= -18) darkF = 1.0;                              // 天文暗夜
-    else if(sunAlt <= -12) darkF = 1.0 - (sunAlt+18)/6*0.5;     // 天文暮光 1.0→0.5
-    else if(sunAlt <= -6)  darkF = 0.5 - (sunAlt+12)/6*0.42;    // 航海暮光 0.5→0.08
-    else if(sunAlt <= 0)   darkF = 0.08 - (sunAlt+6)/6*0.08;    // 民用暮光 0.08→0
-    else return 0;                                             // 白天直接0
   }
+  if(darkF<=0) return 0;
 
-  // 云量（最关键）
-  var cloudSc;
-  if(r.cloud<=8) cloudSc=1.0;
-  else if(r.cloud<=20) cloudSc=1-(r.cloud-8)/12*0.25;
-  else if(r.cloud<=45) cloudSc=0.75-(r.cloud-20)/25*0.45;
-  else if(r.cloud<=75) cloudSc=0.30-(r.cloud-45)/30*0.28;
-  else cloudSc=0.02;
+  // 云况（与精版同口径：低/中云幂函数 + 高云轻惩罚）
+  var cloudSc = starCloudScore01(r);
 
-  // 光污染（波特尔1-9级）
-  // 城市（7-9级）银河几乎不可见，再好的天气也无济于事
-  var lpSc;
-  if(lp<=1) lpSc=1.00;
-  else if(lp<=2) lpSc=0.92;
-  else if(lp<=3) lpSc=0.80;
-  else if(lp<=4) lpSc=0.65;
-  else if(lp<=5) lpSc=0.48;
-  else if(lp<=6) lpSc=0.32;
-  else if(lp<=7) lpSc=0.18;
-  else if(lp<=8) lpSc=0.08;
-  else lpSc=0.03; // 市中心：即使天气完美也几乎看不到银河
-
-  // 月相（月亮亮度影响）
+  // 月相（月亮亮度影响）—— 简版无逐时月出月落，按月面亮度整体折算
   var ill=moonIll(moonPh);
-  var moonSc;
-  if(ill<=5) moonSc=1.0;   // 新月：完美
-  else if(ill<=20) moonSc=0.85;
-  else if(ill<=40) moonSc=0.65;
-  else if(ill<=60) moonSc=0.42;
-  else if(ill<=80) moonSc=0.22;
-  else moonSc=0.08; // 满月：严重影响
+  var moonDamp;
+  if(ill<=5) moonDamp=1.0;
+  else if(ill<=20) moonDamp=0.85;
+  else if(ill<=40) moonDamp=0.65;
+  else if(ill<=60) moonDamp=0.42;
+  else if(ill<=80) moonDamp=0.22;
+  else moonDamp=0.08;
 
-  // 湿度（影响大气折射率和透明度）
-  var rhSc=r.rh<50?1:r.rh<70?1-(r.rh-50)/20*0.3:r.rh<88?0.7-(r.rh-70)/18*0.5:0.08;
+  // 视宁度/透明度：湿度高扣分（与精版 transparency 同向）
+  var rh = r.rh!=null?r.rh:50;
+  var transparency = rh>85 ? (1-(rh-85)/15*0.6) : (rh>70 ? 1-(rh-70)/15*0.15 : 1);
+  transparency = Math.max(0.1, transparency);
+  var visKm = r.vis!=null ? r.vis/1000 : null;
+  if(visKm!=null && visKm<10) transparency = Math.min(transparency, 0.15); // 能见度否决
 
-  // 风速
-  var windSc=r.wind<25?1:r.wind<45?1-(r.wind-25)/20*0.35:0.5;
+  // 风速（长曝稳定性）
+  var windPenalty = (r.wind!=null && r.wind>35) ? Math.min(0.3,(r.wind-35)/40) : 0;
 
-  // 无降水
-  var noRain=r.precip<0.1?1:r.precip<0.5?0.45:0;
+  // 降水一票否决
+  var rainVeto = (r.precip!=null && r.precip>0.3);
 
-  // 重写权重：去掉 lpSc 的加权和（占比不够），改用乘法门控
-  // 物理事实：波特尔 ≥ 7 级（亮郊区/城市/市中心）银河肉眼几乎或完全看不到
-  // 不管天气多好，光污染是硬限制
-  var rawWeather = cloudSc*0.50 + moonSc*0.22 + rhSc*0.13 + windSc*0.075 + noRain*0.075;
-  // 光污染门控（乘法）：
-  //  lp=1 → 1.00（极暗天）
-  //  lp=4 → 0.85（乡村-郊区）
-  //  lp=6 → 0.55（亮郊区）
-  //  lp=7 → 0.28（城郊过渡）—— 银河仅核心隐约可见
-  //  lp=8 → 0.12（城市天空）—— 银河基本不可见
-  //  lp=9 → 0.05（市中心）—— 银河完全不可见
-  var lpGate;
-  if(lp<=1) lpGate=1.00;
-  else if(lp<=2) lpGate=0.96;
-  else if(lp<=3) lpGate=0.90;
-  else if(lp<=4) lpGate=0.85;
-  else if(lp<=5) lpGate=0.72;
-  else if(lp<=6) lpGate=0.55;
-  else if(lp<=7) lpGate=0.28;
-  else if(lp<=8) lpGate=0.12;
-  else lpGate=0.05;
-
-  var raw = rawWeather * lpGate;
-  return Math.round(Math.min(99,Math.max(0, raw*darkF*100)));
+  // ── 综合（与精版同结构）：weatherBase = 云0.65 + 透明0.25 + 风0.10，
+  //    再乘 月光(moonDamp) × 光污染(lpGate) × 暗夜(darkF) ──
+  var weatherBase = cloudSc*0.65 + transparency*0.25 + (1-windPenalty)*0.10;
+  var raw = weatherBase * moonDamp * starLpGate(lp) * darkF;
+  var score = Math.round(Math.min(99, Math.max(0, raw*100)));
+  if(rainVeto) score = Math.min(score, 5);
+  return score;
 }
 
 // ══════════════════════════════════════════
@@ -2894,7 +3171,20 @@ function calcAlps(r, peakElevM, viewerElevM, peakBearingDeg){
   if(cLow >= 15) cloudSc *= Math.max(0.25, 1 - (cLow-15)/55*0.75);  // 15%→1.0 衰减到 70%→0.25
   if(cMid >= 20) cloudSc *= Math.max(0.3,  1 - (cMid-20)/50*0.7);
 
-  var visSc = (r.vis!==null && r.vis!==undefined) ? (r.vis/1000>=20?1:r.vis/1000>=12?0.5:0.1) : (cLow<10?1:0.5);
+  // ── 修复：能见度断崖 ──
+  // 原为硬阶梯(≥20→1, ≥12→0.5, 否则0.1)，12→11km 直接腰斩，会误杀 10-15km 下
+  // 实际能拍到的日照金山。改为分段线性，平滑过渡。
+  var visSc;
+  if(r.vis!==null && r.vis!==undefined){
+    var visKmA = r.vis/1000;
+    if(visKmA>=25) visSc=1.0;
+    else if(visKmA>=15) visSc=0.75+(visKmA-15)/10*0.25;  // 15→25km: 0.75→1.0
+    else if(visKmA>=8)  visSc=0.35+(visKmA-8)/7*0.40;    // 8→15km:  0.35→0.75
+    else if(visKmA>=4)  visSc=0.1+(visKmA-4)/4*0.25;     // 4→8km:   0.10→0.35
+    else visSc=0.1;
+  } else {
+    visSc = (cLow<10?1:0.5);
+  }
   var noRain = r.precip < 0.1 ? 1 : 0;
 
   // ── 总分重构 ──
@@ -2911,8 +3201,39 @@ function calcAlps(r, peakElevM, viewerElevM, peakBearingDeg){
   return Math.round(Math.min(100, Math.max(0, raw*100)));
 }
 
-// ══════════════════════════════════════════
-// 🧭 大圆航向角（Great-Circle Initial Bearing）——日照金山方位预警专用
+// ══════════════════════════════════════════════════════════════════════
+// ❄️ 雪线分析（0°C 等温线高度 / Freezing Level）—— 日照金山雪况预报
+// ──────────────────────────────────────────────────────────────────────
+// 摄影意义：日照金山的"金"靠的是积雪反射低角度阳光。决定峰顶是雪是石的关键，
+// 是 0°C 等温线高度(freezing level)相对峰顶海拔的位置：
+//   · 0°C 层 明显低于峰顶 → 峰顶在冰点以下，若有降水则补雪，雪线下压 → 雪况好，金山饱满
+//   · 0°C 层 接近/高于峰顶 → 峰顶在 0°C 以上，降水为雨，旧雪消融，雪线退缩 → 山头变黑石
+// fzl 为 Open-Meteo freezinglevel_height(米，海平面起算)；peakElevM 为峰顶海拔。
+// ══════════════════════════════════════════════════════════════════════
+function analyzeSnowLine(fzl, peakElevM, precip){
+  if(fzl==null || peakElevM==null) return null;
+  var margin = peakElevM - fzl; // 峰顶高出 0°C 层多少米（正=峰顶在冰点下，利于积雪）
+  var hasPrecip = (precip!=null && precip>=0.1);
+  var status, label, color, advice;
+  if(margin >= 600){
+    status='snow_solid'; label='雪线稳固'; color='#bfe3ff';
+    advice = hasPrecip ? '0°C 层远低于峰顶，当前降水在峰顶为降雪，正在补充新雪——金山雪况极佳'
+                       : '0°C 层远低于峰顶，峰顶稳定积雪，金山可呈饱满金红';
+  } else if(margin >= 100){
+    status='snow_ok'; label='峰顶在冰点下'; color='#9fd8ff';
+    advice = hasPrecip ? '0°C 层略低于峰顶，降水在峰顶多为雪/雨夹雪，雪况尚可'
+                       : '0°C 层略低于峰顶，峰顶维持积雪，金山效果正常';
+  } else if(margin >= -200){
+    status='melting'; label='雪线临界'; color='#f5c842';
+    advice = '0°C 层贴近峰顶，峰顶处于消融临界——向阳面可能露出岩石，金山效果打折，建议关注实时雪况';
+  } else {
+    status='bare'; label='雪线退缩·恐为黑石'; color='#e8734a';
+    advice = hasPrecip ? '0°C 层高于峰顶，当前降水在峰顶为降雨，会加速消融，山头大概率是黑石而非金山'
+                       : '0°C 层高于峰顶，旧雪消融、雪线退缩，峰顶恐为裸露黑石，拍不到经典金山';
+  }
+  return {fzl:Math.round(fzl), peakElev:Math.round(peakElevM), margin:Math.round(margin),
+          status:status, label:label, color:color, advice:advice, hasPrecip:hasPrecip};
+}
 // ══════════════════════════════════════════
 // 用途：拍摄点A → 山峰点B 的绝对方位角，用来替代"站在山下用指南针量"这种容易手抖出错的人工测量，
 // 算出来后再跟当天太阳实际方位角比对，判断光线是否真的会"正面"照到山峰朝向观拍点的这一侧。
@@ -3062,6 +3383,66 @@ function terrainHorizonEngine(lat, lon, dailyEv, utcOff){
       });
   });
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// 🌙 月光地形遮挡引擎（地理高度补偿）—— 任务7
+// ──────────────────────────────────────────────────────────────────────
+// 物理：单纯按"月落时间"判断月光干扰会漏掉一种常见情形——月亮虽在天文地平线以上，
+//       但被相机方位指向的山体挡住，月光照不到机位，此时实际无光害。
+// 方案：沿"月亮方位角"用 thScanBearing 求该方向地形遮挡角(horizon angle)。
+//       当 月亮高度 < 地形遮挡角 → 月被山挡 → 月光干扰系数置零（判定为理想暗夜）。
+// 性能：地形采样昂贵，故按"观测点 + 方位角 30° 桶"缓存遮挡角；一夜内月亮方位变化有限，
+//       命中桶则零请求。整桶结果也落 terrain 永久缓存(kind='moonhorizon:桶')。
+// 用法：异步预热 prewarmMoonHorizon(lat,lon, 夜间若干时刻) 填充缓存，
+//       之后逐时用同步的 moonHorizonGateSync(lat,lon,date) 查询（命中缓存即得）。
+// ══════════════════════════════════════════════════════════════════════
+var MOONHZ_MEM={}; // { "lat,lon|bucket": angleDeg }
+function moonHzBucket(az){ return Math.round(((az%360)+360)%360 / 30) % 12; } // 0..11，每桶30°
+function moonHzKey(lat,lon,bucket){ return (+lat).toFixed(3)+','+(+lon).toFixed(3)+'|'+bucket; }
+// 取某方位角桶的地形遮挡角（Promise）。三级缓存：内存 → terrain 永久 → 实采。
+function getMoonHorizonAngle(lat, lon, az){
+  var bucket=moonHzBucket(az), memK=moonHzKey(lat,lon,bucket);
+  if(MOONHZ_MEM[memK]!=null) return Promise.resolve(MOONHZ_MEM[memK]);
+  var persisted=terrainGet(lat,lon,'moonhz:'+bucket);
+  if(persisted!=null && persisted.ang!=null){ MOONHZ_MEM[memK]=persisted.ang; return Promise.resolve(persisted.ang); }
+  var bearingCenter=bucket*30; // 桶中心方位
+  return terrainGetElev(lat,lon).then(function(obsElev){
+    obsElev=obsElev!=null?obsElev:0;
+    return thScanBearing(lat,lon,obsElev,bearingCenter).then(function(ang){
+      MOONHZ_MEM[memK]=ang;
+      terrainSet(lat,lon,'moonhz:'+bucket,{ang:ang});
+      return ang;
+    });
+  }).catch(function(){ return 0; });
+}
+// 预热：对一组夜间时刻，把月亮所在方位桶的遮挡角全部采样进缓存。返回 Promise。
+function prewarmMoonHorizon(lat, lon, times){
+  var buckets={};
+  times.forEach(function(t){
+    var ma=moonAltAz(t, lat, lon);
+    if(ma.alt>-2) buckets[moonHzBucket(ma.az)]=ma.az; // 只关心月亮在/接近地平线之上的方位
+  });
+  var azList=Object.keys(buckets).map(function(b){return buckets[b];});
+  if(!azList.length) return Promise.resolve();
+  return Promise.all(azList.map(function(az){ return getMoonHorizonAngle(lat,lon,az); })).then(function(){});
+}
+// 同步查询：月亮此刻是否被地形挡住（需先 prewarm，否则缓存未命中返回 false 不误判）。
+// 返回 {blocked:bool, moonAlt, horizonAng, az}
+function moonHorizonGateSync(lat, lon, date){
+  var ma=moonAltAz(date, lat, lon);
+  var bucket=moonHzBucket(ma.az), memK=moonHzKey(lat,lon,bucket);
+  var ang=MOONHZ_MEM[memK];
+  if(ang==null){
+    var p=terrainGet(lat,lon,'moonhz:'+bucket);
+    ang=(p&&p.ang!=null)?p.ang:null;
+    if(ang!=null) MOONHZ_MEM[memK]=ang;
+  }
+  if(ang==null) return {blocked:false, moonAlt:ma.alt, horizonAng:null, az:ma.az}; // 无地形数据：不补偿（保守）
+  // 月亮高度低于该方位地形遮挡角 → 被山挡住 → 月光照不到机位
+  var blocked = (ma.alt < ang);
+  return {blocked:blocked, moonAlt:Math.round(ma.alt*10)/10, horizonAng:Math.round(ang*10)/10, az:Math.round(ma.az)};
+}
+
 // 展示卡 HTML（火烧云/日照金山共用）
 function terrainHorizonCardHTML(th){
   function delayTxt(min, kind){
@@ -3132,6 +3513,79 @@ document.querySelectorAll('.lp-preset').forEach(function(btn){
   });
 });
 
+// ══════════════════════════════════════════════════════════════════════
+// 🗺️ 地图叠加图层 UI 绑定
+// ──────────────────────────────────────────────────────────────────────
+// · 卫星云图（RainViewer 卫星红外，真·10分钟级）：点按钮在地图叠加，并自动滚动播放
+//   过去约 2 小时的多帧动画（云怎么移动一目了然）。
+// · 光污染：点按钮跳转 lightpollutionmap.info 并定位到当前坐标（权威底图，100% 可用）。
+// ══════════════════════════════════════════════════════════════════════
+var SAT_ANIM={}; // 每个地图一个动画状态 {timer, idx}
+function stopSatAnim(mapKey){
+  if(SAT_ANIM[mapKey] && SAT_ANIM[mapKey].timer){ clearInterval(SAT_ANIM[mapKey].timer); }
+  SAT_ANIM[mapKey]=null;
+}
+function fmtFrameTime(unixSec){
+  var d=new Date(unixSec*1000);
+  function p(n){return (n<10?'0':'')+n;}
+  return p(d.getHours())+':'+p(d.getMinutes()); // 本地时间 HH:MM
+}
+function startSatAnim(mapKey, mapApi, hintEl){
+  stopSatAnim(mapKey);
+  rainviewerFetchFrames().then(function(d){
+    if(!d || !d.frames.length || mapApi.getOverlay()!=='satellite') return;
+    var frames=d.frames;            // 从旧到新
+    var st={idx:frames.length-1, timer:null};
+    function show(){
+      var fr=frames[st.idx];
+      mapApi.setOverlayTime(fr.path);
+      if(hintEl) hintEl.innerHTML='🛰️ 卫星云图 '+fmtFrameTime(fr.time)+' · 共'+frames.length+'帧滚动 · © RainViewer';
+    }
+    show();
+    st.timer=setInterval(function(){
+      st.idx=(st.idx+1)%frames.length; // 循环播放
+      show();
+    }, 700); // 每 0.7s 一帧
+    SAT_ANIM[mapKey]=st;
+  });
+}
+function bindOverlayToggle(mapKey, mapApi, wrapId, satBtnId, viirsBtnId){
+  var hintEl=document.querySelector('#'+wrapId+' .mhint');
+  var defaultHint = hintEl ? hintEl.innerHTML : '';
+  function setActive(btnId, on){
+    var b=document.getElementById(btnId); if(!b) return;
+    if(on) b.classList.add('on'); else b.classList.remove('on');
+  }
+  // 卫星层开关（开启后滚动播放动画）
+  if(satBtnId){
+    var sb=document.getElementById(satBtnId);
+    if(sb) sb.addEventListener('click', function(){
+      var cur=mapApi.getOverlay();
+      if(cur==='satellite'){
+        stopSatAnim(mapKey);
+        mapApi.setOverlay(null);
+        setActive(satBtnId,false);
+        if(hintEl) hintEl.innerHTML=defaultHint;
+      } else {
+        mapApi.setOverlay('satellite');
+        setActive(satBtnId,true);
+        if(hintEl) hintEl.innerHTML='🛰️ 正在加载卫星云图…';
+        startSatAnim(mapKey, mapApi, hintEl);
+      }
+    });
+  }
+  // 光污染：跳转外部权威地图（定位到当前坐标）
+  if(viirsBtnId){
+    var vb=document.getElementById(viirsBtnId);
+    if(vb) vb.addEventListener('click', function(){
+      var S=mapApi.getS();
+      var lat=(S.slat!=null?S.slat:S.lat), lon=(S.slon!=null?S.slon:S.lon);
+      var url='https://www.lightpollutionmap.info/#zoom=11&lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&layers=B0FFFFFFTFFFFFFFFFFFF';
+      window.open(url, '_blank');
+    });
+  }
+}
+
 // ══════════════
 // 云海页面
 // ══════════════
@@ -3159,6 +3613,7 @@ var cMap=MapEng('cMC','cMW',function(lat,lon){
   var b=document.getElementById('cBNR');b.style.display='block';b.textContent='🏔️ 已选点 · 点击「确认分析」开始预测';
 });
 PAGE_MAPS.pgCloud=cMap; // ← 注册以便切页面时重绘
+bindOverlayToggle('cloud',cMap,'cMW','cOvSat',null);
 bindMode('c');bindMdl('c',cST);bindSearch('c',cMap,function(lat,lon){cMap.setCenter(lat,lon,12);cST.lat=lat;cST.lon=lon;enableGo('c');fetchElev(lat,lon,function(e){if(e){cST.elev=e;document.getElementById('cES').textContent=e;document.getElementById('cEI').value=e;}});});
 bindCscrollDrag('cRes');
 document.getElementById('cAM').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=Math.max(0,(parseInt(el.value)||cST.elev||500)-10);document.getElementById('cES').textContent=el.value;});
@@ -3172,7 +3627,7 @@ function runCloud(){
   var elev=parseInt(document.getElementById('cEI').value)||cST.elev||800;
   showLoad('获取云海气象数据…');
   cachedFetch('https://api.open-meteo.com/v1/forecast?latitude='+cST.lat+'&longitude='+cST.lon
-    +'&hourly=temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,windgusts_10m,weathercode,dewpoint_2m,temperature_850hPa,relativehumidity_850hPa,temperature_700hPa,relativehumidity_700hPa'
+    +'&hourly=temperature_2m,relativehumidity_2m,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,precipitation,windspeed_10m,windgusts_10m,weathercode,dewpoint_2m,surface_pressure,temperature_850hPa,relativehumidity_850hPa,windspeed_850hPa,temperature_700hPa,relativehumidity_700hPa,temperature_500hPa,relativehumidity_500hPa,freezinglevel_height'
     +'&daily=sunrise,sunset&models='+cST.model+'&timezone=auto&forecast_days=7')
     .then(function(data){
       var h=data.hourly;
@@ -3181,10 +3636,15 @@ function runCloud(){
           cLow:h.cloudcover_low[i]||0,cMid:h.cloudcover_mid[i]||0,cHigh:h.cloudcover_high[i]||0,
           precip:h.precipitation[i],wind:h.windspeed_10m[i],gust:h.windgusts_10m?h.windgusts_10m[i]:null,
           wc:h.weathercode[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:(h.temperature_2m[i]-4),
+          sp:h.surface_pressure?h.surface_pressure[i]:null,
           t850:h.temperature_850hPa?h.temperature_850hPa[i]:null,
           rh850:h.relativehumidity_850hPa?h.relativehumidity_850hPa[i]:null,
+          w850:h.windspeed_850hPa?h.windspeed_850hPa[i]:null,
           t700:h.temperature_700hPa?h.temperature_700hPa[i]:null,
-          rh700:h.relativehumidity_700hPa?h.relativehumidity_700hPa[i]:null};
+          rh700:h.relativehumidity_700hPa?h.relativehumidity_700hPa[i]:null,
+          t500:h.temperature_500hPa?h.temperature_500hPa[i]:null,
+          rh500:h.relativehumidity_500hPa?h.relativehumidity_500hPa[i]:null,
+          fzl:h.freezinglevel_height?h.freezinglevel_height[i]:null};
         r2.prob=calcCloud(r2,elev);r2.cloudBase=lclH(r2.temp,r2.dew);return r2;
       });
       hideLoad();renderCloud(rows,data.daily,elev);
@@ -3308,6 +3768,7 @@ var gMap=MapEng('gMC','gMW',function(lat,lon){
   enableGo('g');
 });
 PAGE_MAPS.pgGlow=gMap;
+bindOverlayToggle('glow',gMap,'gMW','gOvSat',null);
 bindMode('g');bindMdl('g',gST);bindSearch('g',gMap,function(lat,lon){gMap.setCenter(lat,lon,12);gST.lat=lat;gST.lon=lon;enableGo('g');});
 bindCscrollDrag('gRes');
 document.getElementById('gZI').addEventListener('click',function(){gMap.dz(1);});
@@ -3321,12 +3782,14 @@ function runGlow(){
   // 火烧云扇区采样(关键准确度提升):
   // 原版只看"用户点击点"的云量。但火烧云的物理是"阳光从地平线斜射打到中高云",
   // 决定性因素是日出/日落方向 30~100km 远的云况,而不是头顶。
-  // 现在沿日出方位采样 30km/80km 两点,日落方位同样采样 2 点,共 5 点一次性请求。
+  // 现在沿日出方位采样 50km/150km 两点,日落方位同样采样 2 点,共 5 点一次性请求。
   // 主点提供本地参数(温度、湿度、CAPE),扇区点提供"方向性云量代理"。
   //
   // 日出/日落方位用 lat/lon + 当前季节估算太阳赤纬,再用经典日出方位公式:
   //   cos(A) = (sin(dec) - sin(alt)·sin(lat)) / (cos(alt)·cos(lat))   alt=0 时为日出方位余弦
-  // 误差几度,但扇区采样距离 30/80km,几度方位偏差落在合理误差内
+  // 距离调整依据:真正挡住"第一缕/最后一缕阳光"的低云,位于观测点与太阳之间更远的地平线
+  // 切线方向上(几何上约 50-150km 外才是日出/日落时太阳光线掠过的近地空域)。30/80km
+  // 偏近,常采到"头顶附近"的云而非真正的地平线遮挡层。
   // ══════════════════════════════════════════════════════════════════
   var lat=gST.lat, lon=gST.lon;
   // 估算当前儒略日 → 太阳赤纬(简化公式,精度 ±0.5°,够用)
@@ -3339,9 +3802,9 @@ function runGlow(){
   // 南半球符号互换,但 acos 已经处理了 cosA 的正负,所以公式通用
   var azSR = A;        // 日出方向
   var azSS = 360 - A;  // 日落方向
-  // 4 个扇区采样点
-  var p1=destPoint(lat,lon,azSR,30), p2=destPoint(lat,lon,azSR,80);
-  var p3=destPoint(lat,lon,azSS,30), p4=destPoint(lat,lon,azSS,80);
+  // 4 个扇区采样点（近 50km / 远 150km）
+  var p1=destPoint(lat,lon,azSR,50), p2=destPoint(lat,lon,azSR,150);
+  var p3=destPoint(lat,lon,azSS,50), p4=destPoint(lat,lon,azSS,150);
   var lats=[lat,p1.lat,p2.lat,p3.lat,p4.lat].map(function(x){return x.toFixed(4);}).join(',');
   var lons=[lon,p1.lon,p2.lon,p3.lon,p4.lon].map(function(x){return x.toFixed(4);}).join(',');
 
@@ -3352,22 +3815,23 @@ function runGlow(){
       // Open-Meteo 多点请求返回数组,单点请求返回对象。统一处理。
       var pts = Array.isArray(rawData) ? rawData : [rawData];
       var main = pts[0];
-      var srSect = [pts[1], pts[2]].filter(Boolean); // 日出扇区(30/80km)
-      var ssSect = [pts[3], pts[4]].filter(Boolean); // 日落扇区(30/80km)
+      var srSect = [pts[1], pts[2]].filter(Boolean); // 日出扇区(50/150km)
+      var ssSect = [pts[3], pts[4]].filter(Boolean); // 日落扇区(50/150km)
       gST.daily=main.daily;
       var utcOff=main.utc_offset_seconds||0;
       gST.utcOff=utcOff;
       var sunEv=buildSunEv(main.daily);
       var precArr=main.hourly.precipitation||[];
 
-      // 扇区代理云量:对每个小时,取扇区两点的云量加权(近点 0.6 + 远点 0.4),
-      // 因为近点对"太阳能不能升起来被看到"更关键,远点对"光路穿过的大气厚度"更关键
+      // 扇区代理云量:对每个小时,取扇区两点的云量加权(近点50km 0.45 + 远点150km 0.55),
+      // 远点(150km)更接近日出/日落时太阳光线掠过的真实地平线切线,对"光源进不进得来"更关键,
+      // 故远点权重略高于近点
       function sectorClouds(sect, i, field){
         if(!sect.length) return null;
         var vals=sect.map(function(p){return p.hourly && p.hourly[field] ? p.hourly[field][i] : null;}).filter(function(v){return v!=null;});
         if(!vals.length) return null;
         if(vals.length===1) return vals[0];
-        return vals[0]*0.6 + vals[1]*0.4;
+        return vals[0]*0.45 + vals[1]*0.55;
       }
 
       gST.rows=main.hourly.time.map(function(ti,i){
@@ -3531,6 +3995,17 @@ function renderGlow(){
       +'<br><span style="font-size:9.5px;color:#5a7a9a;">'+glowDesc(srMax,ssMax,rs,mode)+'</span>'
       +(bestRow?scoreBreakdownHTML('glow', bestRow, best, '#f97316'):'')
       +(function(){
+        // 🎯 极佳火烧云(≥81 爆烧潜力)的浓郁色彩光线校验 → 长焦提示
+        if(best>=81 && bestRow){
+          var gl=checkGoldenLightThreshold(bestRow, best, 81);
+          if(gl){
+            return '<div style="margin-top:6px;padding:7px 9px;border-radius:7px;background:linear-gradient(135deg,rgba(245,200,66,0.14),rgba(249,115,22,0.08));border:1px solid rgba(245,200,66,0.4);font-size:10px;color:#f5c842;line-height:1.6;">'
+              +'🔭 <b>长焦机位提示</b><br>'+gl.text+'<br><span style="color:#9ab8c8;font-size:9px;">'+gl.detail+'</span></div>';
+          }
+        }
+        return '';
+      })()
+      +(function(){
         // 摄影时间轴：按当前模式只画对应那一张（朝霞模式→朝霞图，晚霞模式→晚霞图）。
         // 取数为事件前后各 2 小时整点，标题/数据/横轴均与 side 严格对应。
         var side = mode==='ss' ? 'ss' : 'sr';
@@ -3683,6 +4158,7 @@ function aOnSelect(lat,lon){
 }
 var aMap=MapEng('aMC','aMW',aOnSelect,aOverlayDraw);
 PAGE_MAPS.pgAlps=aMap;
+bindOverlayToggle('alps',aMap,'aMW','aOvSat',null);
 bindMode('a');bindMdl('a',aST);bindSearch('a',aMap,function(lat,lon){aMap.setCenter(lat,lon,12);aOnSelect(lat,lon);});
 bindCscrollDrag('aRes');
 document.getElementById('aZI').addEventListener('click',function(){aMap.dz(1);});
@@ -3699,7 +4175,7 @@ function runAlps(){
   showLoad('获取日照金山气象数据…');
   // 极简版：只采样山峰本身那一格的天气（用户点的就是山峰位置，无需 A→B 偏移）
   cachedFetch('https://api.open-meteo.com/v1/forecast?latitude='+aST.lat.toFixed(4)+'&longitude='+aST.lon.toFixed(4)
-    +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility'
+    +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,freezinglevel_height'
     +'&daily=sunrise,sunset&models='+aST.model+'&timezone=auto&forecast_days=7')
     .then(function(data){
       var h=data.hourly,utcOff=data.utc_offset_seconds||0;
@@ -3709,7 +4185,8 @@ function runAlps(){
         var r={time:ti,temp:h.temperature_2m[i],cloud:h.cloudcover[i],
           cHigh:h.cloudcover_high[i]||0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]||0:0, cLow:h.cloudcover_low[i]||0,
           precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
-          rh:h.relativehumidity_2m[i],vis:h.visibility?h.visibility[i]:null,sol:sol};
+          rh:h.relativehumidity_2m[i],vis:h.visibility?h.visibility[i]:null,
+          fzl:h.freezinglevel_height?h.freezinglevel_height[i]:null,sol:sol};
         // 极简版：方位角对齐"必然满足"——因为我们让观拍点跟着太阳方位走（反推得到的"最佳观拍位置"必然对准山峰）
         // 所以 calcAlps 传入 sol.az 自身作为"虚拟山峰方位"，方位对齐项满分，让"是否能拍"由云量、太阳仰角、海拔差决定
         r.scHigh=calcAlps(r,pkHigh,baseElev, r.sol.az);
@@ -3773,6 +4250,26 @@ function renderAlps(rows,daily,peaks){
       viewerHint='<br><span style="color:#4ecdc4;">📍 '+timeWord+'太阳从 <b>'+azToDir(best.sol.az)+'</b>('+Math.round(best.sol.az)+'°) 照射山峰<br>'
         +'👉 你应该站在山的 <b style="color:#f5c842;">'+vd.dir+'侧</b>('+Math.round(vd.deg)+'° 方向）拍摄</span>';
     }
+    // ❄️ 雪线提示（0°C 等温线 vs 峰顶）——决定金山是雪是黑石
+    var snowHint='';
+    if(sc>=20 && best){
+      var snow=analyzeSnowLine(best.fzl, peaks.high, best.precip);
+      if(snow){
+        snowHint='<br><span style="color:'+snow.color+';">❄️ 0°C 线 <b>'+snow.fzl+'m</b> · 峰顶 '+snow.peakElev+'m（'
+          +(snow.margin>=0?'峰顶高出 '+snow.margin+'m':'峰顶低于 0°C 线 '+(-snow.margin)+'m')+'）— <b>'+snow.label+'</b><br>'
+          +'<span style="font-size:9.5px;">'+snow.advice+'</span></span>';
+      }
+    }
+
+    // 🎯 极佳光线阈值校验（浓郁色彩 → 长焦提示）
+    var goldenHint='';
+    if(sc>=65 && best){
+      var gl=checkGoldenLightThreshold(best, sc, 65);
+      if(gl){
+        goldenHint='<div style="margin-top:6px;padding:7px 9px;border-radius:7px;background:linear-gradient(135deg,rgba(245,200,66,0.14),rgba(249,115,22,0.08));border:1px solid rgba(245,200,66,0.4);font-size:10px;color:#f5c842;line-height:1.6;">'
+          +'🔭 <b>长焦机位提示</b><br>'+gl.text+'<br><span style="color:#9ab8c8;font-size:9px;">'+gl.detail+'</span></div>';
+      }
+    }
 
     return '<div class="alps-best-row">'
       +'<div class="alps-score-big" style="color:'+c+';">'+sc+'</div>'
@@ -3780,7 +4277,7 @@ function renderAlps(rows,daily,peaks){
       +'<div class="alps-detail-title">'+winIco+' '+winName+' '+ico+'<span style="margin-left:5px;color:#f5c842;font-size:10px;">'+winTime+'</span></div>'
       +(sc>=20 ? '<div class="alps-detail-body">最佳时刻：<b style="color:#f59e0b;">'+pad2(new Date(best.time).getHours())+':00</b> · 太阳仰角 '+best.sol.alt.toFixed(1)+'°'
         +'<br>云量 '+best.cloud+'%（高'+best.cHigh+'/中'+best.cMid+'/低'+best.cLow+'）· 能见度'+(best.vis!=null?Math.round(best.vis/1000)+'km':'—')+' · '+wctFull(best.wc)
-        +viewerHint+'</div>'
+        +viewerHint+snowHint+'</div>'+goldenHint
         : '<div class="alps-detail-body" style="color:#3a5a7a;">云量过高或大气条件不满足，本'+winName+'难有日照金山效果</div>')
       +'<div class="alps-meter"><div class="alps-fill" style="width:'+sc+'%;background:'+c+';"></div></div>'
       +((sc>=20&&best)?scoreBreakdownHTML('alps', best, sc, '#f59e0b'):'')
@@ -3877,7 +4374,9 @@ function renderAlps(rows,daily,peaks){
     var best=rows.reduce(function(a,b){return tierScore(b)>tierScore(a)?b:a;},rows[0]);
     if(!best || tierScore(best)<=0){ if(bodyEl) bodyEl.innerHTML='<span style="color:#5a7a9a;">当前位置近期无日照金山窗口</span>'; return; }
     var bearing=(best.sol&&best.sol.az!=null)?best.sol.az:null;
-    computeConsensus('alps', aST.lat, aST.lon, best.time, {peakElev:5000, viewerElev:2500, peakBearing:bearing}).then(function(cs){
+    // 用该山真实海拔（点山自动探测 / 用户输入），而非写死 5000/2500，保证共识分与卡片分同口径
+    var pkE=aST.peakElev||5000, vwE=aST.baseElev!=null?aST.baseElev:Math.max(0,pkE-2500);
+    computeConsensus('alps', aST.lat, aST.lon, best.time, {peakElev:pkE, viewerElev:vwE, peakBearing:bearing}).then(function(cs){
       if(bodyEl) bodyEl.innerHTML = cs ? consensusPanelHTML(cs, '#f59e0b') : '<span style="color:#5a7a9a;">对比失败</span>';
     });
   })();
@@ -4058,6 +4557,93 @@ function withTimeout(promise, ms){
   return Promise.race([promise, new Promise(function(res){setTimeout(function(){res(null);},ms);})]);
 }
 
+// ══════════════════════════════════════════════════════════════════════
+// 🌃 光污染缓存封装 —— 让首页/日历/共识共享同一套真实 lp 估算
+// ──────────────────────────────────────────────────────────────────────
+// 问题：estimateLPFromCities（基于周边城镇人口的真实估算）此前只有星空详情页调用，
+//       首页/日历/共识全部硬编码 lp=4 → 同一地点详情页与首页星空分数打架。
+// 方案：① 0.05° 网格(约5km)取整做 key，localStorage 永久缓存，避免重复打 Overpass；
+//       ② 命中缓存 → 同步返回真值；
+//       ③ 未命中 → 同步返回中性兜底(lp=4)且立刻发起后台估算回填，下次即为真值。
+// 这样首页首屏不被 Overpass 拖慢，又能逐步收敛到真实光污染等级。
+// ══════════════════════════════════════════════════════════════════════
+var LP_CACHE = {};
+(function(){ try{ LP_CACHE = JSON.parse(lsGet('photoglow_lp_cache','{}'))||{}; }catch(e){ LP_CACHE={}; } })();
+function lpCacheKey(lat, lon){ return lat.toFixed(2)+','+lon.toFixed(2); } // ~1km 网格
+// 同步取缓存的 lp（无则返回 null）
+function getCachedLP(lat, lon){
+  var v = LP_CACHE[lpCacheKey(lat,lon)];
+  return (v && v.lp!=null) ? v.lp : null;
+}
+// 同步返回"当前可用的最佳 lp"，并在缺失时后台异步回填缓存
+function resolveLP(lat, lon, viewerElev){
+  var cached = getCachedLP(lat, lon);
+  if(cached!=null) return cached;
+  // 后台估算回填（带去重锁，避免同点并发重复请求）
+  var key = lpCacheKey(lat,lon);
+  if(!LP_CACHE[key] || !LP_CACHE[key]._pending){
+    LP_CACHE[key] = {_pending:true};
+    withTimeout(estimateLPFromCities(lat, lon, viewerElev||0), 16000).then(function(res){
+      if(res && res.lp!=null){
+        LP_CACHE[key] = {lp:res.lp, conf:res.confidence||'mid', ts:Date.now()};
+        try{ lsSet('photoglow_lp_cache', JSON.stringify(LP_CACHE)); }catch(e){}
+      } else {
+        delete LP_CACHE[key]; // 失败则清锁，下次可重试
+      }
+    });
+  }
+  return 4; // 中性兜底（仅本次，回填后下次即真值）
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// 🌃 任务3：VIIRS 瓦片像素读取 → 波特尔等级（真实光污染数据）
+// ──────────────────────────────────────────────────────────────────────
+// 原理：加载覆盖该坐标的单张 VIIRS 叠加瓦片，定位到像素，读取其颜色亮度，
+//       按 D.Lorenz/VIIRS 调色板(黑→蓝→绿→黄→红→白 = 暗→亮)映射为波特尔 1-9。
+// 限制：浏览器 canvas 安全策略——若瓦片服务器未发送 CORS 头(Access-Control-Allow-Origin)，
+//       getImageData() 会抛 "tainted canvas" 异常。此时本函数返回 null，调用方回退到
+//       城镇人口估算法(estimateLPFromCities)。即便读取失败，地图上的 VIIRS 可视化图层仍正常。
+// 返回：Promise<{lp, raw, source:'viirs'} | null>
+// ══════════════════════════════════════════════════════════════════════
+function lpFromVIIRSPixel(lat, lon){
+  return new Promise(function(resolve){
+    var ov=MAP_OVERLAYS.viirs;
+    var z=Math.min(8, ov.maxZoom||8);
+    var N=1<<z;
+    var xf=(lon+180)/360*N;
+    var yf=(1-Math.log(Math.tan(lat*Math.PI/180)+1/Math.cos(lat*Math.PI/180))/Math.PI)/2*N;
+    var tx=Math.floor(xf), ty=Math.floor(yf);
+    var px=Math.floor((xf-tx)*256), py=Math.floor((yf-ty)*256);
+    var img=new Image(); img.crossOrigin='anonymous';
+    var done=false;
+    var to=setTimeout(function(){ if(!done){done=true;resolve(null);} }, 7000);
+    img.onload=function(){
+      if(done) return; done=true; clearTimeout(to);
+      try{
+        var cvs=document.createElement('canvas'); cvs.width=256; cvs.height=256;
+        var c=cvs.getContext('2d'); c.drawImage(img,0,0);
+        var d=c.getImageData(px,py,1,1).data; // 可能抛 SecurityError（CORS 未开放）
+        var rr=d[0], gg=d[1], bb=d[2], aa=d[3];
+        if(aa===0){ resolve({lp:1, raw:0, source:'viirs'}); return; } // 透明=无光污染数据=极暗
+        // VIIRS 调色板亮度 → 波特尔。按 D.Lorenz overlay 色阶近似：
+        //   透明/极暗 → 1；蓝 → 3；青绿 → 4-5；黄 → 6；橙红 → 7；亮红/白 → 8-9
+        var lum = 0.299*rr + 0.587*gg + 0.114*bb;
+        var lp;
+        if(lum<12) lp=1;
+        else if(bb>rr && bb>gg) lp = lum<60?2:3;            // 蓝色调=暗区
+        else if(gg>=rr && gg>=bb) lp = 4 + (lum>140?1:0);   // 绿/青=乡村-郊区
+        else if(rr>gg && gg>bb) lp = lum>200?7:6;           // 黄橙=郊区-城郊
+        else lp = lum>220?9:8;                              // 红/白=城市-市中心
+        resolve({lp:Math.max(1,Math.min(9,lp)), raw:Math.round(lum), source:'viirs'});
+      }catch(e){
+        resolve(null); // tainted canvas / CORS → 回退
+      }
+    };
+    img.onerror=function(){ if(!done){done=true;clearTimeout(to);resolve(null);} };
+    img.src=ov.url(z,tx,ty);
+  });
+}
+
 function autoDetectLP(lat, lon){
   var noteEl=document.getElementById('sLPAuto');
   noteEl.textContent='⏳ 正在检测海拔+周边城镇,综合估算光污染…';
@@ -4065,10 +4651,29 @@ function autoDetectLP(lat, lon){
   // 先拿海拔(用于山区光穹遮挡修正),再请求 Overpass
   return new Promise(function(resolve){fetchElev(lat,lon,function(elev){resolve(elev);});})
     .then(function(viewerElev){
-      return Promise.all([
-        withTimeout(geoLPGuess(lat,lon),6000),
-        withTimeout(estimateLPFromCities(lat,lon,viewerElev||0),9000)
-      ]).then(function(results){
+      // ── 任务3：优先尝试 VIIRS 真实瓦片像素读取（最准）──
+      return withTimeout(lpFromVIIRSPixel(lat,lon), 7500).then(function(viirs){
+        if(viirs && viirs.lp!=null){
+          // VIIRS 成功：直接用真实数据（仍叠加海拔修正，高山光穹被遮挡）
+          var lpv=viirs.lp;
+          if(viewerElev && viewerElev>500){ lpv=Math.max(1, lpv - Math.min(2, Math.floor((viewerElev-500)/800))); }
+          lpv=Math.max(1,Math.min(9,Math.round(lpv)));
+          var lpMapUrlV='https://www.lightpollutionmap.info/#zoom=12&lat='+lat.toFixed(4)+'&lon='+lon.toFixed(4)+'&layers=B0FFFFFFTFFFFFFFFFFFF';
+          noteEl.innerHTML='✅ <b>VIIRS 卫星实测</b>（瓦片亮度 '+viirs.raw+'）'+(viewerElev?' · 海拔'+viewerElev+'m修正':'')
+            +' → <b>波特尔 '+lpv+' 级</b> '
+            +'<span style="padding:1px 6px;border-radius:5px;background:#22c55e15;color:#22c55e;border:1px solid #22c55e40;font-size:9px;margin-left:4px;">置信度:高</span>'
+            +'<br><span style="font-size:10px;color:#5a7a9a;">💡 点地图右上 🌃 可叠加光污染图层 · <a href="'+lpMapUrlV+'" target="_blank" style="color:#a78bfa;text-decoration:underline;">在 lightpollutionmap.info 校准</a></span>';
+          noteEl.style.color='#4ecdc4';
+          var selv=document.getElementById('sLP'); selv.value=String(lpv); selv.dispatchEvent(new Event('change'));
+          // 写入 LP 缓存供首页/日历复用
+          try{ LP_CACHE[lpCacheKey(lat,lon)]={lp:lpv,conf:'high',ts:Date.now(),src:'viirs'}; lsSet('photoglow_lp_cache',JSON.stringify(LP_CACHE)); }catch(e){}
+          return lpv;
+        }
+        // ── VIIRS 不可用（CORS/超时）→ 回退到城镇人口 + 地名估算 ──
+        return Promise.all([
+          withTimeout(geoLPGuess(lat,lon),6000),
+          withTimeout(estimateLPFromCities(lat,lon,viewerElev||0),9000)
+        ]).then(function(results){
         var geo=results[0], city=results[1];
         var lp, label, confidence='mid';
         if(city && geo){
@@ -4096,12 +4701,13 @@ function autoDetectLP(lat, lon){
         noteEl.innerHTML='✅ '+label+elevText
           +' → <b>波特尔 '+lp+' 级</b> '
           +'<span style="padding:1px 6px;border-radius:5px;background:'+confColor+'15;color:'+confColor+';border:1px solid '+confColor+'40;font-size:9px;margin-left:4px;">置信度:'+confText+'</span>'
-          +'<br><span style="font-size:10px;color:#5a7a9a;">💡 <a href="'+lpMapUrl+'" target="_blank" style="color:#a78bfa;text-decoration:underline;">在 lightpollutionmap.info 校准</a> · 或用下方"快捷选择"按钮</span>';
+          +'<br><span style="font-size:10px;color:#5a7a9a;">💡 <a href="'+lpMapUrl+'" target="_blank" style="color:#a78bfa;text-decoration:underline;">在 lightpollutionmap.info 校准</a> · 或点地图 🌃 叠加光污染图层</span>';
         noteEl.style.color='#4ecdc4';
         var sel=document.getElementById('sLP');
         sel.value=String(lp);
         sel.dispatchEvent(new Event('change'));
         return lp;
+        });
       });
     }).catch(function(){
       noteEl.textContent='⚠️ 自动检测失败,请手动选择光污染等级';
@@ -4118,6 +4724,7 @@ var sMap=MapEng('sMC','sMW',function(lat,lon){
   autoDetectLP(lat,lon);
 });
 PAGE_MAPS.pgStar=sMap;
+bindOverlayToggle('star',sMap,'sMW','sOvSat','sOvViirs');
 bindMode('s');bindMdl('s',sST);bindSearch('s',sMap,function(lat,lon){sMap.setCenter(lat,lon,12);sST.lat=lat;sST.lon=lon;enableGo('s');autoDetectLP(lat,lon);});
 bindCscrollDrag('sRes');
 document.getElementById('sZI').addEventListener('click',function(){sMap.dz(1);});
@@ -4158,28 +4765,45 @@ function runStar(){
         return r;
       });
 
-      // 为每个"夜晚"（按日期分组，18:00-次日08:00）运行高精度分析
-      // ── 修复:dayDate 必须按"观测点本地时区"算每一天,而不是设备时区。
-      //     方法:取 daily.time 数组(observation point local YYYY-MM-DD 字符串),按观测点正午构造 Date。
-      var nightAnalyses = [];
-      var dailyDates = (data.daily && data.daily.time) ? data.daily.time : [];
-      for(var d=0; d<Math.min(7, dailyDates.length); d++){
-        // 把观测点本地的 "YYYY-MM-DD 12:00" 还原为真实UTC时刻,确保 findMoonRiseSet/getPrecise... 内部一致
-        var dayDate = trueUtcDate(dailyDates[d]+'T12:00', utcOff);
-        var ms = findMoonRiseSet(dayDate, sST.lat, sST.lon);
-        var astro = {
-          lat: sST.lat, lon: sST.lon, date: dayDate,
-          utcOffsetSec: utcOff,
-          moonrise: ms.rise, moonset: ms.set,
-          moonIllumination: moonIll(moonPhase(dayDate)),
-          lp: lp  // 传入波特尔光污染等级，让专业分析报告也能根据光污染压低城市分数
-        };
-        var analysis = getPreciseStarrySkyAnalysis(data, astro);
-        nightAnalyses.push({date: dayDate, analysis: analysis, moonrise: ms.rise, moonset: ms.set, utcOffsetSec: utcOff});
+      // ── 🌙 任务7：预热"月光地形遮挡"缓存 ──
+      // getPreciseStarrySkyAnalysis 内部用同步的 moonHorizonGateSync 查询月亮方位的地形遮挡角，
+      // 需先把未来 7 夜、月亮在地平线附近时刻所在方位桶的遮挡角采样进缓存（命中才生效）。
+      // 收集夜间整点时刻 → prewarm → 再跑分析。地形采样失败不阻塞（gateSync 缺数据时保守不补偿）。
+      var prewarmTimes = [];
+      for(var pi=0; pi<h.time.length; pi++){
+        var put = trueUtcDate(h.time[pi], utcOff);
+        var ph = put.getUTCHours(); // 仅采夜间时段附近，减少无谓采样
+        prewarmTimes.push(put);
       }
 
-      hideLoad();renderStar(rows,data.daily,lp,nightAnalyses);
-      document.getElementById('sEmp').style.display='none';
+      function runNightAnalyses(){
+        // 为每个"夜晚"（按日期分组，18:00-次日08:00）运行高精度分析
+        // ── 修复:dayDate 必须按"观测点本地时区"算每一天,而不是设备时区。
+        //     方法:取 daily.time 数组(observation point local YYYY-MM-DD 字符串),按观测点正午构造 Date。
+        var nightAnalyses = [];
+        var dailyDates = (data.daily && data.daily.time) ? data.daily.time : [];
+        for(var d=0; d<Math.min(7, dailyDates.length); d++){
+          // 把观测点本地的 "YYYY-MM-DD 12:00" 还原为真实UTC时刻,确保 findMoonRiseSet/getPrecise... 内部一致
+          var dayDate = trueUtcDate(dailyDates[d]+'T12:00', utcOff);
+          var ms = findMoonRiseSet(dayDate, sST.lat, sST.lon);
+          var astro = {
+            lat: sST.lat, lon: sST.lon, date: dayDate,
+            utcOffsetSec: utcOff,
+            moonrise: ms.rise, moonset: ms.set,
+            moonIllumination: moonIll(moonPhase(dayDate)),
+            lp: lp  // 传入波特尔光污染等级，让专业分析报告也能根据光污染压低城市分数
+          };
+          var analysis = getPreciseStarrySkyAnalysis(data, astro);
+          nightAnalyses.push({date: dayDate, analysis: analysis, moonrise: ms.rise, moonset: ms.set, utcOffsetSec: utcOff});
+        }
+        hideLoad();renderStar(rows,data.daily,lp,nightAnalyses);
+        document.getElementById('sEmp').style.display='none';
+      }
+
+      // 预热（带超时，地形 API 慢/失败也不卡死 UI）
+      withTimeout(prewarmMoonHorizon(sST.lat, sST.lon, prewarmTimes), 12000)
+        .then(runNightAnalyses)
+        .catch(runNightAnalyses); // 任何失败都照常出分析（仅失去地形补偿）
     }).catch(function(e){hideLoad();showErr('sCB','获取失败:'+e.message);});
 }
 
@@ -4420,7 +5044,7 @@ function renderWiki(){
       '<b>这不是占卜，也不是概率。</b>系统给出的"82 分"意思是：基于当前模型数据，这个时段的物理条件接近"最佳"。它<b>不等于</b>"82% 概率出片"。',
       '<b>三个无法回避的物理事实：</b>',
       '<b>① 数据分辨率粗</b>：气象模型用 9-25km 格点，返回的是"包含你这点的整块网格的平均值"。云海/火烧云/日照金山都是局地微地形现象，尺度比格点小 1-2 个数量级。',
-      '<b>② 缺方向性数据</b>：火烧云的关键是日出/日落方向 100km 外有没有低云挡光，但单点 API 给的是"你头顶云量"。本系统通过<b>扇区采样</b>（沿日出/日落方向各采样 30km + 80km）缓解。',
+      '<b>② 缺方向性数据</b>：火烧云的关键是日出/日落方向 150km 外有没有低云挡光，但单点 API 给的是"你头顶云量"。本系统通过<b>扇区采样</b>（沿日出/日落方向各采样 50km + 150km）缓解。',
       '<b>③ 评分权重是经验拟合</b>：未经真实出片数据校准。我们用 👍/👎 反馈在攒数据。',
       '<b>怎么用才科学？</b>把分数当成"系统判断的可能性高低排序"。最终决策要结合<b>卫星云图</b>+<b>地面实况</b>+<b>窗户外面看一眼</b>。',
       '<b>请帮忙点 👍/👎</b>：「准确度」页会告诉你算法在你常去地区的真实命中率。',
@@ -4444,7 +5068,7 @@ function renderWiki(){
     // 🔥 火烧云
     {icon:'🔥',color:'#f97316',title:zh?'火烧云 · 朝霞晚霞':'Red Sky Glow',body:zh?[
       '太阳在地平线附近时，阳光穿过最厚大气，蓝紫光散射殆尽，红橙光将中高层云彩染成炫丽色彩。',
-      '<b>算法：</b>云量评分（高云 50% + 中云 25% + 低云 25%）占总分 50%，太阳几何 20%，大气 20%，风暴动力学 10%。<b>+ 扇区采样</b>（日出/日落方向 30km + 80km 各采样一点）。',
+      '<b>算法：</b>云量评分（高云 58% + 中云 32% + 低云 10%，低云遮挡另由地平线否决项处理）占总分 50%，太阳几何 20%，大气 20%，风暴动力学 10%。<b>+ 扇区采样</b>（日出/日落方向 50km + 150km 各采样一点）。',
       '<b>"火烧云指数" vs "爆烧指数"：</b>前者用加权和，平均水平就给中高分；后者用乘积式评分，要求所有条件同时顶级才能出高分，更能识别"满天烧"。',
       '<b>地平线低云一票否决：</b>日出/日落方向低云 &gt; 55%，爆烧指数会被强制压低。',
     ]:[
@@ -4477,7 +5101,7 @@ function renderWiki(){
       '清澈黑暗的天空下，银河、星云、流星一览无余。<b>光污染和月相是影响最大的两个因素</b>，远超天气因素。',
       '<b>算法：</b>云量 40% + 光污染 22% + 月相 18% + 湿度 10% + 风速 5% + 无降水 5%。',
       '<b>光污染 V2：</b>① 内置 2024 城市人口数据库（近百个中国城市 + 30+ 国际特大城市）；② 分段距离衰减（&lt; 20km 用 2.0、20-80km 用 2.4、&gt; 80km 用 2.8）；③ 阈值表按 VIIRS 2024 校准。',
-      '<b>诚实承认精度差距：</b>本系统纯前端实现，没法直连付费 VIIRS tile。改进后误差预期 ±1 级。最准做法：点 lightpollutionmap.info 链接查真实 VIIRS 数据。',
+      '<b>现已接入 VIIRS 真实数据：</b>自动检测会优先读取地图 VIIRS 瓦片对应像素的真实亮度映射为波特尔等级（置信度高）；若浏览器跨域策略阻止读取，则回退到城镇人口+地名估算（±1 级）。地图右上 🌃 按钮可叠加 VIIRS 光污染图层肉眼核对。',
       '<b>跨日夜晚标注：</b>报表显示"12/15 晚 → 12/16 凌晨"，明确告诉你这是哪两天之间的夜晚。',
       '<b>最佳条件：</b>月亮亮度 &lt; 20%（新月期 ± 3 天）+ 云量 &lt; 10% + 波特尔 ≤ 4 级 + 夜晚 22:00-03:00。',
     ]:[
@@ -4528,13 +5152,13 @@ function renderWiki(){
       +'✅ 修了一批地图青点 bug',
       '<b>下一步可能加：</b>',
       '<b>① Himawari-9 实时云图叠加</b>：技术风险（CORS）。',
-      '<b>② 真实 VIIRS 光污染 tile</b>：需要后端。',
+      '<b>② 真实 VIIRS 光污染 tile</b>：✅ 已接入（瓦片像素读取，CORS 受限时自动回退估算）。',
       '<b>③ ML 权重校准</b>：用累积的 👍/👎 反馈训练。',
       '<b>④ 多地点并排对比</b>：同时分析 2-3 个地点。',
       '<b>当前能帮上忙的事：</b>持续用、点 👍/👎、遇到 bug 反馈。',
     ]:[
       '<b>Done:</b> New homepage cockpit, detail reports, auto-jump, star night labels, removed 7-day calendar, map bugs.',
-      '<b>Next:</b> Himawari-9, VIIRS tiles, ML, multi-location.',
+      '<b>Done:</b> Himawari-9 satellite loop + VIIRS tiles. <b>Next:</b> ML weights, multi-location.',
     ]},
   ];
   var h='<div class="wiki-wrap" style="padding:13px 0;">';
@@ -4848,10 +5472,15 @@ function oppConsensusCtx(o, meta){
     return {minFromSun:0, isSunrise:isSr, prevRain:!!r.prevRain, lat:hST.lat};
   }
   if(o.module==='cloud') return {elev: meta.elev!=null?meta.elev:1500};
-  if(o.module==='alps')  return {peakElev:5000, viewerElev:2500, peakBearing:(r.sol&&r.sol.az!=null)?r.sol.az:null};
-  // star —— 与首页/日历 calcStar 调用保持同一 moonPh 口径，确保"共识里的当前模型分"
-  // 与卡片展示分一致（首页历史上传 0.2，这里沿用，避免同一格子两个分数不符）。
-  return {moonPh:0.2, lp:4, sunAlt:(r.sol&&r.sol.alt!=null)?r.sol.alt:undefined};
+  if(o.module==='alps'){
+    // 与首页机会列表同口径：真实峰高/观拍点海拔，而非写死 5000/2500
+    var pkE = meta.nearMaxPeak || 5000;
+    var vwE = meta.elev!=null ? meta.elev : Math.max(0, pkE-2500);
+    return {peakElev:pkE, viewerElev:vwE, peakBearing:(r.sol&&r.sol.az!=null)?r.sol.az:null};
+  }
+  // star —— 与首页/日历 calcStar 同口径：真实光污染(带缓存) + 太阳高度门控，
+  // 确保"共识里的当前模型分"与卡片展示分一致（同一格子不出现两个分数）。
+  return {moonPh:0.2, lp:(hST.lat!=null?resolveLP(hST.lat,hST.lon,meta.elev):4), sunAlt:(r.sol&&r.sol.alt!=null)?r.sol.alt:undefined};
 }
 
 // 分析一个位置在未来 48 小时的机会
@@ -4872,7 +5501,7 @@ function homeAnalyze48h(lat, lon){
     var canAlps = nearMaxPeak >= 3000;
 
     return cachedFetch('https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(3)+'&longitude='+lon.toFixed(3)
-      +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,dewpoint_2m'
+      +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,dewpoint_2m,surface_pressure,temperature_850hPa,relativehumidity_850hPa,windspeed_850hPa,temperature_700hPa,relativehumidity_700hPa,temperature_500hPa,relativehumidity_500hPa,freezinglevel_height'
       +'&daily=sunrise,sunset&models='+GLOBAL_MODEL+'&timezone=auto&forecast_days=3')
       .then(function(data){
         var h=data.hourly, utcOff=data.utc_offset_seconds||0;
@@ -4898,7 +5527,13 @@ function homeAnalyze48h(lat, lon){
             cHigh:h.cloudcover_high[i]||0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]||0:0, cLow:h.cloudcover_low[i]||0,
             precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
             rh:h.relativehumidity_2m[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:null,
-            vis:h.visibility?h.visibility[i]:null,sol:sol};
+            vis:h.visibility?h.visibility[i]:null,
+            sp:h.surface_pressure?h.surface_pressure[i]:null,
+            t850:h.temperature_850hPa?h.temperature_850hPa[i]:null, rh850:h.relativehumidity_850hPa?h.relativehumidity_850hPa[i]:null, w850:h.windspeed_850hPa?h.windspeed_850hPa[i]:null,
+            t700:h.temperature_700hPa?h.temperature_700hPa[i]:null, rh700:h.relativehumidity_700hPa?h.relativehumidity_700hPa[i]:null,
+            t500:h.temperature_500hPa?h.temperature_500hPa[i]:null, rh500:h.relativehumidity_500hPa?h.relativehumidity_500hPa[i]:null,
+            fzl:h.freezinglevel_height?h.freezinglevel_height[i]:null,
+            sol:sol};
           var hr = dt.getHours();
           var dayKey = ti.split('T')[0];
           var sun = sunByDate[dayKey] || {};
@@ -4918,13 +5553,19 @@ function homeAnalyze48h(lat, lon){
           }
           // 日照金山：仅在周边有 ≥ 3000m 高峰时计算
           if(canAlps && ((hr>=5&&hr<=8) || (hr>=17&&hr<=19))){
-            var as=0; try{ as=calcAlps(r,5000,2500,sol.az)||0; }catch(e){}
+            // ── 修复：用真实峰高/观拍点海拔，替代写死的 5000/2500 ──
+            // nearMaxPeak = Overpass 查到的 30km 内最高峰真实海拔；candElev = 当前点真实海拔。
+            var pkElev = nearMaxPeak || 5000;
+            var vwElev = candElev!=null ? candElev : Math.max(0, pkElev-2500);
+            var as=0; try{ as=calcAlps(r,pkElev,vwElev,sol.az)||0; }catch(e){}
             if(as>=30) opps.push({module:'alps',score:Math.round(as),hour:ti,phase:hr<=8?'日出':'日落',r:r});
           }
           // 星空：任何海拔都可拍
           if(hr>=22 || hr<=3){
             var mp = moonPhase ? moonPhase(dt) : {phase:0.2};
-            var ss=0; try{ ss=calcStar(r,(mp&&mp.phase!=null?mp.phase:0.2),4)||0; }catch(e){}
+            // ── 修复：用真实光污染估算（带缓存）替代写死的 lp=4 ──
+            var lpHome = resolveLP(lat, lon, candElev);
+            var ss=0; try{ ss=calcStar(r,(mp&&mp.phase!=null?mp.phase:0.2),lpHome,sol.alt)||0; }catch(e){}
             if(ss>=30) opps.push({module:'star',score:Math.round(ss),hour:ti,phase:'深夜',r:r});
           }
         });
@@ -5346,8 +5987,12 @@ function calConsensusCtx(d, calMeta, anchorISO){
   calMeta=calMeta||{};
   if(d.bestModule==='glow') return {minFromSun:0, isSunrise:(d.glowPhase!=='晚霞'), prevRain:false, lat:hST.lat};
   if(d.bestModule==='cloud') return {elev: calMeta.elev!=null?calMeta.elev:1500};
-  if(d.bestModule==='alps') return {peakElev:5000, viewerElev:2500, peakBearing:null};
-  return {moonPh:0.2, lp:4}; // star：与日历 calcStar 调用口径一致
+  if(d.bestModule==='alps'){
+    var pkE=calMeta.nearMaxPeak||5000, vwE=calMeta.elev!=null?calMeta.elev:Math.max(0,pkE-2500);
+    return {peakElev:pkE, viewerElev:vwE, peakBearing:null};
+  }
+  // star：与日历 calcStar 同口径（真实光污染缓存）
+  return {moonPh:0.2, lp:(hST.lat!=null?resolveLP(hST.lat,hST.lon,calMeta.elev):4)};
 }
 // 推荐时间段：按题材锚定真实日出/日落或夜间窗口（复用 GLOW_WIN_OFFSETS 口径）
 function pcTimeRange(module, ev, phase){
@@ -5381,7 +6026,7 @@ function buildPhotoCalendar7d(lat, lon){
   var peakP = terrainGetPeak(lat, lon);
   // 字段集与首页 home 请求一致（命中缓存）；forecast_days=7
   var fxUrl = 'https://api.open-meteo.com/v1/forecast?latitude='+(+lat).toFixed(3)+'&longitude='+(+lon).toFixed(3)
-    +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,dewpoint_2m'
+    +'&hourly=temperature_2m,cloudcover,cloudcover_high,cloudcover_mid,cloudcover_low,precipitation,windspeed_10m,weathercode,relativehumidity_2m,visibility,dewpoint_2m,surface_pressure,temperature_850hPa,relativehumidity_850hPa,windspeed_850hPa,temperature_700hPa,relativehumidity_700hPa,temperature_500hPa,relativehumidity_500hPa,freezinglevel_height'
     +'&daily=sunrise,sunset&models='+GLOBAL_MODEL+'&timezone=auto&forecast_days=7';
 
   return Promise.all([elevP, peakP, cachedFetch(fxUrl)]).then(function(arr){
@@ -5401,7 +6046,13 @@ function buildPhotoCalendar7d(lat, lon){
         cHigh:h.cloudcover_high[i]||0, cMid:h.cloudcover_mid?h.cloudcover_mid[i]||0:0, cLow:h.cloudcover_low[i]||0,
         precip:h.precipitation[i],wind:h.windspeed_10m[i],wc:h.weathercode[i],
         rh:h.relativehumidity_2m[i],dew:h.dewpoint_2m?h.dewpoint_2m[i]:null,
-        vis:h.visibility?h.visibility[i]:null,sol:sol};
+        vis:h.visibility?h.visibility[i]:null,
+        sp:h.surface_pressure?h.surface_pressure[i]:null,
+        t850:h.temperature_850hPa?h.temperature_850hPa[i]:null, rh850:h.relativehumidity_850hPa?h.relativehumidity_850hPa[i]:null, w850:h.windspeed_850hPa?h.windspeed_850hPa[i]:null,
+        t700:h.temperature_700hPa?h.temperature_700hPa[i]:null, rh700:h.relativehumidity_700hPa?h.relativehumidity_700hPa[i]:null,
+        t500:h.temperature_500hPa?h.temperature_500hPa[i]:null, rh500:h.relativehumidity_500hPa?h.relativehumidity_500hPa[i]:null,
+        fzl:h.freezinglevel_height?h.freezinglevel_height[i]:null,
+        sol:sol};
       // 火烧云：朝/晚窗口
       if((hr>=4&&hr<=8)||(hr>=16&&hr<=20)){
         var isSr=hr<=8, gs=0; try{gs=calcGlow(r,0,isSr,0,lat)||0;}catch(e){}
@@ -5410,9 +6061,9 @@ function buildPhotoCalendar7d(lat, lon){
       // 云海：清晨
       if(hr>=4&&hr<=9){ var cs=0; try{cs=calcCloud(r,useElev)||0;}catch(e){} if(cs>days[dayKey].cloud) days[dayKey].cloud=cs; }
       // 日照金山：仅周边有 ≥3000m 高峰
-      if(canAlps && ((hr>=5&&hr<=8)||(hr>=17&&hr<=19))){ var as=0; try{as=calcAlps(r,5000,2500,sol.az)||0;}catch(e){} if(as>days[dayKey].alps){ days[dayKey].alps=as; days[dayKey].alpsPhase=hr<=8?'日出':'日落'; } }
+      if(canAlps && ((hr>=5&&hr<=8)||(hr>=17&&hr<=19))){ var as=0; var pkE=nearMaxPeak||5000, vwE=candElev!=null?candElev:Math.max(0,pkE-2500); try{as=calcAlps(r,pkE,vwE,sol.az)||0;}catch(e){} if(as>days[dayKey].alps){ days[dayKey].alps=as; days[dayKey].alpsPhase=hr<=8?'日出':'日落'; } }
       // 银河（③b）：逐时先累计 calcStar 原始估分到 starRaw，季节门控在日聚合层按天判一次。
-      if(hr>=22||hr<=3){ var mp=moonPhase(dt); var ss=0; try{ss=calcStar(r,(mp!=null?mp:0.2),4)||0;}catch(e){} if(ss>(days[dayKey].starRaw||0)) days[dayKey].starRaw=ss; }
+      if(hr>=22||hr<=3){ var mp=moonPhase(dt); var lpCal=resolveLP(lat,lon,candElev); var ss=0; try{ss=calcStar(r,(mp!=null?mp:0.2),lpCal,sol.alt)||0;}catch(e){} if(ss>(days[dayKey].starRaw||0)) days[dayKey].starRaw=ss; }
     });
 
     var list=Object.keys(days).sort().map(function(k){
@@ -5839,6 +6490,8 @@ function initHomePage(){
   }
 }
 setTimeout(initHomePage, 200);
+// 应用启动后做一次地形缓存配额检查（LRU 防白屏）
+setTimeout(function(){ try{ checkStorageQuota(); }catch(e){} }, 1500);
 
 // ══════════════════════════════════════════════════════════════════════
 // 📱 移动端 UI 改造
