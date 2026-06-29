@@ -693,29 +693,50 @@ function assessConfidence(opts){
 // ══════════════════════════════════════════
 // 用户反馈(localStorage,为后续接后端做准备)
 // ══════════════════════════════════════════
-function saveFeedback(module, lat, lon, date, predictedScore, actual, model){
+function saveFeedback(module, lat, lon, date, predictedScore, actual, model, meta){
   try {
     var key='feedback_v1';
     var arr=JSON.parse(localStorage.getItem(key)||'[]');
-    arr.push({
+    var rec={
       module: module, lat: lat, lon: lon, date: date,
       predicted: predictedScore, actual: actual, // 'good' | 'bad'
       model: model || (typeof GLOBAL_MODEL!=='undefined'?GLOBAL_MODEL:'gfs_seamless'),
       ts: Date.now()
-    });
+    };
+    // 附带当时的气象明细（用于事后诊断"为什么高分却扑空"）
+    if(meta && typeof meta==='object'){
+      ['cLow','cMid','cHigh','cloud','vis','rh','wind','precip','dew'].forEach(function(k){
+        if(meta[k]!=null) rec[k]=meta[k];
+      });
+    }
+    arr.push(rec);
     if(arr.length>500) arr=arr.slice(-500); // 防止 localStorage 撑爆
     localStorage.setItem(key, JSON.stringify(arr));
     return true;
   } catch(e) { return false; }
 }
-function feedbackButtonHTML(module, lat, lon, date, score){
+function feedbackButtonHTML(module, lat, lon, date, score, meta){
   var key=[module,lat.toFixed(3),lon.toFixed(3),date].join('|');
   // 低分场景特别引导：预测"没戏"但实际出现了，正是最该收集的"假阴性"数据
   var prompt = score>=20 ? '实际看到了吗?' : '预测偏低 — 实际看到了吗?';
+  // 把气象明细打包进 data-args，反馈时一并存档（vis 转 km，保留分层云量）
+  var m = meta||{};
+  var metaPack = {
+    cLow: m.cLow!=null?Math.round(m.cLow):null,
+    cMid: m.cMid!=null?Math.round(m.cMid):null,
+    cHigh: m.cHigh!=null?Math.round(m.cHigh):null,
+    cloud: m.cloud!=null?Math.round(m.cloud):null,
+    vis: m.vis!=null?Math.round(m.vis/1000):null, // m → km
+    rh: m.rh!=null?Math.round(m.rh):null,
+    wind: m.wind!=null?Math.round(m.wind):null,
+    precip: m.precip!=null?m.precip:null
+  };
+  var argsObj={m:module,lat:lat,lon:lon,d:date,s:score,meta:metaPack};
+  var argsStr=JSON.stringify(argsObj).replace(/'/g,'&#39;');
   return '<div style="display:flex;gap:6px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;">'
     +'<span style="font-size:9.5px;color:#5a7a9a;">'+prompt+'</span>'
-    +'<button class="fb-btn" data-fb="good" data-key="'+key+'" data-args=\''+JSON.stringify({m:module,lat:lat,lon:lon,d:date,s:score})+'\' style="padding:2px 8px;border-radius:5px;border:1px solid rgba(34,197,94,0.3);background:rgba(34,197,94,0.06);color:#22c55e;cursor:pointer;font-size:10px;">👍 看到了</button>'
-    +'<button class="fb-btn" data-fb="bad"  data-key="'+key+'" data-args=\''+JSON.stringify({m:module,lat:lat,lon:lon,d:date,s:score})+'\' style="padding:2px 8px;border-radius:5px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer;font-size:10px;">👎 没看到</button>'
+    +'<button class="fb-btn" data-fb="good" data-key="'+key+'" data-args=\''+argsStr+'\' style="padding:2px 8px;border-radius:5px;border:1px solid rgba(34,197,94,0.3);background:rgba(34,197,94,0.06);color:#22c55e;cursor:pointer;font-size:10px;">👍 看到了</button>'
+    +'<button class="fb-btn" data-fb="bad"  data-key="'+key+'" data-args=\''+argsStr+'\' style="padding:2px 8px;border-radius:5px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.06);color:#ef4444;cursor:pointer;font-size:10px;">👎 没看到</button>'
     +'<span class="fb-thanks" data-key="'+key+'" style="display:none;font-size:9.5px;color:#4ecdc4;">✓ 已记录</span>'
     +'</div>';
 }
@@ -726,7 +747,7 @@ document.addEventListener('click', function(e){
   var args=JSON.parse(btn.getAttribute('data-args'));
   var fbType=btn.getAttribute('data-fb');
   var key=btn.getAttribute('data-key');
-  saveFeedback(args.m, args.lat, args.lon, args.d, args.s, fbType==='good'?'good':'bad');
+  saveFeedback(args.m, args.lat, args.lon, args.d, args.s, fbType==='good'?'good':'bad', null, args.meta);
   // 隐藏所有同 key 的按钮,显示"已记录"
   document.querySelectorAll('.fb-btn[data-key="'+key+'"]').forEach(function(b){b.style.display='none';});
   var th=document.querySelector('.fb-thanks[data-key="'+key+'"]'); if(th) th.style.display='inline';
@@ -3625,7 +3646,7 @@ function renderCloud(rows,daily,elev){
     +'<div style="font-size:12px;font-weight:600;color:#f5c842;margin-bottom:7px;">🌅 日出云海预测</div>';
   dStats.forEach(function(d){
     var c=d.wf>=65?'#f5c842':d.wf>=45?'#e8734a':'#3a5a7a';
-    var fbHtml = feedbackButtonHTML('cloud', cST.lat, cST.lon, d.day, d.wf);
+    var fbHtml = feedbackButtonHTML('cloud', cST.lat, cST.lon, d.day, d.wf, d.bestRow);
     var bdHtml = d.bestRow ? scoreBreakdownHTML('cloud', d.bestRow, d.wf, '#4ecdc4') : '';
     srHTML+='<div class="anrow"><div class="anico">'+d.ico+'</div><div class="aninfo"><div class="andate">'+d.label+' <span style="color:#f5c842;font-size:10px;">🌅'+d.srTime+'</span></div><div class="andetail">'+d.detail+bdHtml+fbHtml+'</div></div>'
       +'<span class="antag" style="color:'+c+';border:1px solid '+c+'33;background:'+c+'0e;">'+d.verdict+'</span></div>';
@@ -3960,7 +3981,7 @@ function renderGlow(){
         });
         return '<div style="margin-top:8px;">'+photoTimelineHTML(pts, '#f97316', (side==='sr'?'朝霞':'晚霞')+'时间轴（'+label+'）')+'</div>';
       })()
-      +feedbackButtonHTML('glow', gST.lat, gST.lon, day, best)
+      +feedbackButtonHTML('glow', gST.lat, gST.lon, day, best, bestRow)
       +'</div></div>'
       +'<span class="antag" style="color:'+c+';border:1px solid '+c+'33;background:'+c+'0e;">'+g.emoji+g.label+'</span></div>';
   });
@@ -4220,7 +4241,7 @@ function renderAlps(rows,daily,peaks){
         : '<div class="alps-detail-body" style="color:#3a5a7a;">云量过高或大气条件不满足，本'+winName+'难有日照金山效果</div>')
       +'<div class="alps-meter"><div class="alps-fill" style="width:'+sc+'%;background:'+c+';"></div></div>'
       +((sc>=20&&best)?scoreBreakdownHTML('alps', best, sc, '#f59e0b'):'')
-      +feedbackButtonHTML('alps', aST.lat, aST.lon, day+'_'+(isDawn?'sr':'ss'), sc)
+      +feedbackButtonHTML('alps', aST.lat, aST.lon, day+'_'+(isDawn?'sr':'ss'), sc, best)
       +'</div>'
       +'<span class="alps-badge" style="color:'+c+';border:1px solid '+c+'33;background:'+c+'0e;">'+verdict+'</span>'
       +'</div>';
@@ -4801,7 +4822,15 @@ function renderStar(rows,daily,lp,nightAnalyses){
         var pts=hb.map(function(x){var dt=new Date(x.time);return {label:pad2(dt.getHours())+':00', value:x.score||0};});
         return '<div style="margin-top:8px;">'+photoTimelineHTML(pts, '#a78bfa', '银河时间轴（'+nightSpan+'）')+'</div>';
       })()
-      +feedbackButtonHTML('star', sST.lat, sST.lon, dayKey, a.score)
+      +(function(){
+        // 取该夜评分最高的那个小时作为代表气象（用于反馈诊断）
+        var hb=a.hourlyBreakdown||[];
+        var bestH=null;
+        for(var hi=0;hi<hb.length;hi++){ if(!bestH||(hb[hi].score||0)>(bestH.score||0)) bestH=hb[hi]; }
+        var starMeta = bestH ? {cLow:bestH.cLow,cMid:bestH.cMid,cHigh:bestH.cHigh,rh:bestH.rh,wind:bestH.wind,
+          vis:(bestH.vis!=null?bestH.vis*1000:null),precip:bestH.precip} : null; // vis 在 breakdown 里是 km，转回 m 以统一
+        return feedbackButtonHTML('star', sST.lat, sST.lon, dayKey, a.score, starMeta);
+      })()
       +'</div>';
   }).join('');
 
