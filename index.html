@@ -89,6 +89,7 @@ input,button{font-family:inherit;font-size:13px;}
 .mzb{width:27px;height:27px;background:rgba(3,7,14,0.92);border:1px solid rgba(200,223,245,0.15);border-radius:6px;color:#e8f4ff;font-size:16px;line-height:1;cursor:pointer;}
 /* 地图下方图层切换条 */
 .ovbar{display:flex;gap:6px;margin:-4px 0 10px;flex-wrap:wrap;}
+.himawari-box{margin:-2px 0 12px;}
 .ovbtn{flex:1;min-width:120px;padding:7px 10px;border-radius:8px;border:1px solid #1a2f4a;background:rgba(255,255,255,0.03);color:#9ab8c8;cursor:pointer;font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;}
 .ovbtn:hover{border-color:#4ecdc4;color:#e8f4ff;}
 .ovbtn.on{border-color:#a78bfa;background:rgba(167,139,250,0.18);color:#cbb8ff;}
@@ -207,7 +208,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span>🗺️</span><span style="font-weight:500;">点击地图选点，自动获取海拔</span><span style="margin-left:auto;font-size:9.5px;color:#3a5a7a;">OpenStreetMap</span></div>
   <div class="mapwrap" style="height:255px;" id="cMW"><canvas class="base" id="cMC"></canvas><div class="mzb-wrap"><button class="mzb" id="cZI">+</button><button class="mzb" id="cZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮缩放</div></div>
-  <div class="ovbar"><button class="ovbtn" id="cOvSat">🛰️ 实时卫星云图（看云怎么动）</button></div>
+  <div class="himawari-box" data-region="cloud"></div>
   <div class="bnr" id="cBNR" style="background:rgba(78,205,196,0.07);border:1px solid rgba(78,205,196,0.18);color:#4ecdc4;"></div>
   <div id="cRes"></div>
   <div class="empty" id="cEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌫️</div><p style="line-height:1.9;">点击地图选点<br>预测 7 天云海条件</p></div>
@@ -231,7 +232,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;"><span>🔥</span><span style="font-weight:500;">朝霞晚霞火烧云分析</span></div>
   <div class="mapwrap" style="height:270px;" id="gMW"><canvas class="base" id="gMC"></canvas><div class="mzb-wrap"><button class="mzb" id="gZI">+</button><button class="mzb" id="gZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮</div></div>
-  <div class="ovbar"><button class="ovbtn" id="gOvSat">🛰️ 实时卫星云图（看地平线云况）</button></div>
+  <div class="himawari-box" data-region="glow"></div>
   <div class="dgrid" id="gDG"></div>
   <div id="gRes"></div>
   <div class="empty" id="gEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌅</div><p>点击地图选点<br>分析朝霞晚霞火烧云</p></div>
@@ -288,7 +289,7 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
     </div>
   </div>
   <div class="mapwrap" style="height:280px;" id="aMW"><canvas class="base" id="aMC"></canvas><div class="mzb-wrap"><button class="mzb" id="aZI">+</button><button class="mzb" id="aZO">−</button></div><div class="mhint">点击山峰位置 · 拖动 · 滚轮</div></div>
-  <div class="ovbar"><button class="ovbtn" id="aOvSat">🛰️ 实时卫星云图（看山头云况）</button></div>
+  <div class="himawari-box" data-region="alps"></div>
   <div id="aRes"></div>
   <div class="empty" id="aEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🏔️</div><p style="line-height:1.9;">点击地图上的<b>山峰位置</b><br>系统自动分析未来 7 天<br>该山能否拍到日照金山</p></div>
 </div></div></div>
@@ -335,7 +336,8 @@ tr.galwin td:first-child{box-shadow:inset 3px 0 0 #a78bfa;}
 <div class="body">
   <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span>⭐</span><span style="font-weight:500;">星空观测条件分析（含光污染）</span></div>
   <div class="mapwrap" style="height:255px;" id="sMW"><canvas class="base" id="sMC"></canvas><div class="mzb-wrap"><button class="mzb" id="sZI">+</button><button class="mzb" id="sZO">−</button></div><div class="mhint">点击选点 · 拖动 · 滚轮</div></div>
-  <div class="ovbar"><button class="ovbtn" id="sOvViirs">🌃 光污染查询 ↗</button><button class="ovbtn" id="sOvSat">🛰️ 实时卫星云图</button></div>
+  <div class="ovbar"><button class="ovbtn" id="sOvViirs">🌃 光污染查询 ↗</button></div>
+  <div class="himawari-box" data-region="star"></div>
   <div id="sRes"></div>
   <div class="empty" id="sEmp"><div style="font-size:40px;opacity:.2;margin-bottom:9px;">🌌</div><p style="line-height:1.9;">点击地图选点<br>分析 7 天夜间星空条件</p></div>
 </div></div></div>
@@ -539,6 +541,9 @@ document.querySelectorAll('.ntab[data-page]').forEach(function(btn){
     // 切换后下一帧重绘对应地图
     setTimeout(function(){
       if(PAGE_MAPS[pageId]) PAGE_MAPS[pageId].draw();
+      // 初始化当前页的 Himawari 卫星图块（懒加载）
+      var pg=document.getElementById(pageId);
+      if(pg){ var boxes=pg.querySelectorAll('.himawari-box'); for(var i=0;i<boxes.length;i++){ renderHimawariBox(boxes[i]); } }
     },0);
   });
 });
@@ -1400,48 +1405,91 @@ function buildSunEv(daily){
 var TS=256;
 
 // ══════════════════════════════════════════════════════════════════════
-// 🗺️ 地图叠加图层配置（任务3 VIIRS光污染 / 任务4 Himawari卫星云图）
-// ──────────────────────────────────────────────────────────────────────
-// 🛰️ 卫星云图：RainViewer 卫星红外（真·10 分钟级更新，标准 Web Mercator XYZ）
-//   数据目录：https://api.rainviewer.com/public/weather-maps.json
-//     → 返回 { host, satellite:{ infrared:[ {time, path}, ... ] } }
-//   瓦片格式（标准 z/x/y）：{host}{path}/{size}/{z}/{x}/{y}/{color}/{smooth}_{snow}.png
-//   无需 API key，全球覆盖，可叠在现有 OSM 地图上（投影一致，不错位）。
-//   带多帧时间序列 → 可做 2 小时滚动动画。
-// 光污染（VIIRS）仍走按钮跳转 lightpollutionmap.info（见 bindOverlayToggle）。
 // ══════════════════════════════════════════════════════════════════════
-// RainViewer 帧目录缓存：{host, frames:[{time, path}], fetchedAt}
-var RV_DATA=null, RV_FETCHING=null;
-function rainviewerFetchFrames(){
-  // 已有较新缓存（<5分钟）直接用
-  if(RV_DATA && (Date.now()-RV_DATA.fetchedAt < 5*60000)) return Promise.resolve(RV_DATA);
-  if(RV_FETCHING) return RV_FETCHING; // 去重并发
-  RV_FETCHING = fetch('https://api.rainviewer.com/public/weather-maps.json')
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      var host = j.host || 'https://tilecache.rainviewer.com';
-      var inf = (j.satellite && j.satellite.infrared) ? j.satellite.infrared : [];
-      RV_DATA = { host:host, frames:inf, fetchedAt:Date.now() };
-      RV_FETCHING = null;
-      return RV_DATA;
-    })
-    .catch(function(){ RV_FETCHING=null; return null; });
-  return RV_FETCHING;
-}
-var MAP_OVERLAYS={
-  satellite: {
-    label:'🛰️ 卫星云图',
-    // url 用动态帧 path（由 S.ovTime 注入完整 path 字符串），标准 z/x/y。
-    // color=0（IR 默认配色），smooth=1, snow=0。size=256 与基础瓦片一致。
-    url:function(z,x,y,framePath){
-      var host = (RV_DATA && RV_DATA.host) ? RV_DATA.host : 'https://tilecache.rainviewer.com';
-      var path = framePath || (RV_DATA && RV_DATA.frames.length ? RV_DATA.frames[RV_DATA.frames.length-1].path : null);
-      if(!path) return ''; // 还没拉到帧目录
-      return host + path + '/256/' + z + '/' + x + '/' + y + '/0/1_0.png';
-    },
-    maxZoom:7, opacity:0.7, attribution:'RainViewer/卫星红外', timed:true
+// 🛰️ Himawari-9 实时卫星云图（直接 <img> 嵌入，不走 fetch / 不走地图叠加）
+// ──────────────────────────────────────────────────────────────────────
+// 经反复测试，瓦片拼接 / fetch JSON 在 App WebView 环境里不稳定。改为最简方案：
+// 直接用 <img> 加载一张「东亚-东南亚区域整图」，带多级 onerror 回退，确保至少能出图。
+//   主源：NICT Himawari Real-time（整幅缩略，10 分钟级）
+//   回退1：JMA 气象厅东亚区域图
+//   回退2：显示"点此打开官方云图"链接（彻底失败时也有出路）
+// 图片每 5 分钟自动刷新一次（加时间戳防缓存）。
+// ══════════════════════════════════════════════════════════════════════
+// 候选图源（按优先级）。{ts} 会被替换为时间戳防缓存。
+var HIMAWARI_SOURCES=[
+  // NICT 整幅区域缩略图（band 13 红外 / 真彩），覆盖东亚-东南亚
+  'https://www.data.jma.go.jp/mscweb/data/himawari/img/se1/se1_b13_1100.jpg',
+  'https://www.data.jma.go.jp/mscweb/data/himawari/img/se1/se1_snd_1100.jpg',
+  'https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__b13_1100.jpg'
+];
+var HIMAWARI_OFFICIAL_PAGE='https://www.data.jma.go.jp/mscweb/data/himawari/sat_img.php?area=se1';
+
+// 渲染一个 Himawari 卫星图块到指定容器
+function renderHimawariBox(box){
+  if(!box || box._inited) return;
+  box._inited=true;
+
+  // ── 折叠按钮（默认收起，点击展开/收起卫星云图）──
+  var btn=document.createElement('button');
+  btn.className='ovbtn';
+  btn.style.width='100%';
+  btn.innerHTML='🛰️ 实时卫星云图（点击展开）';
+
+  // 图片容器（默认隐藏，首次展开才加载图片，省流量）
+  var panel=document.createElement('div');
+  panel.style.cssText='display:none;margin-top:8px;';
+
+  var img=document.createElement('img');
+  img.alt='Himawari-9 实时卫星云图';
+  img.style.cssText='width:100%;border-radius:10px;display:block;background:#0a1420;min-height:120px;';
+  img.referrerPolicy='no-referrer';
+  var srcIdx=0, imgLoaded=false;
+  function load(){
+    img.src=HIMAWARI_SOURCES[srcIdx] + '?t=' + Math.floor(Date.now()/300000); // 5分钟粒度时间戳
   }
-};
+  img.onerror=function(){
+    srcIdx++;
+    if(srcIdx < HIMAWARI_SOURCES.length){ load(); }
+    else {
+      panel.innerHTML='<div style="padding:14px;border:1px dashed #1a2f4a;border-radius:10px;text-align:center;color:#9ab8c8;font-size:12px;line-height:1.8;">'
+        +'🛰️ 卫星云图暂时无法在应用内显示<br><a href="'+HIMAWARI_OFFICIAL_PAGE+'" target="_blank" style="color:#a78bfa;text-decoration:underline;">点此打开 JMA 官方 Himawari-9 实时云图 ↗</a></div>';
+    }
+  };
+  var cap=document.createElement('div');
+  cap.style.cssText='font-size:10px;color:#5a7a9a;margin:4px 2px 0;text-align:center;';
+  cap.innerHTML='🛰️ Himawari-9 实时卫星云图（东亚-东南亚 · 每10分钟更新）· © JMA气象厅';
+  panel.appendChild(img);
+  panel.appendChild(cap);
+
+  var open=false;
+  btn.addEventListener('click', function(){
+    open=!open;
+    if(open){
+      panel.style.display='block';
+      btn.classList.add('on');
+      btn.innerHTML='🛰️ 实时卫星云图（点击收起）';
+      if(!imgLoaded){ imgLoaded=true; load(); // 首次展开才加载
+        if(box._timer) clearInterval(box._timer);
+        box._timer=setInterval(function(){ if(open){ srcIdx=0; load(); } }, 5*60000); // 展开时每5分钟刷新
+      }
+    } else {
+      panel.style.display='none';
+      btn.classList.remove('on');
+      btn.innerHTML='🛰️ 实时卫星云图（点击展开）';
+    }
+  });
+
+  box.innerHTML='';
+  box.appendChild(btn);
+  box.appendChild(panel);
+}
+// 初始化页面上所有 .himawari-box（懒加载：仅当容器可见时）
+function initHimawariBoxes(){
+  var boxes=document.querySelectorAll('.himawari-box');
+  for(var i=0;i<boxes.length;i++){ renderHimawariBox(boxes[i]); }
+}
+
+var MAP_OVERLAYS={}; // 已废弃地图叠加卫星层（保留空对象兼容旧引用）
 
 function MapEng(baseId, wrapId, onSel, ovCb){
   var cv=document.getElementById(baseId), ctx=cv.getContext('2d');
@@ -1504,41 +1552,6 @@ function MapEng(baseId, wrapId, onSel, ovCb){
         if(!usedKeys[allKeys[ki]]) delete S.tiles[allKeys[ki]];
       }
     }
-    // ── 🗺️ 叠加图层（VIIRS 光污染 / Himawari 卫星云图）──
-    if(S.overlay && MAP_OVERLAYS[S.overlay]){
-      var ov=MAP_OVERLAYS[S.overlay];
-      var ovZ=Math.min(S.z, ov.maxZoom||S.z);     // 叠加层有自己的最大缩放
-      var ovN=1<<ovZ;
-      var ratio=(1<<S.z)/ovN;                      // 基础层与叠加层的缩放比（叠加层瓦片更大）
-      var ocx=(S.lon+180)/360*ovN, ocy=(1-Math.log(Math.tan(S.lat*Math.PI/180)+1/Math.cos(S.lat*Math.PI/180))/Math.PI)/2*ovN;
-      var ovTS=TS*ratio;                           // 叠加瓦片在屏幕上的实际像素尺寸
-      var otW=Math.ceil(W/ovTS)+3, otH=Math.ceil(H/ovTS)+3;
-      var osTX=Math.floor(ocx-otW/2), osTY=Math.floor(ocy-otH/2);
-      ctx.save(); ctx.globalAlpha = ov.opacity!=null?ov.opacity:0.6;
-      for(var ox=osTX; ox<=osTX+otW; ox++){
-        for(var oy=osTY; oy<=osTY+otH; oy++){
-          if(oy<0||oy>=ovN) continue;
-          var owx=((ox%ovN)+ovN)%ovN;
-          var okey=S.overlay+':'+ovZ+'/'+owx+'/'+oy+(ov.timed?(':'+S.ovTime):'');
-          var opx=(ox-ocx)*ovTS+W/2, opy=(oy-ocy)*ovTS+H/2;
-          var otile=S.ovTiles[okey];
-          if(otile&&otile.complete&&otile.naturalWidth>0){ ctx.drawImage(otile,opx,opy,ovTS,ovTS); }
-          else if(!otile){
-            (function(k,zz,xx,yy){
-              var img=new Image(); img.crossOrigin='anonymous';
-              img.src=ov.timed ? ov.url(zz,xx,yy,S.ovTime) : ov.url(zz,xx,yy);
-              img.onload=function(){S.ovTiles[k]=img;requestDraw();};
-              img.onerror=function(){delete S.ovTiles[k];}; // 失败删除，允许重试/留空
-              S.ovTiles[k]=img;
-            })(okey,ovZ,owx,oy);
-          }
-        }
-      }
-      ctx.restore();
-      // 叠加层 LRU（上限 200）
-      var ovk=Object.keys(S.ovTiles);
-      if(ovk.length>200){ for(var oi=0;oi<ovk.length&&Object.keys(S.ovTiles).length>200;oi++){ delete S.ovTiles[ovk[oi]]; } }
-    }
     ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(0,H-14,W,14);
     ctx.fillStyle='#777';ctx.font='9px sans-serif';ctx.textAlign='right';
     ctx.fillText('© OpenStreetMap',W-4,H-3);
@@ -1582,25 +1595,6 @@ function MapEng(baseId, wrapId, onSel, ovCb){
     setCenter:function(lat,lon,z){S.lat=lat;S.lon=lon;if(z)S.z=z;S.tiles={};draw();},
     // setSelected: 主动改用户选点标记（搜索定位时用）
     setSelected:function(lat,lon){S.slat=lat;S.slon=lon;draw();},
-    // setOverlay: 切换叠加图层（'satellite'|null）。卫星层先拉 RainViewer 帧目录再绘。
-    setOverlay:function(id){
-      S.overlay = (id && MAP_OVERLAYS[id]) ? id : null;
-      S.ovTiles = {};
-      S.ovTime = null;
-      draw();
-      if(S.overlay==='satellite'){
-        rainviewerFetchFrames().then(function(d){
-          if(d && d.frames.length && S.overlay==='satellite'){
-            S.ovTime = d.frames[d.frames.length-1].path; // 最新一帧
-            S.ovTiles = {};
-            draw();
-          }
-        });
-      }
-    },
-    // setOverlayTime: 卫星动画用——指定帧 path 字符串
-    setOverlayTime:function(framePath){ S.ovTime=framePath; S.ovTiles={}; draw(); },
-    getOverlay:function(){return S.overlay;},
     getS:function(){return S;}
   };
   return api;
@@ -3514,66 +3508,11 @@ document.querySelectorAll('.lp-preset').forEach(function(btn){
 });
 
 // ══════════════════════════════════════════════════════════════════════
-// 🗺️ 地图叠加图层 UI 绑定
+// 🗺️ 地图叠加图层 UI 绑定（现仅保留光污染跳转；卫星云图改用主页 Himawari 嵌图）
 // ──────────────────────────────────────────────────────────────────────
-// · 卫星云图（RainViewer 卫星红外，真·10分钟级）：点按钮在地图叠加，并自动滚动播放
-//   过去约 2 小时的多帧动画（云怎么移动一目了然）。
 // · 光污染：点按钮跳转 lightpollutionmap.info 并定位到当前坐标（权威底图，100% 可用）。
 // ══════════════════════════════════════════════════════════════════════
-var SAT_ANIM={}; // 每个地图一个动画状态 {timer, idx}
-function stopSatAnim(mapKey){
-  if(SAT_ANIM[mapKey] && SAT_ANIM[mapKey].timer){ clearInterval(SAT_ANIM[mapKey].timer); }
-  SAT_ANIM[mapKey]=null;
-}
-function fmtFrameTime(unixSec){
-  var d=new Date(unixSec*1000);
-  function p(n){return (n<10?'0':'')+n;}
-  return p(d.getHours())+':'+p(d.getMinutes()); // 本地时间 HH:MM
-}
-function startSatAnim(mapKey, mapApi, hintEl){
-  stopSatAnim(mapKey);
-  rainviewerFetchFrames().then(function(d){
-    if(!d || !d.frames.length || mapApi.getOverlay()!=='satellite') return;
-    var frames=d.frames;            // 从旧到新
-    var st={idx:frames.length-1, timer:null};
-    function show(){
-      var fr=frames[st.idx];
-      mapApi.setOverlayTime(fr.path);
-      if(hintEl) hintEl.innerHTML='🛰️ 卫星云图 '+fmtFrameTime(fr.time)+' · 共'+frames.length+'帧滚动 · © RainViewer';
-    }
-    show();
-    st.timer=setInterval(function(){
-      st.idx=(st.idx+1)%frames.length; // 循环播放
-      show();
-    }, 700); // 每 0.7s 一帧
-    SAT_ANIM[mapKey]=st;
-  });
-}
 function bindOverlayToggle(mapKey, mapApi, wrapId, satBtnId, viirsBtnId){
-  var hintEl=document.querySelector('#'+wrapId+' .mhint');
-  var defaultHint = hintEl ? hintEl.innerHTML : '';
-  function setActive(btnId, on){
-    var b=document.getElementById(btnId); if(!b) return;
-    if(on) b.classList.add('on'); else b.classList.remove('on');
-  }
-  // 卫星层开关（开启后滚动播放动画）
-  if(satBtnId){
-    var sb=document.getElementById(satBtnId);
-    if(sb) sb.addEventListener('click', function(){
-      var cur=mapApi.getOverlay();
-      if(cur==='satellite'){
-        stopSatAnim(mapKey);
-        mapApi.setOverlay(null);
-        setActive(satBtnId,false);
-        if(hintEl) hintEl.innerHTML=defaultHint;
-      } else {
-        mapApi.setOverlay('satellite');
-        setActive(satBtnId,true);
-        if(hintEl) hintEl.innerHTML='🛰️ 正在加载卫星云图…';
-        startSatAnim(mapKey, mapApi, hintEl);
-      }
-    });
-  }
   // 光污染：跳转外部权威地图（定位到当前坐标）
   if(viirsBtnId){
     var vb=document.getElementById(viirsBtnId);
@@ -3613,7 +3552,7 @@ var cMap=MapEng('cMC','cMW',function(lat,lon){
   var b=document.getElementById('cBNR');b.style.display='block';b.textContent='🏔️ 已选点 · 点击「确认分析」开始预测';
 });
 PAGE_MAPS.pgCloud=cMap; // ← 注册以便切页面时重绘
-bindOverlayToggle('cloud',cMap,'cMW','cOvSat',null);
+// 卫星云图改用主页 Himawari 嵌图，此处不再绑定
 bindMode('c');bindMdl('c',cST);bindSearch('c',cMap,function(lat,lon){cMap.setCenter(lat,lon,12);cST.lat=lat;cST.lon=lon;enableGo('c');fetchElev(lat,lon,function(e){if(e){cST.elev=e;document.getElementById('cES').textContent=e;document.getElementById('cEI').value=e;}});});
 bindCscrollDrag('cRes');
 document.getElementById('cAM').addEventListener('click',function(){var el=document.getElementById('cEI');el.value=Math.max(0,(parseInt(el.value)||cST.elev||500)-10);document.getElementById('cES').textContent=el.value;});
@@ -3768,7 +3707,7 @@ var gMap=MapEng('gMC','gMW',function(lat,lon){
   enableGo('g');
 });
 PAGE_MAPS.pgGlow=gMap;
-bindOverlayToggle('glow',gMap,'gMW','gOvSat',null);
+// 卫星云图改用主页 Himawari 嵌图
 bindMode('g');bindMdl('g',gST);bindSearch('g',gMap,function(lat,lon){gMap.setCenter(lat,lon,12);gST.lat=lat;gST.lon=lon;enableGo('g');});
 bindCscrollDrag('gRes');
 document.getElementById('gZI').addEventListener('click',function(){gMap.dz(1);});
@@ -4158,7 +4097,7 @@ function aOnSelect(lat,lon){
 }
 var aMap=MapEng('aMC','aMW',aOnSelect,aOverlayDraw);
 PAGE_MAPS.pgAlps=aMap;
-bindOverlayToggle('alps',aMap,'aMW','aOvSat',null);
+// 卫星云图改用主页 Himawari 嵌图
 bindMode('a');bindMdl('a',aST);bindSearch('a',aMap,function(lat,lon){aMap.setCenter(lat,lon,12);aOnSelect(lat,lon);});
 bindCscrollDrag('aRes');
 document.getElementById('aZI').addEventListener('click',function(){aMap.dz(1);});
@@ -4724,7 +4663,7 @@ var sMap=MapEng('sMC','sMW',function(lat,lon){
   autoDetectLP(lat,lon);
 });
 PAGE_MAPS.pgStar=sMap;
-bindOverlayToggle('star',sMap,'sMW','sOvSat','sOvViirs');
+bindOverlayToggle('star',sMap,'sMW',null,'sOvViirs');
 bindMode('s');bindMdl('s',sST);bindSearch('s',sMap,function(lat,lon){sMap.setCenter(lat,lon,12);sST.lat=lat;sST.lon=lon;enableGo('s');autoDetectLP(lat,lon);});
 bindCscrollDrag('sRes');
 document.getElementById('sZI').addEventListener('click',function(){sMap.dz(1);});
@@ -5111,12 +5050,12 @@ function renderWiki(){
 
     // 🧰 工具
     {icon:'🧰',color:'#22c55e',title:zh?'推荐配合使用的工具':'Recommended Tools',body:zh?[
-      '<b>🛰️ 卫星实时云图：</b><a href="https://www.windy.com/?clouds" target="_blank" style="color:#a78bfa;text-decoration:underline;">Windy.com</a> · <a href="https://himawari8.nict.go.jp/" target="_blank" style="color:#a78bfa;text-decoration:underline;">Himawari-9</a> · <a href="http://www.nmc.cn/publish/satellite/fy4a-true-color.htm" target="_blank" style="color:#a78bfa;text-decoration:underline;">风云四号</a>。',
+      '<b>🛰️ 卫星实时云图：</b><a href="https://www.data.jma.go.jp/mscweb/data/himawari/sat_img.php?area=se1" target="_blank" style="color:#a78bfa;text-decoration:underline;">Himawari-9（JMA官方）</a> · <a href="http://www.nmc.cn/publish/satellite/fy4a-true-color.htm" target="_blank" style="color:#a78bfa;text-decoration:underline;">风云四号</a>。',
       '<b>🌃 光污染：</b><a href="https://www.lightpollutionmap.info/" target="_blank" style="color:#a78bfa;text-decoration:underline;">lightpollutionmap.info</a>（VIIRS 2024）。',
       '<b>🌌 银河 + 山峰方位：</b><a href="https://www.photopills.com/" target="_blank" style="color:#a78bfa;text-decoration:underline;">PhotoPills</a> 或 <b>巧摄 PlanIt!</b>。',
       '<b>👁️ 老办法最有效：</b>提前一晚看西边天气；开窗户看天。',
     ]:[
-      'Pair with: Windy, Himawari-9, lightpollutionmap.info, PhotoPills.',
+      'Pair with: Himawari-9 (JMA), lightpollutionmap.info, PhotoPills.',
     ]},
 
     // 💡 实战建议
@@ -6275,35 +6214,33 @@ function tryGPSLocation(){
   }, {timeout:10000, maximumAge:60*60*1000});
 }
 
+// 「今天值得去」推荐卡（四个详情页各一张）：依该题材最高分给出"值得去/有点机会/希望不大"
 // 🛰️ 打开 Windy 实时卫星云图（带当前位置）。无位置时用全球默认视角。
 function openWindySatellite(lat, lon){
   var url;
   if(lat!=null && lon!=null){
-    // Windy URL：satellite 叠加层,纬度,经度,缩放级别（格式 ?overlay,lat,lon,zoom）
     url='https://www.windy.com/?satellite,'+(+lat).toFixed(3)+','+(+lon).toFixed(3)+',8';
   } else {
     url='https://www.windy.com/?satellite';
   }
   window.open(url, '_blank', 'noopener');
 }
-// 统一的「看实时卫星云图确认」按钮（首页机会卡 + 各详情页共用，样式与设计稿一致）。
-// 用 data-lat/data-lon 携带该页位置，点击走全局委托 → openWindySatellite。
+// 「看实时卫星云图确认」按钮（点击跳转 Windy 卫星云图，带该页坐标）。
 function windySatBtnHTML(lat, lon, opts){
   opts=opts||{};
   var latAttr=(lat!=null)?(+lat).toFixed(4):'';
   var lonAttr=(lon!=null)?(+lon).toFixed(4):'';
   var L=(typeof LANG!=='undefined'&&LANG==='en');
-  var label=L?'View live satellite':'看实时卫星云图确认';
+  var label=L?'View live satellite ↗':'看实时卫星云图确认 ↗';
   var style=opts.block
     ? 'display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:7px 12px;'
     : 'display:inline-flex;align-items:center;gap:6px;padding:6px 11px;';
-  return '<button class="windy-sat-btn" data-lat="'+latAttr+'" data-lon="'+lonAttr+'" '
+  return '<button onclick="openWindySatellite('+(latAttr?latAttr:'null')+','+(lonAttr?lonAttr:'null')+')" '
     +'style="'+style+'border:1px solid rgba(96,165,250,0.45);border-radius:8px;'
     +'background:linear-gradient(135deg,rgba(96,165,250,0.14),rgba(59,130,246,0.06));'
     +'color:#60a5fa;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;">'
     +'📡 '+label+'</button>';
 }
-// 「今天值得去」推荐卡（四个详情页各一张）：依该题材最高分给出"值得去/有点机会/希望不大"
 // 建议 + 看实时卫星云图按钮 + "预报告诉你该不该计划，云图告诉你此刻动不动身"提示。
 // score: 该页当前最佳分(0..100)；lat/lon: 该页定位（按钮带坐标）。
 function worthGoingCardHTML(score, lat, lon){
@@ -6329,8 +6266,8 @@ function worthGoingCardHTML(score, lat, lon){
         +'<div style="font-size:12px;font-weight:600;color:'+accent+';">'+title+'</div>'
         +'<div style="font-size:11px;color:#9ab8c8;margin-top:2px;line-height:1.6;">'+advice+'</div>'
       +'</div>'
-      +'<div style="margin-left:auto;align-self:center;">'+windySatBtnHTML(lat, lon)+'</div>'
     +'</div>'
+    +'<div style="margin-top:9px;">'+windySatBtnHTML(lat, lon, {block:true})+'</div>'
     +'<div style="font-size:10px;color:#5a7a9a;margin-top:7px;line-height:1.7;">💡 '+tip+'</div>'
   +'</div>';
 }
