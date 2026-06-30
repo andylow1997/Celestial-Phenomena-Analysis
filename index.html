@@ -1436,14 +1436,32 @@ var TS=256;
 //   回退2：显示"点此打开官方云图"链接（彻底失败时也有出路）
 // 图片每 5 分钟自动刷新一次（加时间戳防缓存）。
 // ══════════════════════════════════════════════════════════════════════
-// 候选图源（按优先级）。{ts} 会被替换为时间戳防缓存。
-var HIMAWARI_SOURCES=[
-  // NICT 整幅区域缩略图（band 13 红外 / 真彩），覆盖东亚-东南亚
-  'https://www.data.jma.go.jp/mscweb/data/himawari/img/se1/se1_b13_1100.jpg',
-  'https://www.data.jma.go.jp/mscweb/data/himawari/img/se1/se1_snd_1100.jpg',
-  'https://www.data.jma.go.jp/mscweb/data/himawari/img/fd_/fd__b13_1100.jpg'
-];
+// 候选区域前缀（se1=东南亚, fd_=全圆盘）。文件名格式：{区域}_{波段}_{HHMM}.jpg
+// 关键：末尾 HHMM 是图像的 UTC 时刻，每 10 分钟一张（0000/0010/.../2350）。
+// 不能写死，必须按当前 UTC 时间动态生成，否则永远卡在某一帧死图。
+var HIMAWARI_REGION='se1';      // 东南亚区域（覆盖中国南部/东南亚）
+var HIMAWARI_BAND='b13';        // band 13 红外（昼夜都有）
 var HIMAWARI_OFFICIAL_PAGE='https://www.data.jma.go.jp/mscweb/data/himawari/sat_img.php?area=se1';
+
+// 生成"最近可用的一张图"的 UTC 时刻 HHMM。
+// stepsBack: 往前回退几个 10 分钟（用于发布延迟 / 维护时段 / 加载失败回退）。
+function himawariTimeCode(stepsBack){
+  // JMA 图有约 20-30 分钟发布延迟，默认从"当前 UTC 时间往前 30 分钟"起算
+  var d=new Date(Date.now() - 30*60000 - (stepsBack||0)*10*60000);
+  // 向下取整到 10 分钟
+  var mm=Math.floor(d.getUTCMinutes()/10)*10;
+  var hh=d.getUTCHours();
+  // 跳过卫星维护时段（02:40-02:50、14:40-14:50 UTC 无图）
+  if((hh===2||hh===14) && mm===40){ d=new Date(d.getTime()-20*60000); hh=d.getUTCHours(); mm=Math.floor(d.getUTCMinutes()/10)*10; }
+  function p(n){return (n<10?'0':'')+n;}
+  return p(hh)+p(mm);
+}
+// 构造完整图片 URL（按回退步数生成对应时刻）
+function himawariUrl(stepsBack){
+  var code=himawariTimeCode(stepsBack);
+  return 'https://www.data.jma.go.jp/mscweb/data/himawari/img/'+HIMAWARI_REGION+'/'
+    + HIMAWARI_REGION+'_'+HIMAWARI_BAND+'_'+code+'.jpg?t='+Date.now();
+}
 
 // 渲染一个 Himawari 卫星图块到指定容器
 function renderHimawariBox(box){
@@ -1464,21 +1482,44 @@ function renderHimawariBox(box){
   img.alt='Himawari-9 实时卫星云图';
   img.style.cssText='width:100%;border-radius:10px;display:block;background:#0a1420;min-height:120px;';
   img.referrerPolicy='no-referrer';
-  var srcIdx=0, imgLoaded=false;
+  var stepsBack=0, imgLoaded=false;
   function load(){
-    img.src=HIMAWARI_SOURCES[srcIdx] + '?t=' + Math.floor(Date.now()/300000); // 5分钟粒度时间戳
+    img.src=himawariUrl(stepsBack); // himawariUrl 内部已带时间戳防缓存
   }
+  img.onload=function(){
+    // 加载成功后显示这张图的 UTC 时刻 + 本地刷新时间
+    var code=himawariTimeCode(stepsBack);
+    var now=new Date(); function p(n){return (n<10?'0':'')+n;}
+    cap.innerHTML='🛰️ Himawari-9 卫星云图（东南亚）· 图像时刻 '+code.substr(0,2)+':'+code.substr(2,2)+' UTC · '
+      +'刷新于 '+p(now.getHours())+':'+p(now.getMinutes())+' · © JMA';
+  };
   img.onerror=function(){
-    srcIdx++;
-    if(srcIdx < HIMAWARI_SOURCES.length){ load(); }
+    // 最新一张可能还没发布 → 往前回退 10 分钟再试，最多回退 6 次（1 小时）
+    stepsBack++;
+    if(stepsBack <= 6){ load(); }
     else {
       panel.innerHTML='<div style="padding:14px;border:1px dashed #1a2f4a;border-radius:10px;text-align:center;color:#9ab8c8;font-size:12px;line-height:1.8;">'
         +'🛰️ 卫星云图暂时无法在应用内显示<br><a href="'+HIMAWARI_OFFICIAL_PAGE+'" target="_blank" style="color:#a78bfa;text-decoration:underline;">点此打开 JMA 官方 Himawari-9 实时云图 ↗</a></div>';
     }
   };
+  // 顶部一行：手动刷新按钮
+  var bar=document.createElement('div');
+  bar.style.cssText='display:flex;justify-content:flex-end;margin-bottom:6px;';
+  var refreshBtn=document.createElement('button');
+  refreshBtn.style.cssText='padding:4px 12px;border-radius:6px;border:1px solid rgba(78,205,196,0.4);background:rgba(78,205,196,0.08);color:#4ecdc4;cursor:pointer;font-size:11px;font-weight:600;';
+  refreshBtn.innerHTML='🔄 刷新';
+  refreshBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    refreshBtn.innerHTML='🔄 刷新中…';
+    stepsBack=0; load();
+    setTimeout(function(){ refreshBtn.innerHTML='🔄 刷新'; }, 1500);
+  });
+  bar.appendChild(refreshBtn);
+
   var cap=document.createElement('div');
   cap.style.cssText='font-size:10px;color:#5a7a9a;margin:4px 2px 0;text-align:center;';
-  cap.innerHTML='🛰️ Himawari-9 实时卫星云图（东亚-东南亚 · 每10分钟更新）· © JMA气象厅';
+  cap.innerHTML='🛰️ Himawari-9 卫星云图（东亚-东南亚 · 约每10分钟更新）· © JMA气象厅';
+  panel.appendChild(bar);
   panel.appendChild(img);
   panel.appendChild(cap);
 
@@ -1489,14 +1530,16 @@ function renderHimawariBox(box){
       panel.style.display='block';
       btn.classList.add('on');
       btn.innerHTML='🛰️ 实时卫星云图（点击收起）';
-      if(!imgLoaded){ imgLoaded=true; load(); // 首次展开才加载
-        if(box._timer) clearInterval(box._timer);
-        box._timer=setInterval(function(){ if(open){ srcIdx=0; load(); } }, 5*60000); // 展开时每5分钟刷新
-      }
+      stepsBack=0; load(); // 每次展开都重新拉最新图（不只首次）
+      imgLoaded=true;
+      // 展开时每 3 分钟自动刷新
+      if(box._timer) clearInterval(box._timer);
+      box._timer=setInterval(function(){ if(open){ stepsBack=0; load(); } }, 3*60000);
     } else {
       panel.style.display='none';
       btn.classList.remove('on');
       btn.innerHTML='🛰️ 实时卫星云图（点击展开）';
+      if(box._timer){ clearInterval(box._timer); box._timer=null; } // 收起停掉定时器省电
     }
   });
 
