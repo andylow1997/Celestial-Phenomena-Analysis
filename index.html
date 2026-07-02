@@ -3011,34 +3011,36 @@ var FeatureModel = {
     // F4 水汽充沛度：【只用露点差】一处代表水汽（不再既算rh又算dew）
     var dd = (r.temp!=null?r.temp:20)-(r.dew!=null?r.dew:15);
     var fMoist = tri(dd, 0, 5, 18);                            // 露点差适中最利成霞
-    // F5 地平线进光（低云遮挡）：低云越多越压制
-    var fHorizon = clamp01(1 - cl/70);
+    // F5 地平线进光（低云遮挡）——【修复】这是硬物理门控（光进不来=整场哑火），
+    //   不能放进几何平均：1e-4 下限会把"完全封死"兜在 ~23 分。移出作真乘法门，
+    //   低云 70%+ 时平滑压到 0。软特征留在几何平均里，门控在外面乘。
+    var gateHorizon = clamp01(1 - cl/70);
     // 雨：概率语义的乘性调节（适量雨后放晴↑，正在大雨↓），不是 +分
     var rainAdj = 1.0;
     if(r.precip>0.5) rainAdj=0.15;                            // 正在显著降雨：物理压制
     else if(ctx && ctx.prevRain) rainAdj=1.08;               // 雨后放晴：小幅概率提升（封顶由几何均值自然约束）
     var parts = {
       cloud:{v:fCloud, w:0.34}, sun:{v:fSun, w:0.22},
-      air:{v:fAir, w:0.16}, moist:{v:fMoist, w:0.12}, horizon:{v:fHorizon, w:0.16}
+      air:{v:fAir, w:0.16}, moist:{v:fMoist, w:0.12}
     };
-    var base = weightedGeoMean(parts) * rainAdj;
+    var base = weightedGeoMean(parts) * gateHorizon * rainAdj;
     return { score: Math.round(clamp01(base)*100),
-             features:{cloud:fCloud,sun:fSun,air:fAir,moist:fMoist,horizon:fHorizon,rainAdj:rainAdj} };
+             features:{cloud:fCloud,sun:fSun,air:fAir,moist:fMoist,horizon:gateHorizon,rainAdj:rainAdj} };
   },
   // ── 云海（二：用云底+逆温，100%云量不再误扣）──
   cloud: function(r, elev){
     // F1 逆温（有盖子云海才稳）—复用既有分析（纯读取，不改）
     var inv = (typeof analyzeInversionLayer==='function') ? analyzeInversionLayer(r) : null;
     var fInv = inv ? (inv.isInversion===false?0.15 : inv.isHighQuality?1.0 : 0.7) : 0.6;
-    // F2 云底相对观拍点：云底 < 观拍海拔 → 人在云上（理想）。用 LCL 估云底。
-    var base = (typeof lclH==='function') ? lclH(r.temp, r.dew!=null?r.dew:r.temp-4) : null;
-    var fBase;
-    if(base==null || elev==null) fBase=0.6;
-    else {
-      var margin = elev - base;                               // >0：观拍点在云底之上
-      fBase = clamp01(0.5 + margin/600*0.5);                  // 高出云底~600m 给满
-    }
-    // F3 云量：不再"超90%扣分"。配合低云底+逆温，满云量是超级云海。单调饱和。
+    // F2a 饱和度：LCL(相对地面高度,AGL) 越小 → 近地空气越接近饱和 → 雾/层云越易贴地形成。
+    //   【修复】原实现把 elev(海拔,ASL) 与 lclH(AGL) 直接相减 —— 量纲混用，海雾等低海拔
+    //   场景会给出错误高分。没有格点地形海拔就无法换算真实云底海拔，因此改为两个
+    //   量纲各自自洽的正交特征：饱和度(纯AGL) + 海拔优势(纯ASL)。
+    var lcl = (typeof lclH==='function') ? lclH(r.temp, r.dew!=null?r.dew:r.temp-4) : null;
+    var fSat = lcl==null?0.6 : clamp01(1 - lcl/800);          // LCL≥800m：空气太干，难成雾
+    // F2b 海拔优势：山地云海高度区间(800m+)加分；低海拔不硬卡(平流雾/海雾仍可拍)，给中性分
+    var fElev = elev==null?0.6 : clamp01(0.5 + Math.min(elev,2500)/2500*0.5);
+    // F3 云量：不再"超90%扣分"。配合近饱和+逆温，满云量是超级云海。单调饱和。
     var fCover = clamp01((r.cloud||0)/60);                    // 60%+即足量，100%不罚
     // F4 湿度充沛（只一处代表水汽）
     var fHumid = plateau(r.rh, 80, 100, 25);
@@ -3046,12 +3048,12 @@ var FeatureModel = {
     var w = r.w850!=null?r.w850:(r.wind!=null?r.wind:0);
     var fWind = clamp01(1 - w/54);
     var parts = {
-      inv:{v:fInv,w:0.26}, base:{v:fBase,w:0.22}, cover:{v:fCover,w:0.16},
-      humid:{v:fHumid,w:0.20}, wind:{v:fWind,w:0.16}
+      inv:{v:fInv,w:0.26}, sat:{v:fSat,w:0.14}, elevAdv:{v:fElev,w:0.08},
+      cover:{v:fCover,w:0.16}, humid:{v:fHumid,w:0.20}, wind:{v:fWind,w:0.16}
     };
     var rainAdj = (r.precip!=null && r.precip>0.5)?0.4:1.0;
     return { score: Math.round(clamp01(weightedGeoMean(parts)*rainAdj)*100),
-             features:{inv:fInv,base:fBase,cover:fCover,humid:fHumid,wind:fWind} };
+             features:{inv:fInv,sat:fSat,elevAdv:fElev,cover:fCover,humid:fHumid,wind:fWind} };
   },
   // ── 星空（三：本就接近乘法，这里全连续）──
   star: function(r, moonPh, lp, sunAlt){
@@ -3091,13 +3093,20 @@ var FeatureModel = {
     else { var d=Math.abs(angDiff(peakBearingDeg,r.sol.az)); fAz=clamp01(1-d/45); }
     var cLow=r.cLow!=null?r.cLow:(r.cloud||0)*0.4, cHigh=r.cHigh!=null?r.cHigh:(r.cloud||0)*0.3;
     var fClear = clamp01(1-cLow/40) * plateau(cHigh,0,40,30); // 低云遮山↓，适量高云染色↑
+    // 雪线【修复】：积雪是"日照金山"的定义性前提（无雪即无"金山"可照），与地平线进光
+    //   同属硬物理门控 —— 作乘子而非几何平均成员，否则只压 ~20% 太温和。
+    //   fzl(0°C层,海平面起算) 与峰顶海拔量纲一致可直接比；峰顶高出冰点层 → 稳定积雪(→1)；
+    //   fzl 高出峰顶 800m+ → 无雪，压到 0.15（岩石山低角度光仍有弱染色，与选点红色警告口径一致）。
+    var gateSnow;
+    if(r.fzl==null || peakElevM==null) gateSnow=0.85;        // 数据缺失：轻微保守，不妄断
+    else gateSnow = Math.max(0.15, clamp01(0.15 + ((peakElevM - r.fzl) + 800)/1100*0.85));
     var parts = {
       alt:{v:fAlt,w:0.28}, contrast:{v:fContrast,w:0.14}, elev:{v:fElev,w:0.24},
       az:{v:fAz,w:0.18}, clear:{v:fClear,w:0.16}
     };
     var rainAdj = (r.precip!=null && r.precip>0.3)?0.2:1.0;
-    return { score: Math.round(clamp01(weightedGeoMean(parts)*rainAdj)*100),
-             features:{alt:fAlt,contrast:fContrast,elev:fElev,az:fAz,clear:fClear} };
+    return { score: Math.round(clamp01(weightedGeoMean(parts)*gateSnow*rainAdj)*100),
+             features:{alt:fAlt,contrast:fContrast,elev:fElev,az:fAz,clear:fClear,snow:gateSnow} };
   }
 };
 
@@ -3320,8 +3329,8 @@ function calcCloud(r, elev){
   if(w850kmh!=null){
     var cw850 = CONFIG.cloud.w850;
     if(w850kmh > cw850.strong) qualityMult *= cw850.strongMult;            // >15m/s：强削40%
-    else if(w850kmh > cw850.mid) qualityMult *= cw850.strongMult + (cw850.strong-w850kmh)/14*0.30; // 40-54km/h(11-15m/s)：0.6→0.9 过渡
-    else if(w850kmh > cw850.light) qualityMult *= 0.90 + (cw850.mid-w850kmh)/12*0.10; // 28-40km/h：0.9→1.0 轻微
+    else if(w850kmh > cw850.mid) qualityMult *= cw850.strongMult + (cw850.strong-w850kmh)/(cw850.strong-cw850.mid)*0.30; // 强/中之间：0.6→0.9 过渡（分母派生自CONFIG，改阈值曲线不断裂）
+    else if(w850kmh > cw850.light) qualityMult *= 0.90 + (cw850.mid-w850kmh)/(cw850.mid-cw850.light)*0.10; // 中/轻之间：0.9→1.0 轻微
   }
   var score = Math.round(Math.min(CONFIG.cloud.scoreCap, Math.max(0, base*qualityMult)));
   r.inversion = invAnalysis; // 挂载到行对象上，供页面展示"逆温/温湿差"判定细节
@@ -4652,11 +4661,12 @@ function renderGlow(){
     var br=winRows.reduce(function(a,b){return (scoreOf(b)||0)>(scoreOf(a)||0)?b:a;},winRows[0]);
     var fm=FeatureModel.glow(br,{prevRain:false});
     var legacyBest=Math.round(scoreOf(br)||0);
-    var fconf=computeConfidence([fm.score, legacyBest]); // 简易：新旧两引擎也算一种"分歧"
+    var diff=Math.abs(fm.score-legacyBest); // 【修复】不再把引擎分歧标成"可信度"——那是多模型分歧的语义，会误导
     engineCmpH='<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.25);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:10.5px;line-height:1.7;color:#9ab8c8;">'
       +'🧪 <b style="color:#a78bfa;">Feature 引擎(实验)</b> · 仅对比，不影响现有评分<br>'
       +'新模型 <b style="color:#a78bfa;">'+fm.score+'</b> vs 旧 <b style="color:#f5c842;">'+legacyBest+'</b>'
-      +(fconf!=null?' · 可信度 <b style="color:#4ecdc4;">'+fconf+'%</b>':'')
+      +' · 分差 <b style="color:'+(diff>=25?'#ef4444':diff>=12?'#f59e0b':'#4ecdc4')+';">'+diff+'</b>'
+      +(diff>=25?' <span style="font-size:9px;">(分歧大，值得实拍对照哪个更准)</span>':'')
       +'<br><span style="font-size:9px;color:#5a7a9a;">特征: 画布'+Math.round(fm.features.cloud*100)+' 太阳'+Math.round(fm.features.sun*100)+' 通透'+Math.round(fm.features.air*100)+' 水汽'+Math.round(fm.features.moist*100)+' 地平'+Math.round(fm.features.horizon*100)+'</span>'
       +'</div>';
   }
